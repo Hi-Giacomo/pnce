@@ -21,8 +21,16 @@
     "linux",
     "win32"
   ],
-  "author": "",
+  "author": "Hi-Giacomo",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Hi-Giacomo/pnce"
+  },
+  "bugs": {
+    "url": "https://github.com/Hi-Giacomo/pnce/issues"
+  },
+  "homepage": "https://github.com/Hi-Giacomo/pnce#readme",
   "scripts": {
     "build": "tsc && node scripts/copy-templates.js",
     "start": "node dist/index.js",
