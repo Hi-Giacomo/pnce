@@ -1,0 +1,24 @@
+# dependencies
+node_modules/
+
+# build
+dist/
+*.tgz
+
+# logs
+logs/
+*.log
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# env
+.env
+.env.local

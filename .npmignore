@@ -1,0 +1,65 @@
+# 源代码
+src/
+**/src/
+
+# TypeScript 配置
+tsconfig.json
+tsconfig.build.json
+nest-cli.json
+
+# 开发配置
+.eslintrc.js
+.prettierrc
+prettier.config.js
+
+# 测试文件
+**/*.test.ts
+**/*.spec.ts
+**/__tests__/
+test/
+tests/
+*.test.js
+*.spec.js
+
+# 测试覆盖率
+coverage/
+.nyc_output/
+
+# 开发工具配置
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Git
+.git/
+.gitignore
+.gitattributes
+
+# CI/CD
+.github/
+.gitlab-ci.yml
+.travis.yml
+circle.yml
+
+# 文档（已包含 README.md）
+CHANGELOG.md
+LICENSE
+docs/
+documents/
+
+# 临时文件
+*.log
+logs/
+*.tmp
+*.temp
+
+# 依赖（node_modules 会被 npm 自动忽略）
+node_modules/
+
+# 编译输出（除了 dist 目录）
+build/
+out/
+lib/
