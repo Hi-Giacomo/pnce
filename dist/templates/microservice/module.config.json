@@ -1,9 +1,0 @@
-{
-  "name": "microservice",
-  "description": "微服务模块",
-  "author": "module-author",
-  "version": "1.0.0",
-  "type": "microservice",
-  "appId": "",
-  "teamId": ""
-}
