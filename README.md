@@ -1,10 +1,11 @@
 # Pnce CLI
 
-**[English](#english)** | **[中文](#中文)**
+**[English](#english)** | **[中文](#chinese)**
 
 ---
 
-<a name="english"></a>
+## English
+
 # Pnce CLI
 
 Pnce CLI Tool - NestJS Modular Rapid Development Command-Line Tool
@@ -232,7 +233,8 @@ MIT
 
 ---
 
-<a name="中文"></a>
+## Chinese
+
 # Pnce CLI
 
 Pnce CLI Tool - NestJS 模块化快速开发命令行工具
