@@ -1,5 +1,5 @@
 {
-  "registry": "http://localhost:3000",
+  "registry": "http://62.234.36.178:3000/",
   "website": "http://localhost:5173",
   "authToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2OTg0Yzg4N2FlZmY1NzM0ZjJlY2MwYjIiLCJ1c2VybmFtZSI6IkdpYWNvbW8iLCJlbWFpbCI6IjEwNjE5Mjg4NDhAcXEuY29tIiwiaWF0IjoxNzcwMzE3NjM3LCJleHAiOjE3NzA5MjI0Mzd9.cnA5-8eWQdnpfGFdKVxfpZ51FmitPjeEGEaw02HLzYc"
 }

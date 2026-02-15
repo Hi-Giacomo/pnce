@@ -1,6 +1,6 @@
 {
   "name": "pnce",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "Pnce CLI Tool - 模块化快速开发命令行工具",
   "main": "dist/index.js",
   "bin": {
@@ -30,7 +30,7 @@
   "bugs": {
     "url": "https://github.com/Hi-Giacomo/pnce/issues"
   },
-  "homepage": "https://github.com/Hi-Giacomo/pnce#readme",
+  "homepage": "http://62.234.36.178:5173",
   "scripts": {
     "build": "tsc && node scripts/copy-templates.js",
     "start": "node dist/index.js",
