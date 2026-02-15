@@ -163,7 +163,7 @@ pnce publish
 ```bash
 # Clone repository
 git clone <repository-url>
-cd command-line-tools
+cd pnce
 
 # Install dependencies
 npm install
@@ -182,7 +182,7 @@ npm run start init my-service
 
 ```bash
 # Build and link locally
-cd command-line-tools
+cd pnce
 npm run build
 npm link
 
@@ -193,7 +193,7 @@ pnce --help
 ## 📁 Project Structure
 
 ```
-command-line-tools/
+pnce/
 ├── src/
 │   ├── commands/           # Command modules
 │   │   ├── auth.commands.ts
@@ -202,14 +202,15 @@ command-line-tools/
 │   │   ├── init.commands.ts
 │   │   ├── modules-manager.commands.ts
 │   │   ├── port.commands.ts
-│   │   ├── templates/      # Project templates
-│   │   │   └── microservice-template.ts
+│   │   ├── registry.commands.ts
 │   │   └── index.ts        # Command registration
 │   ├── services/           # Business services
-│   ├── types/             # Type definitions
-│   ├── utils/             # Utility functions
-│   └── index.ts           # CLI entry point
-├── dist/                  # Build output
+│   ├── templates/          # Project templates
+│   ├── types/              # Type definitions
+│   ├── utils/              # Utility functions
+│   ├── config/             # Configuration
+│   └── index.ts            # CLI entry point
+├── dist/                   # Build output
 ├── package.json
 └── README.md
 ```
@@ -392,7 +393,7 @@ pnce publish
 ```bash
 # 克隆仓库
 git clone <repository-url>
-cd command-line-tools
+cd pnce
 
 # 安装依赖
 npm install
@@ -411,7 +412,7 @@ npm run start init my-service
 
 ```bash
 # 在本地构建并链接
-cd command-line-tools
+cd pnce
 npm run build
 npm link
 
@@ -422,7 +423,7 @@ pnce --help
 ## 📁 项目结构
 
 ```
-command-line-tools/
+pnce/
 ├── src/
 │   ├── commands/           # 命令模块
 │   │   ├── auth.commands.ts
@@ -431,14 +432,15 @@ command-line-tools/
 │   │   ├── init.commands.ts
 │   │   ├── modules-manager.commands.ts
 │   │   ├── port.commands.ts
-│   │   ├── templates/      # 项目模板
-│   │   │   └── microservice-template.ts
+│   │   ├── registry.commands.ts
 │   │   └── index.ts        # 命令注册
 │   ├── services/           # 业务服务
-│   ├── types/             # 类型定义
-│   ├── utils/             # 工具函数
-│   └── index.ts           # CLI 入口
-├── dist/                  # 编译输出
+│   ├── templates/          # 项目模板
+│   ├── types/              # 类型定义
+│   ├── utils/              # 工具函数
+│   ├── config/             # 配置
+│   └── index.ts            # CLI 入口
+├── dist/                   # 编译输出
 ├── package.json
 └── README.md
 ```
