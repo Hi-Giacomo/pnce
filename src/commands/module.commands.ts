@@ -28,44 +28,7 @@ export function registerModuleCommands(program: Command, moduleService: ModuleSe
       }
     });
 
-  // 列出所有模块命令
-  program
-    .command('list')
-    .description('列出所有模块')
-    .action(async () => {
-      try {
-        await moduleService.list();
-      } catch (error: any) {
-        console.error('错误:', error.message);
-        process.exit(1);
-      }
-    });
 
-  // 搜索模块命令
-  program
-    .command('search <query>')
-    .description('搜索模块')
-    .action(async (query) => {
-      try {
-        await moduleService.search(query);
-      } catch (error: any) {
-        console.error('搜索失败:', error.message);
-        process.exit(1);
-      }
-    });
-
-  // 查看模块详情命令
-  program
-    .command('info <name>')
-    .description('查看模块详情')
-    .action(async (name) => {
-      try {
-        await moduleService.info(name);
-      } catch (error: any) {
-        console.error('错误:', error.message);
-        process.exit(1);
-      }
-    });
 
   // 查看统计信息命令
   program

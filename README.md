@@ -1,6 +1,8 @@
 # Pnce CLI
 
-Pnce CLI Tool - 模块化快速开发命令行工具
+Pnce CLI Tool - NestJS 模块化快速开发命令行工具
+
+专为 NestJS 设计的模块化开发工具，帮助开发者快速创建、管理和发布 NestJS 模块。
 
 ## 🚀 安装
 
@@ -50,15 +52,6 @@ pnce init my-service --directory /path/to/project
 ### 模块管理
 
 ```bash
-# 列出所有模块
-pnce list
-
-# 搜索模块
-pnce search <keyword>
-
-# 查看模块详情
-pnce info <module-name>
-
 # 发布模块
 pnce publish
 ```
@@ -91,22 +84,19 @@ pnce port check
 
 ## 📦 可用命令
 
-| 命令 | 说明 | 示例 |
-|------|------|------|
-| `login` | 登录账户 | `pnce login` |
-| `logout` | 登出账户 | `pnce logout` |
-| `whoami` | 查看当前用户 | `pnce whoami` |
-| `publish` | 发布模块 | `pnce publish` |
-| `list` | 列出所有模块 | `pnce list` |
-| `search` | 搜索模块 | `pnce search auth` |
-| `info` | 查看模块详情 | `pnce info auth-module` |
-| `init` | 初始化项目 | `pnce init my-service` |
-| `install` | 安装模块 | `pnce install auth-module` |
-| `add` | 添加模块到依赖 | `pnce add auth-module` |
-| `remove` | 移除模块 | `pnce remove auth-module` |
-| `update` | 更新所有模块 | `pnce update` |
-| `port list` | 列出端口配置 | `pnce port list` |
-| `port check` | 检查端口冲突 | `pnce port check` |
+| 命令         | 说明           | 示例                       |
+| ------------ | -------------- | -------------------------- |
+| `login`      | 登录账户       | `pnce login`               |
+| `logout`     | 登出账户       | `pnce logout`              |
+| `whoami`     | 查看当前用户   | `pnce whoami`              |
+| `publish`    | 发布模块       | `pnce publish`             |
+| `init`       | 初始化项目     | `pnce init my-service`     |
+| `install`    | 安装模块       | `pnce install auth-module` |
+| `add`        | 添加模块到依赖 | `pnce add auth-module`     |
+| `remove`     | 移除模块       | `pnce remove auth-module`  |
+| `update`     | 更新所有模块   | `pnce update`              |
+| `port list`  | 列出端口配置   | `pnce port list`           |
+| `port check` | 检查端口冲突   | `pnce port check`          |
 
 ## 💡 使用示例
 
@@ -156,6 +146,7 @@ pnce publish
 ```
 
 **说明：**
+
 - `appId` - 用于关联到应用
 - `teamId` - 用于关联到团队
 - 两者可以单独使用，也可以同时使用
@@ -221,14 +212,10 @@ command-line-tools/
 
 ## 🔧 配置
 
-### 环境变量
-
-- `PCE_API_BASE_URL` - API 服务器地址（默认：http://localhost:3000）
-- `PCE_STORAGE_PATH` - 存储路径（默认：用户目录下的 .pnce）
-
 ### 配置文件
 
 Pnce CLI 使用以下配置文件：
+
 - `module.config.json` - 项目配置（在项目根目录）
 - `.pnce/config.json` - 用户配置（在用户主目录）
 
