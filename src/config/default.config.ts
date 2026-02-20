@@ -4,8 +4,8 @@
  */
 
 // 注册中心相关配置
-export const DEFAULT_REGISTRY_URL = "http://localhost:3000";
-export const DEFAULT_WEBSITE_URL = "http://localhost:5173";
+export const DEFAULT_REGISTRY_URL = "http://62.234.36.178:3000";
+export const DEFAULT_WEBSITE_URL = "http://62.234.36.178:5173";
 export const CLI_VERSION = "0.0.7";
 
 // OAuth2 认证相关配置
