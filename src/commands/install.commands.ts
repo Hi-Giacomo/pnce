@@ -47,6 +47,60 @@ async function addToPackageJson(
 }
 
 /**
+ * 将安装记录添加到 module.config.json
+ */
+async function addToModuleConfig(
+  apiService: ApiService,
+  projectDir: string,
+  moduleName: string,
+  version?: string
+): Promise<void> {
+  const moduleConfigPath = path.join(projectDir, 'module.config.json');
+
+  if (!fs.existsSync(moduleConfigPath)) {
+    // 如果没有 module.config.json，创建一个
+    const packageJsonPath = path.join(projectDir, 'package.json');
+    const packageJson = fs.existsSync(packageJsonPath) ? fs.readJsonSync(packageJsonPath) : {};
+    
+    const moduleConfig = {
+      name: packageJson.name || 'unknown',
+      description: packageJson.description || '',
+      author: packageJson.author || 'module-author',
+      version: packageJson.version || '1.0.0',
+      type: 'service' as const,
+      appId: '',
+      teamId: '',
+      installedModules: {},
+    };
+    
+    fs.writeJsonSync(moduleConfigPath, moduleConfig, { spaces: 2 });
+  }
+
+  const moduleConfig = fs.readJsonSync(moduleConfigPath);
+
+  // 初始化 installedModules 字段
+  if (!moduleConfig.installedModules) {
+    moduleConfig.installedModules = {};
+  }
+
+  // 如果没有指定版本，获取最新版本
+  let targetVersion = version;
+  if (!targetVersion) {
+    const response = await apiService.get(`/api/modules/${moduleName}`);
+    if (response.success && response.module) {
+      targetVersion = response.module.latest;
+    }
+  }
+
+  // 添加或更新安装记录
+  if (targetVersion) {
+    moduleConfig.installedModules[moduleName] = targetVersion;
+    fs.writeJsonSync(moduleConfigPath, moduleConfig, { spaces: 2 });
+    console.log(`✓ 已添加 ${moduleName}@${targetVersion} 到 module.config.json 的 installedModules`);
+  }
+}
+
+/**
  * 注册安装相关命令
  */
 export function registerInstallCommands(
@@ -110,6 +164,9 @@ export function registerInstallCommands(
           // 临时安装
           await moduleService.install(moduleName, version, installDir);
         }
+
+        // 将安装记录写入 module.config.json
+        await addToModuleConfig(api, initialCwd, moduleName, version);
 
         // 如果指定了端口，更新模块配置
         if (options.port) {

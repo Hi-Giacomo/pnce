@@ -160,24 +160,37 @@ export class ModulesManagerService {
         // 解析版本范围，获取具体版本
         const targetVersion = await this.resolveVersion(moduleName, versionRange, lock, options?.forceFresh);
         
-        // 检查模块是否已安装
-        const moduleDir = path.join(absoluteInstallDir, moduleName);
-        const isInstalled = fs.existsSync(moduleDir);
-
-        if (isInstalled && !options?.forceFresh) {
-          console.log(`⏭️  ${moduleName}@${targetVersion} 已安装（跳过）`);
+        // 检查模块状态（包括哈希验证）
+        const moduleStatus = await this.moduleService.checkModuleStatus(moduleName, targetVersion, installDir);
+        
+        if (moduleStatus.isInstalled && !moduleStatus.needsUpdate && !options?.forceFresh) {
+          console.log(`⏭️  ${moduleName}@${targetVersion} 已安装且未修改（跳过）`);
           skipped++;
+          
+          // 使用现有的锁定信息
+          if (lock && lock.modules[moduleName]) {
+            newLock.modules[moduleName] = lock.modules[moduleName];
+          } else {
+            newLock.modules[moduleName] = {
+              version: targetVersion,
+              resolved: `${this.api['axiosInstance'].defaults.baseURL}/api/modules/${moduleName}/${targetVersion}/download`,
+            };
+          }
         } else {
-          console.log(`⬇️  安装 ${moduleName}@${targetVersion}...`);
+          if (moduleStatus.isInstalled && moduleStatus.needsUpdate) {
+            console.log(`🔄 ${moduleName} 需要重新安装（版本变更或代码有修改）...`);
+          } else {
+            console.log(`⬇️  安装 ${moduleName}@${targetVersion}...`);
+          }
           await this.moduleService.install(moduleName, targetVersion, installDir);
           installed++;
+          
+          // 记录到锁定文件
+          newLock.modules[moduleName] = {
+            version: targetVersion,
+            resolved: `${this.api['axiosInstance'].defaults.baseURL}/api/modules/${moduleName}/${targetVersion}/download`,
+          };
         }
-
-        // 记录到锁定文件
-        newLock.modules[moduleName] = {
-          version: targetVersion,
-          resolved: `${this.api['axiosInstance'].defaults.baseURL}/api/modules/${moduleName}/${targetVersion}/download`,
-        };
       } catch (error: any) {
         console.error(`❌ 安装 ${moduleName} 失败:`, error.message);
       }

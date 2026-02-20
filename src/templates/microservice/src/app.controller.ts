@@ -13,7 +13,7 @@ import {
   ParseIntPipe,
   ParseFloatPipe,
 } from '@nestjs/common';
-import { MicroserviceService, User } from './microservice.service';
+import { MicroserviceService, User } from './app.service';
 
 @Controller()
 export class MicroserviceController {

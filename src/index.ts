@@ -1,23 +1,26 @@
 #!/usr/bin/env node
 
-import { Command } from 'commander';
-import { registerCommands } from './commands';
+import { Command } from "commander";
+import { registerCommands } from "./commands";
+import { CLI_VERSION } from "./config/default.config";
 
 const program = new Command();
 
 program
-  .name('pnce')
-  .description('Pnce CLI Tool - 模块化快速开发命令行工具')
-  .version('1.0.0', '-v, --version');
+  .name("pnce")
+  .description("Pnce CLI Tool - 模块化快速开发命令行工具")
+  .version(CLI_VERSION, "-v, --version");
 
 // 设置初始工作目录环境变量
 if (!process.env.INIT_CWD) {
   // 优先从 MODULE_INIT_CWD_FILE 读取（cli-wrapper.js 保存的调用目录）
   if (process.env.MODULE_INIT_CWD_FILE) {
     try {
-      const fs = require('fs-extra');
+      const fs = require("fs-extra");
       if (fs.existsSync(process.env.MODULE_INIT_CWD_FILE)) {
-        process.env.INIT_CWD = fs.readFileSync(process.env.MODULE_INIT_CWD_FILE, 'utf-8').trim();
+        process.env.INIT_CWD = fs
+          .readFileSync(process.env.MODULE_INIT_CWD_FILE, "utf-8")
+          .trim();
         fs.removeSync(process.env.MODULE_INIT_CWD_FILE);
       }
     } catch (error) {

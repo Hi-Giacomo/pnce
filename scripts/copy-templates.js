@@ -2,6 +2,38 @@ const fs = require('fs-extra');
 const path = require('path');
 
 /**
+ * 从 default.config.ts 中提取版本号
+ */
+function getCLIVersion() {
+  const configPath = path.join(__dirname, '..', 'src', 'config', 'default.config.ts');
+  const configContent = fs.readFileSync(configPath, 'utf-8');
+  const versionMatch = configContent.match(/export const CLI_VERSION = "([^"]+)"/);
+  return versionMatch ? versionMatch[1] : null;
+}
+
+/**
+ * 更新 package.json 中的版本号
+ */
+async function updatePackageVersion(version) {
+  if (!version) {
+    console.warn('⚠️  Could not find CLI_VERSION in default.config.ts');
+    return;
+  }
+
+  const packagePath = path.join(__dirname, '..', 'package.json');
+  const packageJson = await fs.readJson(packagePath);
+
+  if (packageJson.version === version) {
+    console.log(`✅ Version already up to date: ${version}`);
+    return;
+  }
+
+  packageJson.version = version;
+  await fs.writeJson(packagePath, packageJson, { spaces: 2 });
+  console.log(`✅ Package version updated to: ${version}`);
+}
+
+/**
  * 复制模板文件到 dist 目录
  * 只复制非编译文件，排除 .ts 文件（源代码）和 .d.ts 文件（类型声明）
  */
@@ -52,7 +84,19 @@ async function copyTemplates() {
   console.log('✨ All templates copied to dist/templates');
 }
 
-copyTemplates().catch((error) => {
-  console.error('❌ Error copying templates:', error);
-  process.exit(1);
-});
+// 主函数：同步版本号并复制模板
+async function main() {
+  try {
+    // 1. 同步版本号
+    const version = getCLIVersion();
+    await updatePackageVersion(version);
+
+    // 2. 复制模板文件
+    await copyTemplates();
+  } catch (error) {
+    console.error('❌ Error:', error);
+    process.exit(1);
+  }
+}
+
+main();

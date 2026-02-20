@@ -32,6 +32,9 @@ export interface PackageJson {
   version: string;
   description?: string;
   author?: string;
+  dependencies?: Record<string, string>;
+  localModules?: Record<string, string>;
+  mainModule?: string;
 }
 
 export interface ModuleConfig {
@@ -39,11 +42,13 @@ export interface ModuleConfig {
   description: string;
   author: string;
   version: string;
-  type: 'library' | 'microservice';
+  type: 'library' | 'microservice' | 'service';
   appId?: string;
   teamId?: string;
-  mainModule: string;
+  mainModule?: string;
   exports?: Record<string, string>;
+  port?: number;
+  installedModules?: Record<string, string>; // 记录安装的模块及其版本
 }
 
 export interface UploadOptions {

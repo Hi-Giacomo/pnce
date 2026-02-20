@@ -1,3 +1,3 @@
-export { MicroserviceModule } from './microservice.module';
-export { MicroserviceController } from './microservice.controller';
-export { MicroserviceService } from './microservice.service';
+export { MicroserviceModule } from './app.module';
+export { MicroserviceController } from './app.controller';
+export { MicroserviceService } from './app.service';

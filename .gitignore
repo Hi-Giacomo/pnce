@@ -39,3 +39,7 @@ Thumbs.db
 *.tmp
 *.temp
 .cache/
+
+# 模块哈希文件
+.module-hash
+
