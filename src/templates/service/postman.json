@@ -1,0 +1,149 @@
+{
+  "info": {
+    "name": "Service API",
+    "description": "Service 微服务接口集合",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "version": "1.0.0"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:3000/api",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "Hello",
+      "item": [
+        {
+          "name": "Hello World",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/hello/world",
+              "host": ["{{baseUrl}}"],
+              "path": ["hello", "world"]
+            },
+            "description": "获取 Hello World 消息"
+          }
+        }
+      ]
+    },
+    {
+      "name": "环境变量管理",
+      "item": [
+        {
+          "name": "获取所有环境变量",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/env",
+              "host": ["{{baseUrl}}"],
+              "path": ["env"]
+            },
+            "description": "获取当前所有环境变量的值"
+          }
+        },
+        {
+          "name": "获取单个环境变量",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/env/PORT",
+              "host": ["{{baseUrl}}"],
+              "path": ["env", "PORT"]
+            },
+            "description": "获取指定环境变量的值，将 PORT 替换为实际的变量名"
+          }
+        },
+        {
+          "name": "获取配置对象",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/env/config/all",
+              "host": ["{{baseUrl}}"],
+              "path": ["env", "config", "all"]
+            },
+            "description": "获取结构化的配置对象"
+          }
+        },
+        {
+          "name": "设置环境变量",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"key\": \"PORT\",\n  \"value\": \"4000\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/env",
+              "host": ["{{baseUrl}}"],
+              "path": ["env"]
+            },
+            "description": "设置单个环境变量。修改 PORT 或 NODE_ENV 会自动重启服务。"
+          }
+        },
+        {
+          "name": "批量设置环境变量",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"envVars\": {\n    \"DB_HOST\": \"192.168.1.100\",\n    \"DB_PORT\": \"5432\",\n    \"DB_NAME\": \"production_db\"\n  }\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/env/batch",
+              "host": ["{{baseUrl}}"],
+              "path": ["env", "batch"]
+            },
+            "description": "批量设置多个环境变量，包含 PORT 或 NODE_ENV 会触发重启"
+          }
+        },
+        {
+          "name": "删除环境变量",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/env/REDIS_PASSWORD",
+              "host": ["{{baseUrl}}"],
+              "path": ["env", "REDIS_PASSWORD"]
+            },
+            "description": "删除指定的环境变量，将 REDIS_PASSWORD 替换为实际的变量名"
+          }
+        },
+        {
+          "name": "重载环境变量",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/env/reload",
+              "host": ["{{baseUrl}}"],
+              "path": ["env", "reload"]
+            },
+            "description": "从 .env 文件重新加载所有环境变量到 process.env"
+          }
+        }
+      ]
+    }
+  ]
+}

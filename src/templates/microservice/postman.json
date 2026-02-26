@@ -1,0 +1,299 @@
+{
+  "info": {
+    "name": "NestJS Microservice - 环境变量管理 API",
+    "description": "动态环境变量管理接口集合，支持接口修改和文件监听自动更新",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "version": "1.0.0"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:3000/api",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "环境变量管理",
+      "item": [
+        {
+          "name": "获取所有环境变量",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/env",
+              "host": ["{{baseUrl}}"],
+              "path": ["env"]
+            },
+            "description": "获取当前所有环境变量的值"
+          }
+        },
+        {
+          "name": "获取单个环境变量",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/env/PORT",
+              "host": ["{{baseUrl}}"],
+              "path": ["env", "PORT"]
+            },
+            "description": "获取指定环境变量的值，将 PORT 替换为实际的变量名"
+          }
+        },
+        {
+          "name": "获取配置对象",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/env/config/all",
+              "host": ["{{baseUrl}}"],
+              "path": ["env", "config", "all"]
+            },
+            "description": "获取结构化的配置对象（app、database、jwt、redis）"
+          }
+        },
+        {
+          "name": "设置环境变量",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"key\": \"PORT\",\n  \"value\": \"4000\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/env",
+              "host": ["{{baseUrl}}"],
+              "path": ["env"]
+            },
+            "description": "设置单个环境变量。修改 PORT 或 NODE_ENV 会自动重启服务。"
+          }
+        },
+        {
+          "name": "批量设置环境变量",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"envVars\": {\n    \"DB_HOST\": \"192.168.1.100\",\n    \"DB_PORT\": \"5432\",\n    \"DB_NAME\": \"production_db\",\n    \"JWT_EXPIRES_IN\": \"30d\"\n  }\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/env/batch",
+              "host": ["{{baseUrl}}"],
+              "path": ["env", "batch"]
+            },
+            "description": "批量设置多个环境变量，包含 PORT 或 NODE_ENV 会触发重启"
+          }
+        },
+        {
+          "name": "删除环境变量",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/env/REDIS_PASSWORD",
+              "host": ["{{baseUrl}}"],
+              "path": ["env", "REDIS_PASSWORD"]
+            },
+            "description": "删除指定的环境变量，将 REDIS_PASSWORD 替换为实际的变量名"
+          }
+        },
+        {
+          "name": "重载环境变量",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/env/reload",
+              "host": ["{{baseUrl}}"],
+              "path": ["env", "reload"]
+            },
+            "description": "从 .env 文件重新加载所有环境变量到 process.env"
+          }
+        },
+        {
+          "name": "健康检查",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/env/health/status",
+              "host": ["{{baseUrl}}"],
+              "path": ["env", "health", "status"]
+            },
+            "description": "检查环境变量服务是否正常运行"
+          }
+        }
+      ]
+    },
+    {
+      "name": "示例场景",
+      "item": [
+        {
+          "name": "1. 更改应用端口",
+          "item": [
+            {
+              "name": "将端口改为 8080",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"key\": \"PORT\",\n  \"value\": \"8080\"\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/env",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["env"]
+                },
+                "description": "修改端口后服务会自动重启，大约 1-2 秒后可通过新端口访问"
+              }
+            },
+            {
+              "name": "恢复默认端口 3000",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"key\": \"PORT\",\n  \"value\": \"3000\"\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/env",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["env"]
+                }
+              }
+            }
+          ]
+        },
+        {
+          "name": "2. 切换运行环境",
+          "item": [
+            {
+              "name": "切换到生产环境",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"key\": \"NODE_ENV\",\n  \"value\": \"production\"\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/env",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["env"]
+                },
+                "description": "切换环境会触发服务重启"
+              }
+            },
+            {
+              "name": "切换到开发环境",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"key\": \"NODE_ENV\",\n  \"value\": \"development\"\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/env",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["env"]
+                }
+              }
+            }
+          ]
+        },
+        {
+          "name": "3. 配置数据库连接",
+          "item": [
+            {
+              "name": "批量配置数据库参数",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"envVars\": {\n    \"DB_HOST\": \"localhost\",\n    \"DB_PORT\": \"5432\",\n    \"DB_NAME\": \"myapp\",\n    \"DB_USER\": \"postgres\",\n    \"DB_PASS\": \"password123\"\n  }\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/env/batch",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["env", "batch"]
+                },
+                "description": "批量更新数据库配置，修改后立即生效，无需重启"
+              }
+            }
+          ]
+        },
+        {
+          "name": "4. 配置 JWT",
+          "item": [
+            {
+              "name": "设置 JWT 密钥和过期时间",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"key\": \"JWT_SECRET\",\n  \"value\": \"your-super-secret-key-2024\"\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/env",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["env"]
+                }
+              },
+              "description": "更新 JWT 密钥"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

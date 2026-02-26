@@ -2,7 +2,7 @@
   "name": "service",
   "description": "Main service service",
   "author": "service-author",
-  "version": "1.0.0",
+  "version": "0.0.1",
   "type": "service",
   "appId": "",
   "teamId": ""

@@ -1,6 +1,6 @@
 {
   "name": "microservice",
-  "version": "1.0.0",
+  "version": "0.0.1",
   "description": "微服务模块",
   "main": "dist/index.js",
   "scripts": {
@@ -12,10 +12,13 @@
     "@nestjs/common": "^11.0.0",
     "@nestjs/core": "^11.0.0",
     "@nestjs/platform-express": "^11.0.0",
+    "@nestjs/config": "^4.0.0",
     "class-validator": "^0.14.0",
     "class-transformer": "^0.5.1",
     "reflect-metadata": "^0.1.14",
-    "rxjs": "^7.8.1"
+    "rxjs": "^7.8.1",
+    "dotenv": "^16.4.5",
+    "chokidar": "^4.0.1"
   },
   "devDependencies": {
     "@nestjs/cli": "^11.0.0",
