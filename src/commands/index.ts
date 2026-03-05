@@ -1,8 +1,12 @@
 import { Command } from 'commander';
 import { ApiService } from '../services/api.service';
 import { ModuleService } from '../services/module.service';
+import { ModuleUploadService } from '../services/module-upload.service';
+import { ModuleDownloadService } from '../services/module-download.service';
 import { AuthService } from '../services/auth.service';
 import { ModulesManagerService } from '../services/modules-manager.service';
+import { getLogger, initLogger } from '../utils/logger';
+import { ErrorHandler } from '../utils/errors';
 
 // 导入命令注册函数
 import { registerAuthCommands } from './auth.commands';
@@ -16,19 +20,31 @@ import { registerRegistryCommands } from './registry.commands';
 /**
  * 注册所有命令
  */
-export function registerCommands(program: Command): void {
-  // 初始化服务
-  const api = new ApiService();
-  const moduleService = new ModuleService(api);
-  const authService = new AuthService(api);
-  const modulesManager = new ModulesManagerService(api, moduleService);
+export async function registerCommands(program: Command): Promise<void> {
+  try {
+    // 等待日志系统初始化
+    await initLogger();
+    const logger = getLogger();
 
-  // 注册各模块命令
-  registerAuthCommands(program, authService);
-  registerModuleCommands(program, moduleService);
-  registerInstallCommands(program, moduleService, modulesManager, api);
-  registerInitCommands(program);
-  registerModulesManagerCommands(program, modulesManager);
-  registerPortCommands(program);
-  registerRegistryCommands(program);
+    // 初始化服务
+    const api = new ApiService(logger);
+    const moduleDownloadService = new ModuleDownloadService(api, logger);
+    const moduleUploadService = new ModuleUploadService(api, logger);
+    const moduleService = new ModuleService(api);
+    const authService = new AuthService(api);
+    const modulesManager = new ModulesManagerService(api, moduleService);
+
+    // 注册各模块命令
+    registerAuthCommands(program, authService);
+    registerModuleCommands(program, moduleUploadService, moduleDownloadService);
+    registerInstallCommands(program, moduleDownloadService, modulesManager, api);
+    registerInitCommands(program);
+    registerModulesManagerCommands(program, modulesManager);
+    registerPortCommands(program);
+    registerRegistryCommands(program);
+
+    logger.debug('所有命令注册完成');
+  } catch (error) {
+    ErrorHandler.handle(error);
+  }
 }

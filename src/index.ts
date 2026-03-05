@@ -3,6 +3,28 @@
 import { Command } from "commander";
 import { registerCommands } from "./commands";
 import { CLI_VERSION } from "./config/default.config";
+import { initLogger, getLogger } from "./utils/logger";
+import { ErrorHandler } from "./utils/errors";
+
+// 初始化日志系统
+initLogger().then(() => {
+  const logger = getLogger();
+  logger.info('Pnce CLI启动', {
+    version: CLI_VERSION,
+    cwd: process.cwd(),
+  });
+}).catch(error => {
+  console.warn('初始化日志系统失败:', error.message);
+});
+
+// 全局错误处理
+process.on('uncaughtException', (error) => {
+  ErrorHandler.handle(error);
+});
+
+process.on('unhandledRejection', (reason) => {
+  ErrorHandler.handle(reason);
+});
 
 const program = new Command();
 
@@ -34,11 +56,13 @@ if (!process.env.INIT_CWD) {
   }
 }
 
-// 注册所有命令
-registerCommands(program);
+// 异步注册所有命令
+registerCommands(program).then(() => {
+  program.parse(process.argv);
 
-program.parse(process.argv);
-
-if (!process.argv.slice(2).length) {
-  program.outputHelp();
-}
+  if (!process.argv.slice(2).length) {
+    program.outputHelp();
+  }
+}).catch(error => {
+  ErrorHandler.handle(error);
+});
