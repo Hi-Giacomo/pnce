@@ -201,7 +201,10 @@ export class ConfigManager {
     }
 
     if (process.env.PNCE_OAUTH_PORT) {
-      env.oauthPort = parseInt(process.env.PNCE_OAUTH_PORT);
+      const port = parseInt(process.env.PNCE_OAUTH_PORT);
+      if (!isNaN(port) && port > 0 && port <= 65535) {
+        env.oauthPort = port;
+      }
     }
 
     if (process.env.PNCE_TOKEN) {
@@ -218,7 +221,11 @@ export class ConfigManager {
     }
 
     if (process.env.PNCE_LOG_LEVEL) {
-      env.logLevel = process.env.PNCE_LOG_LEVEL as any;
+      const validLevels = ['error', 'warn', 'info', 'debug'];
+      const logLevel = process.env.PNCE_LOG_LEVEL.toLowerCase();
+      if (validLevels.includes(logLevel)) {
+        env.logLevel = logLevel as 'error' | 'warn' | 'info' | 'debug';
+      }
     }
 
     if (process.env.PNCE_VERBOSE) {

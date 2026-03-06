@@ -46,7 +46,12 @@ circle.yml
 
 # 文档（已包含 README.md）
 CHANGELOG.md
-LICENSE
+CONTRIBUTING.md
+SECURITY.md
+OPTIMIZATION_PLAN.md
+OPTIMIZATION_SUMMARY.md
+API_DOCUMENTATION.md
+LOGIN_REQUIREMENTS.md
 docs/
 documents/
 
@@ -58,6 +63,7 @@ logs/
 
 # 依赖（node_modules 会被 npm 自动忽略）
 node_modules/
+**/node_modules/
 
 # 编译输出（除了 dist 目录）
 build/

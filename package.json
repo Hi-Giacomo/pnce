@@ -22,7 +22,7 @@
     "win32"
   ],
   "author": "Hi-Giacomo",
-  "license": "MIT",
+  "license": "MulanPSL2",
   "repository": {
     "type": "git",
     "url": "https://github.com/hi-giacomo/pnce"
@@ -30,7 +30,7 @@
   "bugs": {
     "url": "https://github.com/hi-giacomo/pnce/issues"
   },
-  "homepage": "http://62.234.36.178:5173",
+  "homepage": "https://github.com/hi-giacomo/pnce",
   "scripts": {
     "build": "tsc && node scripts/copy-templates.js",
     "start": "node dist/index.js",

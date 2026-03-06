@@ -448,8 +448,8 @@ export PNCE_VERBOSE="true"
 
 ```json
 {
-  "apiServer": "http://62.234.36.178:3000",
-  "oauthEndpoint": "http://62.234.36.178:5173/authorize",
+  "apiServer": "http://localhost:3000",
+  "oauthEndpoint": "http://localhost:5173/authorize",
   "oauthPort": 3001,
   "outputDir": "/home/user/projects",
   "useProxy": false,
