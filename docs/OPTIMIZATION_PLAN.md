@@ -259,6 +259,26 @@
 
 ## 后续版本规划
 
+### 0.0.10 版本（立即修复）
+
+#### ✅ 已完成
+
+- [x] 修复所有失败的测试用例
+  - [x] 修复 `tests/utils/errors.test.ts` 中的错误代码断言失败
+  - [x] 修复 `tests/services/api.service.test.ts` 中的 mock 配置问题
+  - [x] 修复 `tests/commands/init.test.ts` 中的 fs-extra mock 问题
+  - [x] 确保所有测试用例通过（47/47 通过）
+
+- [x] 清理遗留的 TODO 注释
+  - [x] 完成 `src/utils/plugin-system.ts:199` 中的 TODO
+    - [x] 将配置管理器集成到插件系统的上下文中
+    - [x] 添加 `getConfigManager()` 方法到插件系统
+    - [x] 更新插件系统的构造函数接受 ConfigManager 参数
+
+- [x] 修复 ApiService 中的配置访问问题
+  - [x] 修复 `config.get('apiServer')` 为 `config.apiServer`
+  - [x] 正确使用 ConfigManager 的 getConfig() 方法
+
 ### 0.1.0 版本建议
 
 以下改进可以在后续版本中考虑：
@@ -268,3 +288,102 @@
 - 添加更多内置插件示例
 - 完善插件开发文档
 - 支持从 npm 安装外部插件
+
+### 📋 详细修复任务列表
+
+#### 测试修复任务
+
+- [x] 调查并修复错误代码断言问题
+  - [x] 检查 `CliError.unauthorized()` 返回的 exitCode
+  - [x] 确认预期值应该是 1（标准 CLI 退出码）而不是 401
+  - [x] 更新测试断言
+
+- [ ] 为以下模块添加单元测试
+  - [ ] `src/services/module-upload.service.ts`
+  - [ ] `src/services/module-download.service.ts`
+  - [ ] `src/services/modules-manager.service.ts`
+  - [ ] `src/utils/alias-manager.ts`
+  - [ ] `src/utils/analytics.ts`
+  - [ ] `src/utils/profile-manager.ts`
+  - [ ] `src/utils/plugin-system.ts`
+
+- [ ] 为命令模块添加测试
+  - [ ] 测试 `alias` 命令
+  - [ ] 测试 `analytics` 命令
+  - [ ] 测试 `profile` 命令
+  - [ ] 测试 `plugin` 命令
+  - [ ] 测试 `config-validate` 命令
+
+#### 代码优化任务
+
+- [x] 完善插件系统的配置管理器集成
+  - [x] 在 `PluginContext` 中传入实际的 `PnceConfig` 实例
+  - [x] 添加 `getConfigManager()` 方法
+  - [x] 更新插件系统的构造函数接受 ConfigManager 参数
+
+- [ ] 优化生产环境配置
+  - [ ] 验证生产环境日志配置的性能影响
+  - [ ] 测试性能监控数据的准确性
+  - [ ] 添加生产环境监控告警机制
+
+#### 文档完善任务
+
+- [ ] 补充插件开发文档
+  - [ ] 创建 `docs/PLUGIN_DEVELOPMENT.md`
+  - [ ] 添加插件开发指南
+  - [ ] 添加插件 API 参考文档
+  - [ ] 添加插件示例代码
+
+- [ ] 完善高级功能文档
+  - [ ] 添加性能优化指南
+  - [ ] 添加故障排除实战案例
+  - [ ] 补充更多使用示例
+
+- [ ] 验证国际化翻译
+  - [ ] 检查所有用户提示的中文翻译
+  - [ ] 检查所有用户提示的英文翻译
+  - [ ] 确保翻译准确性和一致性
+
+#### 安全性增强任务
+
+- [ ] 完成安全性审计
+  - [ ] 安排第三方安全审计
+  - [ ] 修复审计发现的问题
+  - [ ] 发布安全审计报告
+
+- [ ] 实现密码隐藏输入
+  - [ ] 使用 `readline` 实现密码输入隐藏
+  - [ ] 更新相关文档
+
+#### 性能优化任务
+
+- [ ] 优化依赖包大小
+  - [ ] 分析依赖包的使用情况
+  - [ ] 移除未使用的依赖
+  - [ ] 优化打包后的体积
+
+- [ ] 添加性能基准测试
+  - [ ] 创建性能基准测试套件
+  - [ ] 建立性能基准线
+  - [ ] 定期运行性能测试
+
+### 🎯 发布前检查清单
+
+#### 0.0.10 发布前必须完成
+
+- [x] 所有测试用例通过（47/47 ✅）
+- [ ] 测试覆盖率 ≥ 50%
+- [x] 无 TODO 注释残留 ✅
+- [x] 无 TypeScript 编译错误 ✅
+- [x] 无 ESLint 错误 ✅
+- [ ] CI/CD 流程全部通过
+- [ ] 文档更新完毕
+- [ ] CHANGELOG.md 更新
+
+#### 0.1.0 发布前必须完成
+
+- [ ] 测试覆盖率 ≥ 80%
+- [ ] 安全性审计通过
+- [ ] 性能基准测试建立
+- [ ] 插件开发文档完善
+- [ ] 国际化翻译验证完成

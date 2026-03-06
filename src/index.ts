@@ -65,7 +65,10 @@ const aliasManager = getAliasManager();
 if (argv.length > 2) {
   const command = argv[2];
   if (aliasManager.isAlias(command)) {
-    argv = [argv[0], ...aliasManager.resolve(argv.slice(2))];
+    const resolvedArgs = aliasManager.resolve(argv.slice(2));
+    if (resolvedArgs.length > 0) {
+      argv = [argv[0], ...resolvedArgs];
+    }
   }
 }
 

@@ -13,7 +13,7 @@ import { getConfigManager } from '../config/manager';
 export function registerModuleCommands(
   program: Command,
   moduleUploadService: ModuleUploadService,
-  moduleDownloadService: ModuleDownloadService
+  _moduleDownloadService: ModuleDownloadService
 ): void {
   // 上传模块命令
   program
@@ -53,7 +53,7 @@ export function registerModuleCommands(
     });
 
   // 修正导入路径命令（使用旧的服务）
-  const moduleService = new ModuleService(require('./index').api); // 从全局获取api实例
+  // const moduleService = new ModuleService(require('./index').api); // 从全局获取api实例
   program
     .command('fix-imports <module>')
     .description('修正模块中已安装依赖的导入路径')

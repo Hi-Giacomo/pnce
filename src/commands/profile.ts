@@ -162,7 +162,7 @@ export const deleteProfileCommand = new Command('delete')
       logger.info(`配置档案已删除: ${name}`);
     } catch (error) {
       console.log(chalk.red(`删除档案失败: ${error}\n`));
-      logger.error('删除配置档案失败', error);
+      logger.error('删除配置档案失败', error instanceof Error ? error : new Error(String(error)));
     }
   });
 
@@ -182,7 +182,7 @@ export const renameProfileCommand = new Command('rename')
       logger.info(`配置档案已重命名: ${oldName} -> ${newName}`);
     } catch (error) {
       console.log(chalk.red(`重命名档案失败: ${error}\n`));
-      logger.error('重命名配置档案失败', error);
+      logger.error('重命名配置档案失败', error instanceof Error ? error : new Error(String(error)));
     }
   });
 

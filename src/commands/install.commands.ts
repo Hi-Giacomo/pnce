@@ -226,8 +226,6 @@ export function registerInstallCommands(
     .option('--save', '添加到 package.json 的 localModules')
     .action(async (modules, options) => {
       try {
-        const initialCwd = process.env.INIT_CWD || process.cwd();
-
         // 解析模块列表
         const moduleList = modules.map((module: string) => {
           const [name, version] = module.split('@');

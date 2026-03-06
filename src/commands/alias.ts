@@ -48,7 +48,7 @@ export const addAliasCommand = new Command('add')
       logger.info(`别名已添加: ${alias} -> ${command}`);
     } catch (error) {
       console.log(chalk.red(`添加别名失败: ${error}`));
-      logger.error('添加别名失败', error);
+      logger.error('添加别名失败', error instanceof Error ? error : new Error(String(error)));
     }
   });
 

@@ -27,7 +27,7 @@ describe('Error Classes', () => {
     it('should create unauthorized error', () => {
       const error = CliError.unauthorized();
       expect(error.code).toBe('AUTH_UNAUTHORIZED');
-      expect(error.exitCode).toBe(401);
+      expect(error.exitCode).toBe(1); // 标准 CLI 退出码
     });
 
     it('should create token expired error', () => {

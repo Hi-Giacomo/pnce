@@ -15,10 +15,11 @@ export class ApiService {
 
   constructor(logger?: Logger) {
     this.logger = logger;
-    const config = getConfigManager();
+    const configManager = getConfigManager();
+    const config = configManager.getConfig();
 
     this.axiosInstance = axios.create({
-      baseURL: config.get('apiServer'),
+      baseURL: config.apiServer,
     });
 
     // 配置重试机制

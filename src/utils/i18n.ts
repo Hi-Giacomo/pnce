@@ -117,7 +117,7 @@ export class I18nManager {
 
     // 支持嵌套键，如 'common.success'
     const keys = key.split('.');
-    let value: any = locale;
+    let value: string | Locale = locale;
 
     for (const k of keys) {
       if (value && typeof value === 'object' && k in value) {

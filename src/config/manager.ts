@@ -494,7 +494,7 @@ export class ConfigManager {
 
     try {
       const files = require('fs-extra').readdirSync(profilesDir);
-      return files.filter(file => file.endsWith('.json')).map(file => file.replace('.json', ''));
+      return files.filter((file: string) => file.endsWith('.json')).map((file: string) => file.replace('.json', ''));
     } catch (error) {
       return [];
     }

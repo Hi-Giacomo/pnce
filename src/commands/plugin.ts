@@ -1,9 +1,6 @@
 import { Command } from 'commander';
 import chalk from 'chalk';
 import { getPluginSystem } from '../utils/plugin-system';
-import { getLogger } from '../utils/logger';
-
-const logger = getLogger();
 
 /**
  * 插件命令

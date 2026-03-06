@@ -1,14 +1,16 @@
+// @ts-ignore - 这是模板文件，依赖项在实际项目中安装
 import { NestFactory } from '@nestjs/core';
 import { MainModule } from './modules';
+// @ts-ignore - 这是模板文件，依赖项在实际项目中安装
+import { INestApplication } from '@nestjs/common';
+// @ts-ignore - 这是模板文件，依赖项在实际项目中安装
 import * as chokidar from 'chokidar';
 import * as path from 'path';
+// @ts-ignore - 这是模板文件，依赖项在实际项目中安装
 import { loadEnvFile } from './config/env.config';
 
-let app: any;
+let app: INestApplication | null = null;
 let envWatcher: chokidar.FSWatcher | null = null;
-
-// 定义需要重启服务的环境变量
-const RESTART_REQUIRED_VARS = ['PORT', 'NODE_ENV', 'APP_HOST'];
 
 async function bootstrap() {
   app = await NestFactory.create(MainModule);
@@ -48,8 +50,8 @@ async function bootstrap() {
 }
 
 // 在 bootstrap 之前就导出函数，确保全局可访问
-(global as any).restartServer = restartServer;
-(global as any).stopEnvWatcher = stopEnvWatcher;
+(global as Record<string, unknown>).restartServer = restartServer;
+(global as Record<string, unknown>).stopEnvWatcher = stopEnvWatcher;
 
 interface ConfigState {
   port: string;
@@ -63,7 +65,7 @@ let lastKnownConfig: ConfigState = {
   host: '0.0.0.0',
 };
 
-function startEnvWatcher() {
+function startEnvWatcher(): void {
   const envFilePath = path.join(process.cwd(), '.env');
   console.log('🔍 开始监听文件:', envFilePath);
 
@@ -85,14 +87,14 @@ function startEnvWatcher() {
     handleEnvFileChange();
   });
 
-  envWatcher.on('error', (error) => {
+  envWatcher.on('error', (error: Error) => {
     console.error('❌ 监听 .env 文件出错:', error);
   });
 
   console.log('✅ 环境变量文件监听已启动\n');
 }
 
-function handleEnvFileChange() {
+function handleEnvFileChange(): void {
   try {
     // 读取新的环境变量
     const newEnvVars = loadEnvFile();
@@ -138,7 +140,7 @@ function handleEnvFileChange() {
       console.log('✅ 配置已应用，无需重启服务\n');
     }
   } catch (error) {
-    console.error('❌ 处理 .env 文件变化失败:', error);
+    console.error('❌ 处理 .env 文件变化失败:', error instanceof Error ? error.message : String(error));
   }
 }
 
@@ -162,12 +164,12 @@ async function restartServer() {
     await bootstrap();
     console.log('✅ 服务重启成功\n');
   } catch (error) {
-    console.error('❌ 重启服务失败:', error);
+    console.error('❌ 重启服务失败:', error instanceof Error ? error.message : String(error));
     process.exit(1);
   }
 }
 
-function stopEnvWatcher() {
+function stopEnvWatcher(): void {
   if (envWatcher) {
     envWatcher.close();
     envWatcher = null;
@@ -202,7 +204,7 @@ process.on('SIGINT', () => {
   }
 });
 
-bootstrap().catch((error) => {
-  console.error('❌ 启动失败:', error);
+bootstrap().catch((error: Error) => {
+  console.error('❌ 启动失败:', error.message);
   process.exit(1);
 });

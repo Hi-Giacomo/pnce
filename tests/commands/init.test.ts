@@ -5,13 +5,17 @@ import path from 'path';
 import * as initCommands from '../../src/commands/init';
 
 // Mock fs-extra
-vi.mock('fs-extra', () => ({
-  existsSync: vi.fn(),
-  readJsonSync: vi.fn(),
-  writeJsonSync: vi.fn(),
-  mkdirSync: vi.fn(),
-  copySync: vi.fn(),
-}));
+vi.mock('fs-extra', async () => {
+  const actual = await vi.importActual('fs-extra');
+  return {
+    ...actual,
+    existsSync: vi.fn(),
+    readJsonSync: vi.fn(),
+    writeJsonSync: vi.fn(),
+    mkdirSync: vi.fn(),
+    copySync: vi.fn(),
+  };
+});
 
 describe('Init Commands', () => {
   const mockProgram = new Command();

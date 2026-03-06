@@ -25,7 +25,7 @@ export interface ConfigIssue {
   /**
    * 建议值
    */
-  suggestion?: any;
+  suggestion?: string | number | boolean;
 }
 
 /**
@@ -225,7 +225,7 @@ export class ConfigSuggester {
 
     issues.forEach(issue => {
       if (issue.suggestion !== undefined) {
-        (fixedConfig as any)[issue.field] = issue.suggestion;
+        (fixedConfig as Record<string, unknown>)[issue.field] = issue.suggestion;
         logger.debug(`自动修复配置: ${issue.field} = ${issue.suggestion}`);
       }
     });

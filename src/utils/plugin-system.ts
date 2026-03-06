@@ -1,6 +1,9 @@
 import { readFileSync, writeFileSync, existsSync, mkdirSync, unlinkSync } from 'fs';
 import path from 'path';
 import { getLogger } from './logger';
+import { Command } from 'commander';
+import { PnceConfig, ConfigManager } from '../config/manager';
+import { Logger } from 'winston';
 
 const logger = getLogger();
 
@@ -41,12 +44,12 @@ export interface Plugin {
   /**
    * 命令注册函数
    */
-  registerCommands?: (program: any) => void;
+  registerCommands?: (program: Command) => void;
 
   /**
    * 配置验证函数
    */
-  validateConfig?: (config: any) => boolean;
+  validateConfig?: (config: PnceConfig) => boolean;
 
   /**
    * 钩子函数
@@ -57,10 +60,10 @@ export interface Plugin {
      */
     beforeCommand?: (command: string, args: string[]) => void | Promise<void>;
 
-    /**
-     * 命令执行后钩子
-     */
-    afterCommand?: (command: string, args: string[], result: any) => void | Promise<void>;
+  /**
+   * 命令执行后钩子
+   */
+  afterCommand?: (command: string, args: string[], result: unknown) => void | Promise<void>;
 
     /**
      * 错误处理钩子
@@ -81,18 +84,18 @@ export interface PluginContext {
   /**
    * 配置管理器
    */
-  config: any;
+  config: PnceConfig | null;
 
   /**
    * 日志记录器
    */
-  logger: any;
+  logger: Logger;
 
   /**
    * 获取工具函数
    */
   utils: {
-    track: (event: string, data?: any) => void;
+    track: (event: string, data?: Record<string, unknown>) => void;
   };
 }
 
@@ -134,11 +137,15 @@ export class PluginSystem {
   private manifestFile: string;
   private plugins: Map<string, Plugin> = new Map();
   private manifests: Map<string, PluginManifest> = new Map();
+  private configManager: ConfigManager;
 
-  constructor(pluginsDir?: string) {
+  constructor(pluginsDir?: string, configManager?: ConfigManager) {
     const configBaseDir = pluginsDir || path.join(require('os').homedir(), '.pnce');
     this.pluginsDir = path.join(configBaseDir, 'plugins');
     this.manifestFile = path.join(configBaseDir, 'plugins-manifest.json');
+
+    // 初始化配置管理器
+    this.configManager = configManager || new ConfigManager();
 
     // 确保插件目录存在
     if (!existsSync(this.pluginsDir)) {
@@ -190,13 +197,16 @@ export class PluginSystem {
         throw new Error(`插件已存在: ${plugin.name}`);
       }
 
+      // 获取当前配置
+      const config = this.configManager.getConfig();
+
       // 初始化插件
       const context: PluginContext = {
         version: process.env.PNCE_VERSION || '0.0.9',
-        config: null, // TODO: 传入实际的配置管理器
-        logger,
+        config: config,
+        logger: logger as unknown as Logger,
         utils: {
-          track: (event: string, data?: any) => {
+          track: (event: string, data?: Record<string, unknown>) => {
             logger.debug(`插件事件: ${plugin.name}.${event}`, data);
           },
         },
@@ -304,7 +314,7 @@ export class PluginSystem {
    * 注册所有插件的命令
    * @param program - Commander 程序实例
    */
-  registerAllCommands(program: any): void {
+  registerAllCommands(program: Command): void {
     this.plugins.forEach(plugin => {
       if (plugin.registerCommands) {
         try {
@@ -343,7 +353,7 @@ export class PluginSystem {
    * @param args - 参数
    * @param result - 结果
    */
-  async triggerAfterCommand(command: string, args: string[], result: any): Promise<void> {
+  async triggerAfterCommand(command: string, args: string[], result: unknown): Promise<void> {
     const promises: Promise<void>[] = [];
 
     this.plugins.forEach(plugin => {
@@ -383,6 +393,13 @@ export class PluginSystem {
   getPluginsDir(): string {
     return this.pluginsDir;
   }
+
+  /**
+   * 获取配置管理器
+   */
+  getConfigManager(): ConfigManager {
+    return this.configManager;
+  }
 }
 
 /**
@@ -403,6 +420,6 @@ export function getPluginSystem(): PluginSystem {
 /**
  * 创建插件系统实例
  */
-export function createPluginSystem(pluginsDir?: string): PluginSystem {
-  return new PluginSystem(pluginsDir);
+export function createPluginSystem(pluginsDir?: string, configManager?: ConfigManager): PluginSystem {
+  return new PluginSystem(pluginsDir, configManager);
 }
