@@ -34,6 +34,18 @@
 - [配置说明](#配置说明)
 - [常见问题](#常见问题)
 
+## 📚 文档
+
+更多详细文档请查看：
+- [快速开始](docs/QUICKSTART.md) - 快速上手指南
+- [API 文档](docs/API_DOCUMENTATION.md) - API 参考文档
+- [架构文档](docs/ARCHITECTURE.md) - 项目架构说明
+- [常见问题](docs/FAQ.md) - 常见问题解答
+- [故障排除](docs/TROUBLESHOOTING.md) - 问题排查指南
+- [变更日志](docs/CHANGELOG.md) - 版本变更记录
+- [贡献指南](docs/CONTRIBUTING.md) - 如何参与贡献
+- [安全策略](docs/SECURITY.md) - 安全相关政策
+
 ## 🚀 安装
 
 ### 全局安装

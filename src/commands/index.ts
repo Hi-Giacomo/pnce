@@ -16,6 +16,12 @@ import { registerInitCommands } from './init.commands';
 import { registerModulesManagerCommands } from './modules-manager.commands';
 import { registerPortCommands } from './port.commands';
 import { registerRegistryCommands } from './registry.commands';
+import { register as registerLangCommand } from './lang';
+import { register as registerAliasCommand } from './alias';
+import { register as registerConfigValidateCommand } from './config-validate';
+import { register as registerAnalyticsCommand } from './analytics';
+import { register as registerProfileCommand } from './profile';
+import { register as registerPluginCommand } from './plugin';
 
 /**
  * 注册所有命令
@@ -42,6 +48,12 @@ export async function registerCommands(program: Command): Promise<void> {
     registerModulesManagerCommands(program, modulesManager);
     registerPortCommands(program);
     registerRegistryCommands(program);
+    registerLangCommand(program);
+    registerAliasCommand(program);
+    registerConfigValidateCommand(program);
+    registerAnalyticsCommand(program);
+    registerProfileCommand(program);
+    registerPluginCommand(program);
 
     logger.debug('所有命令注册完成');
   } catch (error) {

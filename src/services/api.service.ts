@@ -92,8 +92,19 @@ export class ApiService {
           );
       }
     } else if (error && typeof error === 'object' && 'request' in error) {
-      // 请求已发送但没有收到响应
-      throw CliError.networkError('网络请求失败，请检查网络连接');
+      // 请求已发送但没有收到响应 - 可能是离线状态
+      const errorMsg = '网络请求失败，请检查网络连接';
+      const config = getConfigManager();
+      const isOfflineMode = config.get('enableCache') === true;
+
+      if (isOfflineMode) {
+        throw new CliError(
+          'OFFLINE_MODE',
+          `${errorMsg}\n提示：当前处于离线模式，CLI 将尝试使用缓存中的数据\n如需在线模式，请检查网络连接后重试`,
+          -1
+        );
+      }
+      throw CliError.networkError(errorMsg);
     } else {
       // 请求配置错误
       throw new CliError(ErrorCode.INVALID_INPUT, (error as Error).message || '请求配置错误');

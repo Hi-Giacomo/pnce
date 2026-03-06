@@ -20,49 +20,49 @@ export class CliError extends Error {
     Error.captureStackTrace(this, this.constructor);
   }
 
-  // 静态方法快速创建常见错误
+  // 静态方法快速创建常见错误（使用标准退出码）
   static unauthorized(message = '未授权，请先登录') {
-    return new CliError('AUTH_UNAUTHORIZED', message, 401);
+    return new CliError('AUTH_UNAUTHORIZED', message, 1);
   }
 
   static tokenExpired(message = 'Token已过期，请重新登录') {
-    return new CliError('AUTH_TOKEN_EXPIRED', message, 401);
+    return new CliError('AUTH_TOKEN_EXPIRED', message, 1);
   }
 
   static networkError(message = '网络请求失败') {
-    return new CliError('NETWORK_ERROR', message, 503);
+    return new CliError('NETWORK_ERROR', message, 2);
   }
 
   static moduleNotFound(name: string) {
-    return new CliError('MODULE_NOT_FOUND', `模块 "${name}" 不存在`, 404, { name });
+    return new CliError('MODULE_NOT_FOUND', `模块 "${name}" 不存在`, 3, { name });
   }
 
   static versionNotFound(name: string, version: string) {
-    return new CliError('VERSION_NOT_FOUND', `模块 "${name}" 的版本 "${version}" 不存在`, 404, { name, version });
+    return new CliError('VERSION_NOT_FOUND', `模块 "${name}" 的版本 "${version}" 不存在`, 3, { name, version });
   }
 
   static uploadFailed(message = '上传失败') {
-    return new CliError('UPLOAD_FAILED', message, 500);
+    return new CliError('UPLOAD_FAILED', message, 4);
   }
 
   static configError(message = '配置错误') {
-    return new CliError('CONFIG_ERROR', message, 500);
+    return new CliError('CONFIG_ERROR', message, 5);
   }
 
   static invalidInput(message = '输入参数无效') {
-    return new CliError('INVALID_INPUT', message, 400);
+    return new CliError('INVALID_INPUT', message, 6);
   }
 
   static serverError(message = '服务器错误') {
-    return new CliError('SERVER_ERROR', message, 500);
+    return new CliError('SERVER_ERROR', message, 7);
   }
 
   static fileNotFound(path: string) {
-    return new CliError('FILE_NOT_FOUND', `文件不存在: ${path}`, 404, { path });
+    return new CliError('FILE_NOT_FOUND', `文件不存在: ${path}`, 8, { path });
   }
 
   static fileAccessDenied(path: string) {
-    return new CliError('FILE_ACCESS_DENIED', `无法访问文件: ${path}`, 403, { path });
+    return new CliError('FILE_ACCESS_DENIED', `无法访问文件: ${path}`, 9, { path });
   }
 }
 
@@ -159,6 +159,32 @@ export class ErrorHandler {
   }
 
   /**
+   * 非退出式错误处理（用于可能恢复的场景）
+   */
+  static handleNonFatal(error: unknown): void {
+    let cliError: CliError;
+
+    if (error instanceof CliError) {
+      cliError = error;
+    } else if (error instanceof Error) {
+      const code = this.inferErrorCode(error.message);
+      cliError = new CliError(code, error.message);
+    } else {
+      cliError = new CliError(ErrorCode.INTERNAL_ERROR, String(error));
+    }
+
+    if (this.logger) {
+      this.logger.error('Non-fatal Error', {
+        code: cliError.code,
+        message: cliError.message,
+        details: cliError.details,
+      });
+    }
+
+    this.displayError(cliError);
+  }
+
+  /**
    * 显示错误信息
    */
   private static displayError(error: CliError) {
@@ -184,12 +210,18 @@ export class ErrorHandler {
    */
   private static getHelpHint(code: string): string | null {
     const hints: Record<string, string> = {
-      'AUTH_UNAUTHORIZED': '请使用 `pnce auth login` 登录',
-      'AUTH_TOKEN_EXPIRED': '请使用 `pnce auth login` 重新登录',
-      'MODULE_NOT_FOUND': '请检查模块名称是否正确，或使用 `pnce search <keyword>` 搜索',
+      'AUTH_UNAUTHORIZED': '请使用 `pnce login` 登录',
+      'AUTH_TOKEN_EXPIRED': '请使用 `pnce login` 重新登录',
+      'MODULE_NOT_FOUND': '请检查模块名称是否正确，或使用 `pnce list` 查看所有可用模块',
       'VERSION_NOT_FOUND': '请使用 `pnce info <name>` 查看可用版本',
-      'UPLOAD_FAILED': '请检查网络连接和模块格式',
-      'CONFIG_ERROR': '请检查配置文件或运行 `pnce init`',
+      'UPLOAD_FAILED': '请检查网络连接和模块格式，确保项目已正确配置',
+      'CONFIG_ERROR': '请检查配置文件或运行 `pnce init` 初始化配置',
+      'NETWORK_ERROR': '请检查网络连接或稍后重试',
+      'TIMEOUT_ERROR': '请求超时，请检查网络或稍后重试',
+      'INVALID_INPUT': '请检查输入参数是否正确',
+      'FILE_NOT_FOUND': '请检查文件路径是否正确',
+      'FILE_ACCESS_DENIED': '请检查文件权限',
+      'INTERNAL_ERROR': '发生未知错误，请重试或联系支持团队',
     };
 
     return hints[code] || null;

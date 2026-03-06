@@ -18,8 +18,7 @@ prettier.config.js
 **/__tests__/
 test/
 tests/
-*.test.js
-*.spec.js
+vitest.config.ts
 
 # 测试覆盖率
 coverage/
@@ -49,9 +48,7 @@ CHANGELOG.md
 CONTRIBUTING.md
 SECURITY.md
 OPTIMIZATION_PLAN.md
-OPTIMIZATION_SUMMARY.md
 API_DOCUMENTATION.md
-LOGIN_REQUIREMENTS.md
 docs/
 documents/
 
@@ -61,6 +58,14 @@ logs/
 *.tmp
 *.temp
 
+# 源码映射文件（减小发布包体积）
+**/*.map
+**/d.ts.map
+
+# 模板中的锁文件（减小包体积）
+**/yarn.lock
+**/package-lock.json
+
 # 依赖（node_modules 会被 npm 自动忽略）
 node_modules/
 **/node_modules/
@@ -69,3 +74,10 @@ node_modules/
 build/
 out/
 lib/
+
+# 打包输出
+release/
+pkg/
+
+# Node 版本
+.nvmrc

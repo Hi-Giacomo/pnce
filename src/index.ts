@@ -5,6 +5,7 @@ import { registerCommands } from "./commands";
 import { CLI_VERSION } from "./config/default.config";
 import { initLogger, getLogger } from "./utils/logger";
 import { ErrorHandler } from "./utils/errors";
+import { getAliasManager } from "./utils/alias-manager";
 
 // 初始化日志系统
 initLogger().then(() => {
@@ -56,11 +57,23 @@ if (!process.env.INIT_CWD) {
   }
 }
 
+// 解析命令别名
+let argv = process.argv.slice();
+const aliasManager = getAliasManager();
+
+// 尝试解析第一个参数是否为别名
+if (argv.length > 2) {
+  const command = argv[2];
+  if (aliasManager.isAlias(command)) {
+    argv = [argv[0], ...aliasManager.resolve(argv.slice(2))];
+  }
+}
+
 // 异步注册所有命令
 registerCommands(program).then(() => {
-  program.parse(process.argv);
+  program.parse(argv);
 
-  if (!process.argv.slice(2).length) {
+  if (!argv.slice(2).length) {
     program.outputHelp();
   }
 }).catch(error => {

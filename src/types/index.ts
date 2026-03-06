@@ -1,9 +1,3 @@
-export interface Config {
-  registry: string;
-  website: string;
-  authToken: string;
-}
-
 export interface ModuleInfo {
   name: string;
   description: string;

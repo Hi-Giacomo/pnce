@@ -1,7 +1,7 @@
 import { readFileSync, writeFileSync, existsSync, mkdirSync } from 'fs';
 import path from 'path';
 import os from 'os';
-import { CliError, ErrorCode } from '../utils/errors';
+import { CliError, ErrorCode, CryptoUtil } from '../utils';
 
 /**
  * 配置接口
@@ -97,9 +97,9 @@ export interface PnceConfig {
  * 默认配置
  */
 const DEFAULT_CONFIG: PnceConfig = {
-  apiServer: 'http://62.234.36.178:3000',
-  oauthEndpoint: 'http://62.234.36.178:5173/authorize',
-  oauthPort: 3001,
+  apiServer: process.env.PNCE_API_SERVER || 'http://localhost:3000',
+  oauthEndpoint: process.env.PNCE_OAUTH_ENDPOINT || 'http://localhost:5173/authorize',
+  oauthPort: parseInt(process.env.PNCE_OAUTH_PORT || '3001'),
   outputDir: process.cwd(),
   useProxy: false,
   downloadTimeout: 300000, // 5分钟
@@ -225,6 +225,8 @@ export class ConfigManager {
       const logLevel = process.env.PNCE_LOG_LEVEL.toLowerCase();
       if (validLevels.includes(logLevel)) {
         env.logLevel = logLevel as 'error' | 'warn' | 'info' | 'debug';
+      } else {
+        console.warn(`Invalid PNCE_LOG_LEVEL: ${process.env.PNCE_LOG_LEVEL}. Valid values are: ${validLevels.join(', ')}`);
       }
     }
 
@@ -334,13 +336,16 @@ export class ConfigManager {
   }
 
   /**
-   * 设置认证Token
+   * 设置认证Token（加密存储）
    */
   setAuth(token: string, refreshToken?: string, expiresIn?: number): void {
     const tokenData: Partial<PnceConfig> = {
-      token,
-      refreshToken,
+      token: CryptoUtil.encrypt(token),
     };
+
+    if (refreshToken) {
+      tokenData.refreshToken = CryptoUtil.encrypt(refreshToken);
+    }
 
     if (expiresIn) {
       tokenData.tokenExpiresAt = Date.now() + expiresIn * 1000;
@@ -373,17 +378,33 @@ export class ConfigManager {
   }
 
   /**
-   * 获取当前Token
+   * 获取当前Token（解密后返回）
    */
   getToken(): string | undefined {
-    return this.userConfig.token;
+    const encryptedToken = this.userConfig.token;
+    if (!encryptedToken) return undefined;
+
+    try {
+      return CryptoUtil.decrypt(encryptedToken);
+    } catch (error) {
+      console.warn('解密 Token 失败:', error);
+      return undefined;
+    }
   }
 
   /**
-   * 获取刷新Token
+   * 获取刷新Token（解密后返回）
    */
   getRefreshToken(): string | undefined {
-    return this.userConfig.refreshToken;
+    const encryptedToken = this.userConfig.refreshToken;
+    if (!encryptedToken) return undefined;
+
+    try {
+      return CryptoUtil.decrypt(encryptedToken);
+    } catch (error) {
+      console.warn('解密 Refresh Token 失败:', error);
+      return undefined;
+    }
   }
 
   /**
@@ -395,6 +416,108 @@ export class ConfigManager {
 
   getProjectConfigPath(): string {
     return this.projectConfigPath;
+  }
+
+  /**
+   * 获取配置档案目录
+   */
+  private getProfilesDir(): string {
+    return path.join(os.homedir(), '.pnce', 'profiles');
+  }
+
+  /**
+   * 切换到指定配置档案
+   * @param profileName 档案名称
+   */
+  switchProfile(profileName: string): void {
+    const profilesDir = this.getProfilesDir();
+    const profilePath = path.join(profilesDir, `${profileName}.json`);
+
+    if (!existsSync(profilePath)) {
+      throw new CliError(ErrorCode.CONFIG_ERROR, `配置档案 "${profileName}" 不存在`);
+    }
+
+    // 读取档案内容
+    try {
+      const content = require('fs-extra').readFileSync(profilePath, 'utf-8');
+      const profileConfig = JSON.parse(content);
+
+      // 备份当前配置
+      const backupPath = path.join(profilesDir, 'backup.json');
+      require('fs-extra').writeFileSync(backupPath, JSON.stringify(this.userConfig, null, 2), 'utf-8');
+
+      // 应用档案配置
+      this.userConfig = profileConfig;
+      this.saveUserConfig();
+
+      console.log(`✅ 已切换到配置档案: ${profileName}`);
+    } catch (error) {
+      throw new CliError(ErrorCode.CONFIG_ERROR, `加载配置档案失败: ${error}`);
+    }
+  }
+
+  /**
+   * 保存当前配置为档案
+   * @param profileName 档案名称
+   */
+  saveProfile(profileName: string): void {
+    const profilesDir = this.getProfilesDir();
+
+    // 确保目录存在
+    if (!existsSync(profilesDir)) {
+      require('fs-extra').mkdirSync(profilesDir, { recursive: true });
+    }
+
+    const profilePath = path.join(profilesDir, `${profileName}.json`);
+
+    try {
+      require('fs-extra').writeFileSync(
+        profilePath,
+        JSON.stringify(this.userConfig, null, 2),
+        'utf-8'
+      );
+      console.log(`✅ 已保存配置档案: ${profileName}`);
+    } catch (error) {
+      throw new CliError(ErrorCode.CONFIG_ERROR, `保存配置档案失败: ${error}`);
+    }
+  }
+
+  /**
+   * 列出所有配置档案
+   */
+  listProfiles(): string[] {
+    const profilesDir = this.getProfilesDir();
+
+    if (!existsSync(profilesDir)) {
+      return [];
+    }
+
+    try {
+      const files = require('fs-extra').readdirSync(profilesDir);
+      return files.filter(file => file.endsWith('.json')).map(file => file.replace('.json', ''));
+    } catch (error) {
+      return [];
+    }
+  }
+
+  /**
+   * 删除配置档案
+   * @param profileName 档案名称
+   */
+  deleteProfile(profileName: string): void {
+    const profilesDir = this.getProfilesDir();
+    const profilePath = path.join(profilesDir, `${profileName}.json`);
+
+    if (!existsSync(profilePath)) {
+      throw new CliError(ErrorCode.CONFIG_ERROR, `配置档案 "${profileName}" 不存在`);
+    }
+
+    try {
+      require('fs-extra').removeSync(profilePath);
+      console.log(`✅ 已删除配置档案: ${profileName}`);
+    } catch (error: unknown) {
+      throw new CliError(ErrorCode.CONFIG_ERROR, `删除配置档案失败: ${error}`);
+    }
   }
 }
 

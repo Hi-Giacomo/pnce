@@ -1,0 +1,94 @@
+{
+  "common": {
+    "success": "Success",
+    "error": "Error",
+    "warning": "Warning",
+    "info": "Info",
+    "loading": "Loading...",
+    "please_wait": "Please wait",
+    "confirm": "Confirm",
+    "cancel": "Cancel",
+    "yes": "Yes",
+    "no": "No"
+  },
+  "auth": {
+    "login": "Login",
+    "logout": "Logout",
+    "login_success": "Login successful",
+    "login_failed": "Login failed",
+    "logout_success": "Logout successful",
+    "please_login": "Please login first",
+    "token_expired": "Token has expired",
+    "browser_opening": "Opening browser...",
+    "waiting_for_auth": "Waiting for authorization..."
+  },
+  "module": {
+    "upload": "Upload",
+    "download": "Download",
+    "install": "Install",
+    "uninstall": "Uninstall",
+    "list": "List",
+    "search": "Search",
+    "info": "Info",
+    "upload_success": "Upload successful",
+    "upload_failed": "Upload failed",
+    "download_success": "Download successful",
+    "download_failed": "Download failed",
+    "install_success": "Install successful",
+    "install_failed": "Install failed",
+    "module_found": "Module found: {{name}}",
+    "module_not_found": "Module not found: {{name}}",
+    "uploading": "Uploading: {{name}}",
+    "downloading": "Downloading: {{name}}",
+    "installing": "Installing: {{name}}"
+  },
+  "config": {
+    "config": "Config",
+    "config_saved": "Configuration saved",
+    "config_loaded": "Configuration loaded",
+    "config_not_found": "Configuration file not found",
+    "config_invalid": "Invalid configuration",
+    "profile_saved": "Profile saved",
+    "profile_loaded": "Profile loaded",
+    "profile_not_found": "Profile not found",
+    "switched_profile": "Switched to profile: {{name}}"
+  },
+  "error": {
+    "network_error": "Network error",
+    "timeout": "Request timeout",
+    "permission_denied": "Permission denied",
+    "file_not_found": "File not found",
+    "invalid_input": "Invalid input",
+    "unknown_error": "Unknown error",
+    "E001": "Authentication error",
+    "E002": "Network error",
+    "E003": "Configuration error",
+    "E004": "Module error",
+    "E005": "File error",
+    "E006": "Validation error",
+    "E999": "Unknown error"
+  },
+  "cache": {
+    "cache": "Cache",
+    "cache_hit": "Cache hit",
+    "cache_miss": "Cache miss",
+    "cache_expired": "Cache expired",
+    "cache_cleared": "Cache cleared",
+    "cleaning_cache": "Cleaning cache..."
+  },
+  "version": {
+    "version": "Version",
+    "latest_version": "Latest version",
+    "current_version": "Current version",
+    "update_available": "Update available",
+    "up_to_date": "Up to date",
+    "checking_update": "Checking for updates...",
+    "version_locked": "Version locked",
+    "version_unlocked": "Version unlocked"
+  },
+  "performance": {
+    "performance": "Performance",
+    "operation_time": "Operation time",
+    "slow_operation": "Slow operation detected"
+  }
+}
