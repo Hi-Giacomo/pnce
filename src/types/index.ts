@@ -9,9 +9,13 @@ export interface ModuleInfo {
   description: string;
   author: string;
   latest: string;
-  versions: string[];
+  versions: Record<string, VersionInfo> | string[];
   createdAt: string;
   uploadedBy?: string;
+  type?: string;
+  appId?: string;
+  teamId?: string;
+  downloads?: number;
 }
 
 export interface VersionInfo {
@@ -24,7 +28,9 @@ export interface Stats {
   totalModules: number;
   totalVersions: number;
   totalSize: number;
+  totalDownloads: number;
   topAuthors: Array<{ author: string; count: number }>;
+  topModules: Array<{ name: string; downloads: number }>;
 }
 
 export interface PackageJson {
@@ -79,19 +85,31 @@ export interface RegisterOptions {
   password?: string;
 }
 
-export interface ApiResponse<T = any> {
+export interface ApiResponse<T = unknown> {
   success: boolean;
   message?: string;
   data?: T;
-  [key: string]: any;
+  modules?: ModuleInfo[];
+  module?: ModuleInfo;
+  stats?: Stats;
+  user?: UserInfo;
+  access_token?: string;
+  refresh_token?: string;
+  [key: string]: unknown;
+}
+
+export interface UserInfo {
+  id?: string;
+  username?: string;
+  email: string;
+  avatar?: string;
+  createdAt?: string;
 }
 
 export interface AuthResponse {
   access_token: string;
-  user: {
-    username?: string;
-    email: string;
-  };
+  refresh_token?: string;
+  user: UserInfo;
 }
 
 export interface OAuth2AuthorizeOptions {

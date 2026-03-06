@@ -1,9 +1,11 @@
 import { Command } from 'commander';
 import * as path from 'path';
 import * as fs from 'fs-extra';
+import { ErrorHandler } from '../utils/errors';
 
 /**
  * 注册端口管理相关命令
+ * @param program - Commander程序实例
  */
 export function registerPortCommands(program: Command): void {
   // 端口管理命令
@@ -43,9 +45,8 @@ export function registerPortCommands(program: Command): void {
           console.log('端口缓存文件不存在');
           console.log('提示: 运行 npm run dev 后会自动创建缓存文件');
         }
-      } catch (error: any) {
-        console.error('错误:', error.message);
-        process.exit(1);
+      } catch (error) {
+        ErrorHandler.handle(error);
       }
     });
 }

@@ -3,6 +3,7 @@ import retry from 'axios-retry';
 import { ApiResponse } from '../types';
 import { getConfigManager } from '../config/manager';
 import { CliError, ErrorCode, Logger } from '../utils';
+import { HTTP } from '../constants';
 
 /**
  * API服务
@@ -22,8 +23,8 @@ export class ApiService {
 
     // 配置重试机制
     retry(this.axiosInstance, {
-      retries: 3,
-      retryDelay: retryCount => retryCount * 1000,
+      retries: HTTP.RETRY_COUNT,
+      retryDelay: retryCount => retryCount * HTTP.RETRY_DELAY_MS,
       retryCondition: (error) => {
         // 只在网络错误或5xx错误时重试
         return !error.response || error.response.status >= 500;
@@ -68,10 +69,12 @@ export class ApiService {
 
   /**
    * 处理API错误
+   * @param error - 错误对象
+   * @throws CliError - 统一的CLI错误
    */
-  private handleApiError(error: any): never {
-    if (error.response) {
-      const { status, data } = error.response;
+  private handleApiError(error: unknown): never {
+    if (error && typeof error === 'object' && 'response' in error) {
+      const { status, data } = (error as any).response;
 
       switch (status) {
         case 401:
@@ -79,7 +82,7 @@ export class ApiService {
         case 403:
           throw new CliError(ErrorCode.FILE_ACCESS_DENIED, data.message || '无权访问');
         case 404:
-          throw CliError.moduleNotFound(error.config.url?.split('/').pop() || '未知模块');
+          throw CliError.moduleNotFound((error as any).config.url?.split('/').pop() || '未知模块');
         case 429:
           throw new CliError('RATE_LIMIT_EXCEEDED', '请求过于频繁，请稍后再试', 429);
         default:
@@ -88,12 +91,12 @@ export class ApiService {
             data.message || `服务器错误: ${status}`
           );
       }
-    } else if (error.request) {
+    } else if (error && typeof error === 'object' && 'request' in error) {
       // 请求已发送但没有收到响应
       throw CliError.networkError('网络请求失败，请检查网络连接');
     } else {
       // 请求配置错误
-      throw new CliError(ErrorCode.INVALID_INPUT, error.message || '请求配置错误');
+      throw new CliError(ErrorCode.INVALID_INPUT, (error as Error).message || '请求配置错误');
     }
   }
 
@@ -112,8 +115,12 @@ export class ApiService {
 
   /**
    * POST请求
+   * @param url - 请求URL
+   * @param data - 请求数据
+   * @param isFormData - 是否为表单数据
+   * @returns API响应数据
    */
-  async post<T = any>(url: string, data: any, isFormData = false): Promise<ApiResponse<T>> {
+  async post<T = unknown>(url: string, data: unknown, isFormData = false): Promise<ApiResponse<T>> {
     const authHeaders = this.getAuthHeaders();
     const headers: Record<string, string> = {};
 
@@ -151,7 +158,8 @@ export class ApiService {
   }
 
   /**
-   * 获取axios实例（用于直接使用）
+   * 获取axios实例(用于直接使用)
+   * @returns Axios实例
    */
   getAxiosInstance(): AxiosInstance {
     return this.axiosInstance;

@@ -2,9 +2,10 @@ import * as fs from 'fs-extra';
 import * as path from 'path';
 import FormData from 'form-data';
 import { ApiService } from './api.service';
-import { PackageJson } from '../types';
+import { PackageJson, ApiResponse, ModuleInfo } from '../types';
 import { CliError, ErrorCode } from '../utils/errors';
 import { Logger } from '../utils/logger';
+import { DOWNLOAD, EXCLUDE_PATTERNS, DEFAULT_NPMIGNORE, PATHS } from '../constants';
 
 /**
  * 模块上传服务
@@ -18,7 +19,7 @@ export class ModuleUploadService {
 
   /**
    * 上传模块到服务器
-   * @param moduleDir 模块目录
+   * @param moduleDir - 模块目录
    */
   async upload(moduleDir: string): Promise<void> {
     try {
@@ -40,9 +41,9 @@ export class ModuleUploadService {
       this.displayModuleInfo(packageJson, moduleConfig);
 
       // 创建临时文件
-      const tempDir = path.join(require('os').homedir(), '.module-temp');
+      const tempDir = DOWNLOAD.TEMP_DIR_PATH;
       await fs.ensureDir(tempDir);
-      const tgzPath = path.join(tempDir, `${packageJson.name}-${packageJson.version}.tgz`);
+      const tgzPath = path.join(tempDir, `${packageJson.name}-${packageJson.version}${DOWNLOAD.TEMP_FILE_EXT}`);
 
       // 打包模块
       await this.createPackage(absoluteModuleDir, tgzPath);
@@ -62,7 +63,7 @@ export class ModuleUploadService {
    * 读取 package.json
    */
   private async readPackageJson(moduleDir: string): Promise<PackageJson> {
-    const packageJsonPath = path.join(moduleDir, 'package.json');
+    const packageJsonPath = path.join(moduleDir, PATHS.PACKAGE_FILE);
 
     if (!await fs.pathExists(packageJsonPath)) {
       throw CliError.fileNotFound(packageJsonPath);
@@ -137,19 +138,7 @@ export class ModuleUploadService {
         // 排除不需要的文件和目录
         filter: (filePath: string) => {
           const relativePath = path.relative(sourceDir, filePath);
-          // 排除 node_modules, .git, npm-debug.log 等
-          const excludePatterns = [
-            'node_modules',
-            '.git',
-            'npm-debug.log',
-            '.DS_Store',
-            'coverage',
-            '.coverage',
-            'dist',
-            '.pnce',
-          ];
-
-          return !excludePatterns.some(pattern => relativePath.startsWith(pattern));
+          return !EXCLUDE_PATTERNS.some(pattern => relativePath.startsWith(pattern));
         },
       },
       ['.'] // 打包整个目录
@@ -162,22 +151,10 @@ export class ModuleUploadService {
    * 确保 .npmignore 存在
    */
   private async ensureNpmignore(moduleDir: string): Promise<void> {
-    const npmignorePath = path.join(moduleDir, '.npmignore');
-    const defaultContent = `node_modules/
-.git/
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-.DS_Store
-coverage/
-dist/
-.pnce/
-external_modules/
-*.log
-`;
+    const npmignorePath = path.join(moduleDir, PATHS.NPMIGNORE_FILE);
 
     if (!await fs.pathExists(npmignorePath)) {
-      await fs.writeFile(npmignorePath, defaultContent.trim());
+      await fs.writeFile(npmignorePath, DEFAULT_NPMIGNORE.trim());
     }
   }
 
@@ -207,7 +184,7 @@ external_modules/
 
     console.log('上传中...');
 
-    const response = await this.api.post('/api/modules/upload', formData, true);
+    const response = await this.api.post<ApiResponse<{ module: ModuleInfo }>>('/api/modules/upload', formData, true);
 
     if (!response.success) {
       throw new CliError(

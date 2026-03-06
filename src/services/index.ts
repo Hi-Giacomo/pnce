@@ -6,4 +6,3 @@ export * from './module-upload.service';
 export * from './module-download.service';
 export * from './module-hash.service';
 export * from './modules-manager.service';
-export * from './config.service';

@@ -4,7 +4,6 @@ import * as fs from 'fs-extra';
 import { ModuleUploadService } from '../services/module-upload.service';
 import { ModuleDownloadService } from '../services/module-download.service';
 import { ModuleService } from '../services/module.service';
-import { ConfigService } from '../services/config.service';
 import { ErrorHandler } from '../utils/errors';
 import { getConfigManager } from '../config/manager';
 

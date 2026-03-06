@@ -115,9 +115,9 @@ export enum ErrorCode {
  * 错误处理器
  */
 export class ErrorHandler {
-  private static logger: any = null;
+  private static logger: { error: (message: string, meta?: unknown) => void } | null = null;
 
-  static setLogger(logger: any) {
+  static setLogger(logger: { error: (message: string, meta?: unknown) => void }) {
     this.logger = logger;
   }
 
@@ -139,13 +139,13 @@ export class ErrorHandler {
 
     // 记录错误日志
     if (this.logger) {
-      this.logger.error({
+      this.logger.error('CLI Error', {
         code: cliError.code,
         message: cliError.message,
         exitCode: cliError.exitCode,
         details: cliError.details,
         stack: cliError.stack,
-      }, 'CLI Error');
+      });
     }
 
     // 显示用户友好的错误信息

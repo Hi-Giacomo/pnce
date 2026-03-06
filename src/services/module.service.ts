@@ -4,13 +4,19 @@ import * as child_process from 'child_process';
 import * as crypto from 'crypto';
 import FormData = require('form-data');
 import { ApiService } from './api.service';
-import { PackageJson } from '../types';
+import { PackageJson, ModuleInfo, VersionInfo, Stats, ApiResponse } from '../types';
 
+/**
+ * 模块服务
+ * 负责模块的上传、下载和版本管理
+ */
 export class ModuleService {
   constructor(private api: ApiService) {}
 
   /**
-   * 计算目录的哈希值（递归计算所有文件的哈希）
+   * 计算目录的哈希值(递归计算所有文件的哈希)
+   * @param dirPath - 目录路径
+   * @returns SHA256哈希值
    */
   private async calculateDirectoryHash(dirPath: string): Promise<string> {
     const hash = crypto.createHash('sha256');
@@ -56,6 +62,8 @@ export class ModuleService {
 
   /**
    * 保存模块的哈希值
+   * @param modulePath - 模块路径
+   * @param hash - 哈希值
    */
   private async saveModuleHash(modulePath: string, hash: string): Promise<void> {
     const hashFilePath = path.join(modulePath, '.module-hash');
@@ -187,11 +195,11 @@ export class ModuleService {
       formData.append('type', type); // 添加 type
     }
 
-    const response = await this.api.post('/api/modules/upload', formData, true);
+    const response = await this.api.post<ApiResponse<{ module: ModuleInfo }>>('/api/modules/upload', formData, true);
 
-    if (response.success) {
+    if (response.success && response.module) {
       console.log(`✓ 模块 ${moduleName}@${moduleVersion} 上传成功!`);
-      if (response.module?.author) {
+      if (response.module.author) {
         console.log(`  作者: ${response.module.author}`);
       }
     } else {
@@ -212,9 +220,9 @@ export class ModuleService {
     // 如果没有指定版本，获取最新版本
     if (!targetVersion) {
       console.log(`获取 ${moduleName} 的最新版本...`);
-      const response = await this.api.get(`/api/modules/${moduleName}`);
+      const response = await this.api.get<ApiResponse<{ module: ModuleInfo }>>(`/api/modules/${moduleName}`);
 
-      if (!response.success) {
+      if (!response.success || !response.module) {
         throw new Error(response.message || '获取模块信息失败');
       }
 
@@ -415,9 +423,9 @@ export class ModuleService {
   }
 
   async list(): Promise<void> {
-    const response = await this.api.get('/api/modules');
+    const response = await this.api.get<ApiResponse<{ modules: ModuleInfo[] }>>('/api/modules');
 
-    if (!response.success) {
+    if (!response.success || !response.modules) {
       throw new Error(response.message || '获取模块列表失败');
     }
 
@@ -430,7 +438,7 @@ export class ModuleService {
 
     console.log('\n模块列表:');
     console.log('─'.repeat(80));
-    modules.forEach((mod: any) => {
+    modules.forEach((mod: ModuleInfo) => {
       const typeLabel = mod.type ? ` [${mod.type}]` : '';
       console.log(`  ${mod.name}@${mod.latest}${typeLabel}`);
       console.log(`  描述: ${mod.description || '无'}`);
@@ -441,9 +449,9 @@ export class ModuleService {
   }
 
   async search(query: string): Promise<void> {
-    const response = await this.api.get(`/api/modules?q=${encodeURIComponent(query)}`);
+    const response = await this.api.get<ApiResponse<{ modules: ModuleInfo[] }>>(`/api/modules?q=${encodeURIComponent(query)}`);
 
-    if (!response.success) {
+    if (!response.success || !response.modules) {
       throw new Error(response.message || '搜索失败');
     }
 
@@ -456,7 +464,7 @@ export class ModuleService {
 
     console.log(`\n搜索 "${query}" 的结果:`);
     console.log('─'.repeat(80));
-    modules.forEach((mod: any) => {
+    modules.forEach((mod: ModuleInfo) => {
       const typeLabel = mod.type ? ` [${mod.type}]` : '';
       console.log(`  ${mod.name}@${mod.latest}${typeLabel}`);
       console.log(`  描述: ${mod.description || '无'}`);
@@ -466,9 +474,9 @@ export class ModuleService {
   }
 
   async info(moduleName: string): Promise<void> {
-    const response = await this.api.get(`/api/modules/${moduleName}`);
+    const response = await this.api.get<ApiResponse<{ module: ModuleInfo }>>(`/api/modules/${moduleName}`);
 
-    if (!response.success) {
+    if (!response.success || !response.module) {
       throw new Error(response.message || '获取模块信息失败');
     }
 
@@ -490,15 +498,16 @@ export class ModuleService {
     }
     console.log(`\n所有版本:`);
     Object.keys(module.versions).forEach((version: string) => {
-      const v = module.versions[version];
-      console.log(`  ${version} - ${this.formatSize(v.size)} (${v.uploadedAt})`);
+      const v = module.versions as Record<string, VersionInfo>;
+      const versionInfo = v[version];
+      console.log(`  ${version} - ${this.formatSize(versionInfo.size)} (${versionInfo.uploadedAt})`);
     });
   }
 
   async getStats(): Promise<void> {
-    const response = await this.api.get('/api/stats');
+    const response = await this.api.get<ApiResponse<{ stats: Stats }>>('/api/stats');
 
-    if (!response.success) {
+    if (!response.success || !response.stats) {
       throw new Error(response.message || '获取统计信息失败');
     }
 
@@ -511,7 +520,7 @@ export class ModuleService {
 
     if (stats.topAuthors && stats.topAuthors.length > 0) {
       console.log('\n最活跃作者:');
-      stats.topAuthors.forEach((item: any) => {
+      stats.topAuthors.forEach((item: { author: string; count: number }) => {
         console.log(`  ${item.author}: ${item.count} 个模块`);
       });
     }
@@ -741,7 +750,7 @@ export class ModuleService {
             let targetVersion = version;
             if (version.startsWith('^') || version.startsWith('~')) {
               // 获取模块信息解析版本
-              const response = await this.api.get(`/api/modules/${depName}`);
+              const response = await this.api.get<ApiResponse<{ module: ModuleInfo }>>(`/api/modules/${depName}`);
               if (response.success && response.module) {
                 const availableVersions = Object.keys(response.module.versions);
                 // 简单的版本范围解析：取最新版本
@@ -827,7 +836,7 @@ export class ModuleService {
                 let targetVersion = version;
                 if (version.startsWith('^') || version.startsWith('~')) {
                   // 获取模块信息解析版本
-                  const response = await this.api.get(`/api/modules/${depName}`);
+                  const response = await this.api.get<ApiResponse<{ module: ModuleInfo }>>(`/api/modules/${depName}`);
                   if (response.success && response.module) {
                     const availableVersions = Object.keys(response.module.versions);
                     // 简单的版本范围解析：取最新版本
@@ -908,7 +917,7 @@ export class ModuleService {
                 let targetVersion = version;
                 if (version.startsWith('^') || version.startsWith('~')) {
                   // 获取模块信息解析版本
-                  const response = await this.api.get(`/api/modules/${depName}`);
+                  const response = await this.api.get<ApiResponse<{ module: ModuleInfo }>>(`/api/modules/${depName}`);
                   if (response.success && response.module) {
                     const availableVersions = Object.keys(response.module.versions);
                     // 简单的版本范围解析：取最新版本
@@ -932,8 +941,8 @@ export class ModuleService {
             }
           }
         }
-      } catch (error: any) {
-        console.error(`  [modules.json] 解析 ${moduleName} 的 modules.json 失败:`, error.message);
+      } catch (error: unknown) {
+        console.error(`  [modules.json] 解析 ${moduleName} 的 modules.json 失败:`, error instanceof Error ? error.message : String(error));
         // 不抛出错误，继续执行
       }
     }
@@ -1027,8 +1036,8 @@ export class ModuleService {
             await this.fixModuleImportsForModule(modulePath, depInstallPath, depInstallPath, projectRoot);
           }
         }
-      } catch (error: any) {
-        console.error(`      ❌ 安装 ${modName} 失败:`, error.message);
+      } catch (error: unknown) {
+        console.error(`      ❌ 安装 ${modName} 失败:`, error instanceof Error ? error.message : String(error));
         // 继续安装其他模块
       }
     }

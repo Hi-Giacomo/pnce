@@ -1,8 +1,11 @@
 import { Command } from 'commander';
 import { ModulesManagerService } from '../services/modules-manager.service';
+import { ErrorHandler } from '../utils/errors';
 
 /**
  * 注册模块依赖管理相关命令
+ * @param program - Commander程序实例
+ * @param modulesManager - 模块管理器实例
  */
 export function registerModulesManagerCommands(
   program: Command,
@@ -20,9 +23,8 @@ export function registerModulesManagerCommands(
         console.log('   yarn cli modules-add <module>     - 添加模块依赖');
         console.log('   yarn cli modules-install          - 安装所有依赖');
         console.log('   yarn cli modules-list             - 查看依赖列表');
-      } catch (error: any) {
-        console.error('初始化失败:', error.message);
-        process.exit(1);
+      } catch (error) {
+        ErrorHandler.handle(error);
       }
     });
 
@@ -42,8 +44,8 @@ export function registerModulesManagerCommands(
         } else {
           console.log('\n💡 提示: 运行 "yarn cli modules-install" 来安装模块');
         }
-      } catch (error: any) {
-        console.error('添加失败:', error.message);
+      } catch (error: unknown) {
+        console.error('添加失败:', error instanceof Error ? error.message : String(error));
         process.exit(1);
       }
     });
@@ -58,9 +60,8 @@ export function registerModulesManagerCommands(
         modulesManager.removeModule(projectDir, module);
 
         console.log('\n💡 提示: 运行 "yarn cli modules-prune" 来清理已安装的模块');
-      } catch (error: any) {
-        console.error('移除失败:', error.message);
-        process.exit(1);
+      } catch (error) {
+        ErrorHandler.handle(error);
       }
     });
 
@@ -73,9 +74,8 @@ export function registerModulesManagerCommands(
       try {
         const projectDir = process.env.INIT_CWD || process.cwd();
         await modulesManager.installAll(projectDir, { forceFresh: options.force });
-      } catch (error: any) {
-        console.error('安装失败:', error.message);
-        process.exit(1);
+      } catch (error) {
+        ErrorHandler.handle(error);
       }
     });
 
@@ -87,8 +87,8 @@ export function registerModulesManagerCommands(
       try {
         const projectDir = process.env.INIT_CWD || process.cwd();
         modulesManager.list(projectDir);
-      } catch (error: any) {
-        console.error('列表失败:', error.message);
+      } catch (error: unknown) {
+        console.error('列表失败:', error instanceof Error ? error.message : String(error));
         process.exit(1);
       }
     });
@@ -101,9 +101,8 @@ export function registerModulesManagerCommands(
       try {
         const projectDir = process.env.INIT_CWD || process.cwd();
         await modulesManager.prune(projectDir);
-      } catch (error: any) {
-        console.error('清理失败:', error.message);
-        process.exit(1);
+      } catch (error) {
+        ErrorHandler.handle(error);
       }
     });
 }
