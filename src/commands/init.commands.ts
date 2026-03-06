@@ -11,9 +11,11 @@ import {
   generateMicroserviceFiles,
   createProjectStructure,
 } from '../templates';
+import { ErrorHandler } from '../utils/errors';
 
 /**
  * 注册初始化相关命令
+ * @param program - Commander程序实例
  */
 export function registerInitCommands(program: Command): void {
   // 初始化命令
@@ -87,9 +89,8 @@ export function registerInitCommands(program: Command): void {
           console.log(`   cd ${moduleName}`);
           console.log('   npm install');
           console.log('   npm run dev\n');
-        } catch (error: any) {
-          console.error('❌ 创建失败:', error.message);
-          process.exit(1);
+        } catch (error) {
+          ErrorHandler.handle(error);
         }
         return;
       }

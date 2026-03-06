@@ -1,6 +1,7 @@
 import winston from 'winston';
 import path from 'path';
 import fs from 'fs-extra';
+import os from 'os';
 
 /**
  * 日志级别
@@ -29,7 +30,8 @@ export interface LoggerConfig {
 function getDefaultConfig(): LoggerConfig {
   return {
     level: (process.env.PNCE_LOG_LEVEL || 'info') as LogLevel,
-    dir: path.join(process.cwd(), '.pnce', 'logs'),
+    // 使用用户主目录，而不是当前工作目录
+    dir: path.join(os.homedir(), '.pnce', 'logs'),
     maxFiles: 30,
     maxSize: '10m',
     format: (process.env.PNCE_LOG_FORMAT || 'simple') as 'json' | 'simple',

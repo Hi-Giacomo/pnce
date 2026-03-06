@@ -6,6 +6,8 @@ import { ModulesManagerService } from '../services/modules-manager.service';
 import { ApiService } from '../services/api.service';
 import { ErrorHandler, CliError } from '../utils';
 import { getConfig } from '../config';
+import { ApiResponse, ModuleInfo } from '../types';
+import { PATHS } from '../constants';
 
 /**
  * 添加模块到 package.json 的 localModules 字段
@@ -16,10 +18,10 @@ async function addToPackageJson(
   moduleName: string,
   version?: string
 ): Promise<void> {
-  const packageJsonPath = path.join(projectDir, 'package.json');
+  const packageJsonPath = path.join(projectDir, PATHS.PACKAGE_FILE);
 
   if (!fs.existsSync(packageJsonPath)) {
-    throw new CliError('FILE_NOT_FOUND', 'package.json 不存在', 404);
+    throw new CliError('FILE_NOT_FOUND', `${PATHS.PACKAGE_FILE} 不存在`, 404);
   }
 
   const packageJson = await fs.readJson(packageJsonPath);
@@ -28,8 +30,8 @@ async function addToPackageJson(
   let targetVersion = version;
   if (!targetVersion) {
     console.log(`获取 ${moduleName} 的最新版本...`);
-    const response = await apiService.get(`/api/modules/${moduleName}`);
-    if (!response.success) {
+    const response = await apiService.get<ApiResponse<{ module: ModuleInfo }>>(`/api/modules/${moduleName}`);
+    if (!response.success || !response.module) {
       throw new CliError('MODULE_NOT_FOUND', `获取模块信息失败: ${moduleName}`, 404, { name: moduleName });
     }
     targetVersion = `^${response.module.latest}`;
@@ -50,6 +52,10 @@ async function addToPackageJson(
 
 /**
  * 将安装记录添加到 module.config.json
+ * @param apiService - API服务实例
+ * @param projectDir - 项目根目录路径
+ * @param moduleName - 模块名称
+ * @param version - 模块版本(可选,未指定则获取最新版本)
  */
 async function addToModuleConfig(
   apiService: ApiService,
@@ -57,11 +63,11 @@ async function addToModuleConfig(
   moduleName: string,
   version?: string
 ): Promise<void> {
-  const moduleConfigPath = path.join(projectDir, 'module.config.json');
+  const moduleConfigPath = path.join(projectDir, PATHS.MODULE_CONFIG_FILE);
 
   if (!fs.existsSync(moduleConfigPath)) {
     // 如果没有 module.config.json，创建一个
-    const packageJsonPath = path.join(projectDir, 'package.json');
+    const packageJsonPath = path.join(projectDir, PATHS.PACKAGE_FILE);
     const packageJson = fs.existsSync(packageJsonPath) ? await fs.readJson(packageJsonPath) : {};
 
     const moduleConfig = {
@@ -88,7 +94,7 @@ async function addToModuleConfig(
   // 如果没有指定版本，获取最新版本
   let targetVersion = version;
   if (!targetVersion) {
-    const response = await apiService.get(`/api/modules/${moduleName}`);
+    const response = await apiService.get<ApiResponse<{ module: ModuleInfo }>>(`/api/modules/${moduleName}`);
     if (response.success && response.module) {
       targetVersion = response.module.latest;
     }
@@ -104,6 +110,10 @@ async function addToModuleConfig(
 
 /**
  * 注册安装相关命令
+ * @param program - Commander程序实例
+ * @param moduleDownloadService - 模块下载服务实例
+ * @param modulesManager - 模块管理器实例
+ * @param api - API服务实例
  */
 export function registerInstallCommands(
   program: Command,
@@ -130,10 +140,7 @@ export function registerInstallCommands(
 
         // 检查是否同时指定了 --link 和 --save
         if (options.link && options.save) {
-          console.error('❌ 错误: 不能同时使用 --link 和 --save');
-          console.error('   --link: 添加到 modules.json (外部依赖)');
-          console.error('   --save: 添加到 package.json (本地集成)');
-          process.exit(1);
+          throw new CliError('INVALID_INPUT', '不能同时使用 --link 和 --save\n   --link: 添加到 modules.json (外部依赖)\n   --save: 添加到 package.json (本地集成)');
         }
 
         // 确定安装模式和目录
@@ -142,16 +149,16 @@ export function registerInstallCommands(
 
         if (options.link) {
           installMode = 'link';
-          installDir = 'src/external_modules';
+          installDir = PATHS.EXTERNAL_MODULES_DIR;
           console.log('✨ 模式: 外部依赖（添加到 modules.json）\n');
         } else if (options.save) {
           installMode = 'save';
-          installDir = 'src/local_modules';
+          installDir = PATHS.LOCAL_MODULES_DIR;
           console.log('✨ 模式: 本地集成（添加到 package.json）\n');
         } else {
           // 默认临时安装
           installMode = 'temp';
-          installDir = 'src/external_modules';
+          installDir = PATHS.EXTERNAL_MODULES_DIR;
           console.log('✨ 模式: 临时安装（不加入依赖管理）\n');
           console.log('💡 提示: 使用 --link 添加到 modules.json，或 --save 添加到 package.json\n');
         }
@@ -193,7 +200,7 @@ export function registerInstallCommands(
             initialCwd,
             installDir,
             moduleName,
-            'module.config.json'
+            PATHS.MODULE_CONFIG_FILE
           );
 
           if (fs.existsSync(moduleConfigPath)) {
@@ -202,7 +209,7 @@ export function registerInstallCommands(
             await fs.writeJson(moduleConfigPath, config, { spaces: 2 });
             console.log(`✓ 模块 ${moduleName} 端口已配置为 ${options.port}`);
           } else {
-            console.log(`  提示: 模块 ${moduleName} 没有 module.config.json，无法配置端口`);
+            console.log(`  提示: 模块 ${moduleName} 没有 ${PATHS.MODULE_CONFIG_FILE}，无法配置端口`);
           }
         }
       } catch (error) {
@@ -219,8 +226,6 @@ export function registerInstallCommands(
     .option('--save', '添加到 package.json 的 localModules')
     .action(async (modules, options) => {
       try {
-        const initialCwd = process.env.INIT_CWD || process.cwd();
-
         // 解析模块列表
         const moduleList = modules.map((module: string) => {
           const [name, version] = module.split('@');
@@ -232,9 +237,9 @@ export function registerInstallCommands(
         // 确定安装目录
         let installDir: string;
         if (options.save) {
-          installDir = 'src/local_modules';
+          installDir = PATHS.LOCAL_MODULES_DIR;
         } else {
-          installDir = 'src/external_modules';
+          installDir = PATHS.EXTERNAL_MODULES_DIR;
         }
 
         // 批量安装

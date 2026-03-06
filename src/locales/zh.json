@@ -1,0 +1,94 @@
+{
+  "common": {
+    "success": "成功",
+    "error": "错误",
+    "warning": "警告",
+    "info": "信息",
+    "loading": "加载中...",
+    "please_wait": "请稍候",
+    "confirm": "确认",
+    "cancel": "取消",
+    "yes": "是",
+    "no": "否"
+  },
+  "auth": {
+    "login": "登录",
+    "logout": "退出登录",
+    "login_success": "登录成功",
+    "login_failed": "登录失败",
+    "logout_success": "退出登录成功",
+    "please_login": "请先登录",
+    "token_expired": "Token 已过期",
+    "browser_opening": "正在打开浏览器...",
+    "waiting_for_auth": "等待授权完成..."
+  },
+  "module": {
+    "upload": "上传",
+    "download": "下载",
+    "install": "安装",
+    "uninstall": "卸载",
+    "list": "列表",
+    "search": "搜索",
+    "info": "信息",
+    "upload_success": "上传成功",
+    "upload_failed": "上传失败",
+    "download_success": "下载成功",
+    "download_failed": "下载失败",
+    "install_success": "安装成功",
+    "install_failed": "安装失败",
+    "module_found": "找到模块: {{name}}",
+    "module_not_found": "未找到模块: {{name}}",
+    "uploading": "正在上传: {{name}}",
+    "downloading": "正在下载: {{name}}",
+    "installing": "正在安装: {{name}}"
+  },
+  "config": {
+    "config": "配置",
+    "config_saved": "配置已保存",
+    "config_loaded": "配置已加载",
+    "config_not_found": "配置文件不存在",
+    "config_invalid": "配置文件无效",
+    "profile_saved": "配置档案已保存",
+    "profile_loaded": "配置档案已加载",
+    "profile_not_found": "配置档案不存在",
+    "switched_profile": "已切换到配置档案: {{name}}"
+  },
+  "error": {
+    "network_error": "网络错误",
+    "timeout": "请求超时",
+    "permission_denied": "权限不足",
+    "file_not_found": "文件不存在",
+    "invalid_input": "输入无效",
+    "unknown_error": "未知错误",
+    "E001": "认证失败",
+    "E002": "网络错误",
+    "E003": "配置错误",
+    "E004": "模块错误",
+    "E005": "文件错误",
+    "E006": "验证错误",
+    "E999": "未知错误"
+  },
+  "cache": {
+    "cache": "缓存",
+    "cache_hit": "缓存命中",
+    "cache_miss": "缓存未命中",
+    "cache_expired": "缓存已过期",
+    "cache_cleared": "缓存已清除",
+    "cleaning_cache": "正在清理缓存..."
+  },
+  "version": {
+    "version": "版本",
+    "latest_version": "最新版本",
+    "current_version": "当前版本",
+    "update_available": "有可用更新",
+    "up_to_date": "已是最新版本",
+    "checking_update": "正在检查更新...",
+    "version_locked": "版本已锁定",
+    "version_unlocked": "版本已解锁"
+  },
+  "performance": {
+    "performance": "性能",
+    "operation_time": "操作耗时",
+    "slow_operation": "慢操作检测"
+  }
+}

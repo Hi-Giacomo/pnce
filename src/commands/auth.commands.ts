@@ -1,10 +1,13 @@
 import { Command } from 'commander';
-import { ConfigService } from '../services/config.service';
 import { AuthService } from '../services/auth.service';
 import { AuthResponse } from '../types';
+import { ErrorHandler } from '../utils/errors';
+import { getConfigManager } from '../config/manager';
 
 /**
  * 注册认证相关命令
+ * @param program - Commander程序实例
+ * @param authService - 认证服务实例
  */
 export function registerAuthCommands(program: Command, authService: AuthService): void {
   // 注册命令
@@ -17,11 +20,10 @@ export function registerAuthCommands(program: Command, authService: AuthService)
     .action(async (options) => {
       try {
         const response = await authService.register(options);
-        ConfigService.updateConfig({ authToken: response.access_token });
+        // Token已由AuthService自动保存到配置
         console.log(`✓ 注册成功! 用户: ${response.user.username || response.user.email}`);
-      } catch (error: any) {
-        console.error('注册失败:', error.response?.data?.message || error.message);
-        process.exit(1);
+      } catch (error) {
+        ErrorHandler.handle(error);
       }
     });
 
@@ -43,14 +45,36 @@ export function registerAuthCommands(program: Command, authService: AuthService)
           response = await authService.webLogin();
         }
 
-        ConfigService.updateConfig({ authToken: response.access_token });
+        // Token已由AuthService自动保存到配置
         console.log(`✓ 登录成功! 用户: ${response.user.username || response.user.email}`);
         console.log('');
-        console.log('💡 提示: 您现在可以上传模块了，使用命令: npm run cli upload');
-        process.exit(0);
-      } catch (error: any) {
-        console.error('登录失败:', error.response?.data?.message || error.message);
-        process.exit(1);
+        console.log('💡 提示: 您现在可以上传模块了，使用命令: pnce upload');
+      } catch (error) {
+        ErrorHandler.handle(error);
+      }
+    });
+
+  // 查看用户信息命令
+  program
+    .command('me')
+    .description('查看当前用户信息')
+    .action(async () => {
+      try {
+        const configManager = getConfigManager();
+
+        if (!configManager.getToken()) {
+          console.log('未登录');
+          console.log('请使用以下命令登录:');
+          console.log('  pnce login');
+          return;
+        }
+
+        const user = await authService.me();
+        console.log('当前用户信息:');
+        console.log(`  用户名: ${user.username || 'N/A'}`);
+        console.log(`  邮箱: ${user.email || 'N/A'}`);
+      } catch (error) {
+        ErrorHandler.handle(error);
       }
     });
 
@@ -59,7 +83,12 @@ export function registerAuthCommands(program: Command, authService: AuthService)
     .command('logout')
     .description('登出')
     .action(() => {
-      ConfigService.updateConfig({ authToken: '' });
-      console.log('✓ 已登出');
+      try {
+        const configManager = getConfigManager();
+        configManager.clearAuth();
+        console.log('✓ 已登出');
+      } catch (error) {
+        ErrorHandler.handle(error);
+      }
     });
 }

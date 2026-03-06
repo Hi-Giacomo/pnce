@@ -34,6 +34,18 @@
 - [配置说明](#配置说明)
 - [常见问题](#常见问题)
 
+## 📚 文档
+
+更多详细文档请查看：
+- [快速开始](docs/QUICKSTART.md) - 快速上手指南
+- [API 文档](docs/API_DOCUMENTATION.md) - API 参考文档
+- [架构文档](docs/ARCHITECTURE.md) - 项目架构说明
+- [常见问题](docs/FAQ.md) - 常见问题解答
+- [故障排除](docs/TROUBLESHOOTING.md) - 问题排查指南
+- [变更日志](docs/CHANGELOG.md) - 版本变更记录
+- [贡献指南](docs/CONTRIBUTING.md) - 如何参与贡献
+- [安全策略](docs/SECURITY.md) - 安全相关政策
+
 ## 🚀 安装
 
 ### 全局安装
@@ -51,7 +63,11 @@ pnce --help
 
 ## 🎯 快速开始
 
-### 1. 登录账户
+### 1. 登录账户（仅上传模块时需要）
+
+> ⚠️ **注意**：只有在**上传模块到云端**、**删除云端模块**、**更新云端模块版本**时才需要登录。
+>
+> 安装模块、搜索模块、查看模块信息等操作**不需要登录**。
 
 ```bash
 # OAuth2 浏览器登录
@@ -62,9 +78,15 @@ pnce login -e your@email.com -p your-password
 
 # 注册新账户
 pnce register
+
+# 查看当前登录状态
+pnce me
+
+# 登出
+pnce logout
 ```
 
-### 2. 创建服务
+### 2. 创建服务（无需登录）
 
 ```bash
 # 创建一个服务
@@ -74,7 +96,7 @@ pnce init service my-app
 pnce init microservice my-service
 ```
 
-### 3. 安装模块
+### 3. 安装模块（无需登录）
 
 ```bash
 # 安装单个模块
@@ -83,14 +105,17 @@ pnce install user-module
 # 安装指定版本
 pnce install user-module@1.0.0
 
-# 批量安装（并行）
+# 批量安装（并行，无需登录）
 pnce install-batch auth-module user-module payment-module
 ```
 
-### 4. 发布模块
+### 4. 发布模块（需要登录）
 
 ```bash
-# 在模块目录中
+# 先登录
+pnce login
+
+# 在模块目录中上传
 pnce upload
 
 # 或者从指定目录上传
@@ -101,16 +126,16 @@ pnce upload -d ./modules/my-module
 
 ### 模块管理
 
-| 功能 | 命令 | 说明 |
-|------|------|------|
-| 安装模块 | `pnce install <module>` | 安装单个模块到项目 |
-| 批量安装 | `pnce install-batch <modules...>` | 并行安装多个模块（3倍速度） |
-| 上传模块 | `pnce upload` | 发布模块到注册中心 |
-| 搜索模块 | `pnce search <keyword>` | 搜索可用模块 |
-| 查看信息 | `pnce info <name>` | 查看模块详细信息 |
-| 查看列表 | `pnce list` | 列出所有可用模块 |
-| 查看热门 | `pnce trending` | 查看热门模块 |
-| 查看统计 | `pnce stats` | 查看全局统计信息 |
+| 功能 | 命令 | 说明 | 需要登录 |
+|------|------|------|----------|
+| 安装模块 | `pnce install <module>` | 安装单个模块到项目 | ❌ 否 |
+| 批量安装 | `pnce install-batch <modules...>` | 并行安装多个模块（3倍速度） | ❌ 否 |
+| 上传模块 | `pnce upload` | 发布模块到注册中心 | ✅ 是 |
+| 搜索模块 | `pnce search <keyword>` | 搜索可用模块 | ❌ 否 |
+| 查看信息 | `pnce info <name>` | 查看模块详细信息 | ❌ 否 |
+| 查看列表 | `pnce list` | 列出所有可用模块 | ❌ 否 |
+| 查看热门 | `pnce trending` | 查看热门模块 | ❌ 否 |
+| 查看统计 | `pnce stats` | 查看全局统计信息 | ❌ 否 |
 
 ### 依赖管理
 
@@ -138,9 +163,13 @@ pnce upload -d ./modules/my-module
 
 ### 认证管理
 
+> 💡 **提示**：认证仅在**上传模块到云端**、**删除云端模块**、**更新云端模块版本**时需要。
+>
+> **不需要登录的操作**：安装模块、搜索模块、查看信息、创建服务等。
+
 | 功能 | 命令 | 说明 |
 |------|------|------|
-| 登录 | `pnce login` | 登录账户 |
+| 登录 | `pnce login` | 登录账户（上传模块前需要） |
 | 注册 | `pnce register` | 注册新账户 |
 | 查看用户 | `pnce me` | 查看当前用户信息 |
 | 登出 | `pnce logout` | 登出账户 |
@@ -188,7 +217,9 @@ pnce install-batch auth-module user-module --concurrency 5
 pnce install-batch auth-module user-module --save
 ```
 
-### 模块发布
+### 模块发布（需要登录）
+
+> ⚠️ **上传模块到云端需要登录**
 
 #### 准备模块
 
@@ -429,8 +460,8 @@ export PNCE_VERBOSE="true"
 
 ```json
 {
-  "apiServer": "http://62.234.36.178:3000",
-  "oauthEndpoint": "http://62.234.36.178:5173/authorize",
+  "apiServer": "http://localhost:3000",
+  "oauthEndpoint": "http://localhost:5173/authorize",
   "oauthPort": 3001,
   "outputDir": "/home/user/projects",
   "useProxy": false,
@@ -656,6 +687,36 @@ steps:
 
 欢迎贡献代码、报告问题或提出建议！
 
+## ⚠️ 重要说明
+
+### 登录要求
+
+**需要登录的操作**（仅限云端操作）：
+- ✅ 上传模块到云端（`pnce upload`）
+- ✅ 删除云端模块
+- ✅ 更新云端模块版本
+
+**不需要登录的操作**（本地操作和公开访问）：
+- ❌ 安装模块（`pnce install`）
+- ❌ 批量安装（`pnce install-batch`）
+- ❌ 搜索模块（`pnce search`）
+- ❌ 查看模块信息（`pnce info`）
+- ❌ 查看模块列表（`pnce list`）
+- ❌ 创建服务（`pnce init`）
+- ❌ 依赖管理（`pnce modules`）
+- ❌ 端口管理（`pnce port`）
+
+**示例**：
+
+```bash
+# ❌ 安装模块 - 无需登录，直接使用
+pnce install user-module
+
+# ✅ 上传模块 - 需要登录
+pnce login           # 先登录
+pnce upload          # 再上传
+```
+
 ## 📄 许可证
 
 [MIT](LICENSE)
@@ -663,8 +724,8 @@ steps:
 ## 🔗 相关链接
 
 - [npm 包](https://www.npmjs.com/package/pnce)
-- [GitHub 仓库](https://github.com/Hi-Giacomo/pnce)
-- [问题反馈](https://github.com/Hi-Giacomo/pnce/issues)
+- [GitHub 仓库](https://github.com/hi-giacomo/pnce)
+- [问题反馈](https://github.com/hi-giacomo/pnce/issues)
 
 ---
 

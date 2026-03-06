@@ -8,6 +8,8 @@ import { ProgressBar, MultiProgressManager } from '../utils/progress';
 import axios from 'axios';
 import retry from 'axios-retry';
 import winston from 'winston';
+import { DOWNLOAD, HTTP, PATHS } from '../constants';
+import { ApiResponse, ModuleInfo } from '../types';
 
 /**
  * 模块下载服务
@@ -38,9 +40,9 @@ export class ModuleDownloadService {
 
   /**
    * 下载并安装单个模块
-   * @param moduleName 模块名称
-   * @param version 版本号（可选，默认最新）
-   * @param installDir 安装目录
+   * @param moduleName - 模块名称
+   * @param version - 版本号(可选,默认最新)
+   * @param installDir - 安装目录
    */
   async install(
     moduleName: string,
@@ -99,7 +101,7 @@ export class ModuleDownloadService {
   async installBatch(
     modules: Array<{ name: string; version?: string }>,
     installDir: string = 'node_modules',
-    concurrency: number = 3
+    concurrency: number = DOWNLOAD.DEFAULT_CONCURRENCY
   ): Promise<void> {
     const initialCwd = process.env.INIT_CWD || process.cwd();
     const progressManager = new MultiProgressManager(this.logger);
@@ -126,7 +128,7 @@ export class ModuleDownloadService {
    * 获取模块的最新版本
    */
   private async getLatestVersion(moduleName: string): Promise<string> {
-    const response = await this.api.get(`/api/modules/${moduleName}`);
+    const response = await this.api.get<ApiResponse<{ module: ModuleInfo }>>(`/api/modules/${moduleName}`);
 
     if (!response.success || !response.module?.latest) {
       throw new CliError(
@@ -188,6 +190,76 @@ export class ModuleDownloadService {
       installedVersion,
       installedName,
     };
+  }
+
+  /**
+   * 下载并解压模块
+   */
+  private async downloadAndExtract(
+    moduleName: string,
+    version: string,
+    installPath: string,
+    initialCwd: string,
+    progressManager?: MultiProgressManager
+  ): Promise<void> {
+    const downloadUrl = `${this.api['axiosInstance'].defaults.baseURL}/api/modules/${moduleName}/${version}/download`;
+
+    // 配置重试
+    const axiosInstance = axios.create();
+    retry(axiosInstance, {
+      retries: HTTP.RETRY_COUNT,
+      retryDelay: retryCount => retryCount * HTTP.RETRY_DELAY_MS,
+    });
+
+    const response = await axiosInstance({
+      method: 'GET',
+      url: downloadUrl,
+      responseType: 'stream',
+      headers: this.api['getAuthHeaders']?.() || {},
+    });
+
+    const contentLength = parseInt(response.headers['content-length'], 10);
+    const tempDir = DOWNLOAD.TEMP_DIR_PATH;
+    await fs.ensureDir(tempDir);
+
+    const tempTgzPath = path.join(tempDir, `${moduleName}-${version}${DOWNLOAD.TEMP_FILE_EXT}`);
+    const writer = fs.createWriteStream(tempTgzPath);
+
+    // 创建进度条
+    let progressBar: ProgressBar | null = null;
+    if (progressManager && contentLength) {
+      progressBar = progressManager.create(moduleName, {
+        totalSize: contentLength,
+        logger: this.logger,
+      });
+    }
+
+    let downloadedBytes = 0;
+    response.data.on('data', (chunk: Buffer) => {
+      downloadedBytes += chunk.length;
+      if (progressBar) {
+        progressBar.update(chunk.length);
+      }
+    });
+
+    await new Promise((resolve, reject) => {
+      writer.on('finish', resolve);
+      writer.on('error', reject);
+      response.data.pipe(writer);
+    });
+
+    if (progressBar) {
+      progressBar.stop();
+      if (progressManager) {
+        progressManager.stop(moduleName);
+      }
+    }
+
+    // 解压到目标目录
+    await this.extractPackage(tempTgzPath, installPath);
+
+    // 清理临时文件
+    await fs.remove(tempTgzPath);
   }
 
   /**
@@ -276,76 +348,6 @@ export class ModuleDownloadService {
       });
       throw error;
     }
-  }
-
-  /**
-   * 下载并解压模块
-   */
-  private async downloadAndExtract(
-    moduleName: string,
-    version: string,
-    installPath: string,
-    initialCwd: string,
-    progressManager?: MultiProgressManager
-  ): Promise<void> {
-    const downloadUrl = `${this.api['axiosInstance'].defaults.baseURL}/api/modules/${moduleName}/${version}/download`;
-
-    // 配置重试
-    const axiosInstance = axios.create();
-    retry(axiosInstance, {
-      retries: 3,
-      retryDelay: retryCount => retryCount * 1000,
-    });
-
-    const response = await axiosInstance({
-      method: 'GET',
-      url: downloadUrl,
-      responseType: 'stream',
-      headers: this.api['getAuthHeaders']?.() || {},
-    });
-
-    const contentLength = parseInt(response.headers['content-length'], 10);
-    const tempDir = path.join(require('os').homedir(), '.module-temp');
-    await fs.ensureDir(tempDir);
-
-    const tempTgzPath = path.join(tempDir, `${moduleName}-${version}.tgz`);
-    const writer = fs.createWriteStream(tempTgzPath);
-
-    // 创建进度条
-    let progressBar: ProgressBar | null = null;
-    if (progressManager && contentLength) {
-      progressBar = progressManager.create(moduleName, {
-        totalSize: contentLength,
-        logger: this.logger,
-      });
-    }
-
-    let downloadedBytes = 0;
-    response.data.on('data', (chunk: Buffer) => {
-      downloadedBytes += chunk.length;
-      if (progressBar) {
-        progressBar.update(chunk.length);
-      }
-    });
-
-    await new Promise((resolve, reject) => {
-      writer.on('finish', resolve);
-      writer.on('error', reject);
-      response.data.pipe(writer);
-    });
-
-    if (progressBar) {
-      progressBar.stop();
-      if (progressManager) {
-        progressManager.stop(moduleName);
-      }
-    }
-
-    // 解压到目标目录
-    await this.extractPackage(tempTgzPath, installPath);
-
-    // 清理临时文件
-    await fs.remove(tempTgzPath);
   }
 
   /**

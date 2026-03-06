@@ -1,7 +1,7 @@
 import * as http from 'http';
 import * as crypto from 'crypto';
 import * as url from 'url';
-import { ConfigService } from './config.service';
+import { getConfigManager } from '../config/manager';
 import { AuthResponse } from '../types';
 import { OAUTH2_CONFIG } from '../config/default.config';
 
@@ -23,8 +23,8 @@ export class OAuth2Service {
   }
 
   static async webLogin(): Promise<AuthResponse> {
-    const config = ConfigService.getConfig();
-    const registryUrl = config.registry;
+    const config = getConfigManager().getConfig();
+    const registryUrl = config.apiServer;
 
     // 生成 PKCE 参数
     const codeVerifier = this.generateCodeVerifier();
@@ -32,9 +32,8 @@ export class OAuth2Service {
     const state = this.generateState();
     const redirectUri = `http://localhost:${this.REDIRECT_PORT}/callback`;
 
-    // 构建授权 URL - 使用 website 的授权页面
-    const websiteUrl = config.website;
-    const authUrl = new URL(`${websiteUrl}/authorize`);
+    // 构建授权 URL - 使用 oauthEndpoint 的授权页面
+    const authUrl = new URL(`${config.oauthEndpoint}`);
     authUrl.searchParams.append('response_type', 'code');
     authUrl.searchParams.append('client_id', this.CLIENT_ID);
     authUrl.searchParams.append('redirect_uri', redirectUri);

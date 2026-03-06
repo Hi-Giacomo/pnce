@@ -1,9 +1,10 @@
 import { ApiService } from './api.service';
 import { OAuth2Service } from './oauth2.service';
-import { LoginOptions, RegisterOptions, AuthResponse } from '../types';
+import { LoginOptions, RegisterOptions, AuthResponse, ApiResponse, UserInfo } from '../types';
 import { CliError, ErrorCode } from '../utils';
 import { getConfigManager } from '../config/manager';
 import * as readline from 'readline';
+import { TOKEN, VALIDATION } from '../constants';
 
 /**
  * 认证服务
@@ -13,7 +14,8 @@ export class AuthService {
   constructor(private api: ApiService) {}
 
   /**
-   * Web登录（OAuth2）
+   * Web登录(OAuth2)
+   * @returns 认证响应,包含access_token和用户信息
    */
   async webLogin(): Promise<AuthResponse> {
     const authResponse = await OAuth2Service.webLogin();
@@ -23,7 +25,7 @@ export class AuthService {
     configManager.setAuth(
       authResponse.access_token,
       undefined,
-      3600 // 假设1小时过期
+      TOKEN.DEFAULT_EXPIRE_SECONDS
     );
 
     return authResponse;
@@ -31,6 +33,8 @@ export class AuthService {
 
   /**
    * 用户注册
+   * @param options - 注册选项,包含用户名、邮箱、密码
+   * @returns 认证响应,包含access_token和用户信息
    */
   async register(options: RegisterOptions): Promise<AuthResponse> {
     const username = options.username || await this.prompt('请输入用户名: ');
@@ -57,18 +61,18 @@ export class AuthService {
     });
 
     // 响应直接包含 access_token 和 user
-    if (response.access_token) {
+    if (response.access_token && response.user) {
       // 保存Token到配置
       const configManager = getConfigManager();
       configManager.setAuth(
         response.access_token,
-        undefined,
-        3600 // 假设1小时过期
+        response.refresh_token,
+        TOKEN.DEFAULT_EXPIRE_SECONDS
       );
 
       return {
         access_token: response.access_token,
-        user: response.user || { email }
+        user: response.user
       };
     }
 
@@ -93,18 +97,18 @@ export class AuthService {
     });
 
     // 响应直接包含 access_token 和 user
-    if (response.access_token) {
+    if (response.access_token && response.user) {
       // 保存Token到配置
       const configManager = getConfigManager();
       configManager.setAuth(
         response.access_token,
-        undefined,
-        3600 // 假设1小时过期
+        response.refresh_token,
+        TOKEN.DEFAULT_EXPIRE_SECONDS
       );
 
       return {
         access_token: response.access_token,
-        user: response.user || { email }
+        user: response.user
       };
     }
 
@@ -131,7 +135,7 @@ export class AuthService {
       configManager.setAuth(
         response.access_token,
         response.refresh_token,
-        3600
+        TOKEN.DEFAULT_EXPIRE_SECONDS
       );
 
       return response.access_token;
@@ -143,8 +147,8 @@ export class AuthService {
   /**
    * 获取当前用户信息
    */
-  async me(): Promise<any> {
-    const response = await this.api.get('/api/auth/me');
+  async me(): Promise<UserInfo> {
+    const response = await this.api.get<ApiResponse<{ user: UserInfo }>>('/api/auth/me');
 
     if (!response.success || !response.user) {
       throw new CliError(ErrorCode.AUTH_UNAUTHORIZED, '获取用户信息失败');
@@ -166,8 +170,7 @@ export class AuthService {
    * 验证邮箱格式
    */
   private isValidEmail(email: string): boolean {
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return emailRegex.test(email);
+    return VALIDATION.EMAIL_REGEX.test(email);
   }
 
   /**

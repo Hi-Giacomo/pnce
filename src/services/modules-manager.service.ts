@@ -3,6 +3,7 @@ import * as path from 'path';
 import { ApiService } from './api.service';
 import { ModuleService } from './module.service';
 import { ModulesConfig, ModulesLock, DEFAULT_MODULES_CONFIG } from '../types/modules-config';
+import { ApiResponse, ModuleInfo } from '../types';
 
 /**
  * 模块依赖管理服务
@@ -38,6 +39,8 @@ export class ModulesManagerService {
 
   /**
    * 读取 modules.json 配置
+   * @param projectDir - 项目根目录路径
+   * @returns 模块配置对象
    */
   readConfig(projectDir: string): ModulesConfig {
     const configPath = path.join(projectDir, this.configFileName);
@@ -93,8 +96,8 @@ export class ModulesManagerService {
     let version = versionRange;
     if (!version) {
       console.log(`获取 ${moduleName} 的最新版本...`);
-      const response = await this.api.get(`/api/modules/${moduleName}`);
-      if (!response.success) {
+      const response = await this.api.get<ApiResponse<{ module: ModuleInfo }>>(`/api/modules/${moduleName}`);
+      if (!response.success || !response.module) {
         throw new Error('获取模块信息失败');
       }
       version = `^${response.module.latest}`;
@@ -191,8 +194,8 @@ export class ModulesManagerService {
             resolved: `${this.api['axiosInstance'].defaults.baseURL}/api/modules/${moduleName}/${targetVersion}/download`,
           };
         }
-      } catch (error: any) {
-        console.error(`❌ 安装 ${moduleName} 失败:`, error.message);
+      } catch (error: unknown) {
+        console.error(`❌ 安装 ${moduleName} 失败:`, error instanceof Error ? error.message : String(error));
       }
     }
 
@@ -222,8 +225,8 @@ export class ModulesManagerService {
     }
 
     // 获取模块信息
-    const response = await this.api.get(`/api/modules/${moduleName}`);
-    if (!response.success) {
+    const response = await this.api.get<ApiResponse<{ module: ModuleInfo }>>(`/api/modules/${moduleName}`);
+    if (!response.success || !response.module) {
       throw new Error('获取模块信息失败');
     }
 
@@ -237,7 +240,7 @@ export class ModulesManagerService {
 
     // 移除 ^ 或 ~ 前缀
     const cleanVersion = versionRange.replace(/^[\^~]/, '');
-    
+
     // 如果是精确版本
     if (availableVersions.includes(cleanVersion)) {
       return cleanVersion;
