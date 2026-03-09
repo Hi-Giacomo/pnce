@@ -27,7 +27,7 @@ export class ModuleUploadService {
       const absoluteModuleDir = path.resolve(initialCwd, moduleDir);
 
       // 验证目录存在
-      if (!await fs.pathExists(absoluteModuleDir)) {
+      if (!(await fs.pathExists(absoluteModuleDir))) {
         throw CliError.fileNotFound(absoluteModuleDir);
       }
 
@@ -43,7 +43,10 @@ export class ModuleUploadService {
       // 创建临时文件
       const tempDir = DOWNLOAD.TEMP_DIR_PATH;
       await fs.ensureDir(tempDir);
-      const tgzPath = path.join(tempDir, `${packageJson.name}-${packageJson.version}${DOWNLOAD.TEMP_FILE_EXT}`);
+      const tgzPath = path.join(
+        tempDir,
+        `${packageJson.name}-${packageJson.version}${DOWNLOAD.TEMP_FILE_EXT}`
+      );
 
       // 打包模块
       await this.createPackage(absoluteModuleDir, tgzPath);
@@ -65,17 +68,14 @@ export class ModuleUploadService {
   private async readPackageJson(moduleDir: string): Promise<PackageJson> {
     const packageJsonPath = path.join(moduleDir, PATHS.PACKAGE_FILE);
 
-    if (!await fs.pathExists(packageJsonPath)) {
+    if (!(await fs.pathExists(packageJsonPath))) {
       throw CliError.fileNotFound(packageJsonPath);
     }
 
     const packageJson: PackageJson = await fs.readJson(packageJsonPath);
 
     if (!packageJson.name || !packageJson.version) {
-      throw new CliError(
-        ErrorCode.INVALID_INPUT,
-        'package.json 中缺少必需的 name 或 version 字段'
-      );
+      throw new CliError(ErrorCode.INVALID_INPUT, 'package.json 中缺少必需的 name 或 version 字段');
     }
 
     return packageJson;
@@ -91,7 +91,7 @@ export class ModuleUploadService {
   }> {
     const moduleConfigPath = path.join(moduleDir, 'module.config.json');
 
-    if (!await fs.pathExists(moduleConfigPath)) {
+    if (!(await fs.pathExists(moduleConfigPath))) {
       return {};
     }
 
@@ -138,7 +138,7 @@ export class ModuleUploadService {
         // 排除不需要的文件和目录
         filter: (filePath: string) => {
           const relativePath = path.relative(sourceDir, filePath);
-          return !EXCLUDE_PATTERNS.some(pattern => relativePath.startsWith(pattern));
+          return !EXCLUDE_PATTERNS.some((pattern) => relativePath.startsWith(pattern));
         },
       },
       ['.'] // 打包整个目录
@@ -153,7 +153,7 @@ export class ModuleUploadService {
   private async ensureNpmignore(moduleDir: string): Promise<void> {
     const npmignorePath = path.join(moduleDir, PATHS.NPMIGNORE_FILE);
 
-    if (!await fs.pathExists(npmignorePath)) {
+    if (!(await fs.pathExists(npmignorePath))) {
       await fs.writeFile(npmignorePath, DEFAULT_NPMIGNORE.trim());
     }
   }
@@ -184,13 +184,14 @@ export class ModuleUploadService {
 
     console.log('上传中...');
 
-    const response = await this.api.post<ApiResponse<{ module: ModuleInfo }>>('/api/modules/upload', formData, true);
+    const response = await this.api.post<ApiResponse<{ module: ModuleInfo }>>(
+      '/api/modules/upload',
+      formData,
+      true
+    );
 
     if (!response.success) {
-      throw new CliError(
-        ErrorCode.UPLOAD_FAILED,
-        response.message || '上传失败'
-      );
+      throw new CliError(ErrorCode.UPLOAD_FAILED, response.message || '上传失败');
     }
 
     console.log(`✓ 模块 ${packageJson.name}@${packageJson.version} 上传成功!`);

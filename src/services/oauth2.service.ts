@@ -24,7 +24,7 @@ export class OAuth2Service {
 
   static async webLogin(): Promise<AuthResponse> {
     const config = getConfigManager().getConfig();
-    const registryUrl = config.apiServer;
+    // const registryUrl = config.apiServer;
 
     // 生成 PKCE 参数
     const codeVerifier = this.generateCodeVerifier();
@@ -98,8 +98,7 @@ export class OAuth2Service {
         } catch (error) {
           this.sendErrorResponse(res, 400, 'Invalid authorization code format');
           reject(new Error('授权码格式错误'));
-        }
-        finally {
+        } finally {
           server.close();
         }
       });
@@ -121,7 +120,7 @@ export class OAuth2Service {
     registryUrl: string,
     code: string,
     codeVerifier: string,
-    redirectUri: string,
+    redirectUri: string
   ): Promise<AuthResponse> {
     const axios = (await import('axios')).default;
 
@@ -156,7 +155,7 @@ export class OAuth2Service {
         break;
     }
 
-    return new Promise((resolve, reject) => {
+    return new Promise<void>((resolve) => {
       exec(command, (error) => {
         if (error) {
           console.warn('无法自动打开浏览器，请手动访问上述 URL');
@@ -222,7 +221,11 @@ export class OAuth2Service {
     `);
   }
 
-  private static sendErrorResponse(res: http.ServerResponse, statusCode: number, message: string): void {
+  private static sendErrorResponse(
+    res: http.ServerResponse,
+    statusCode: number,
+    message: string
+  ): void {
     res.writeHead(statusCode, { 'Content-Type': 'text/html; charset=utf-8' });
     res.end(`
       <!DOCTYPE html>

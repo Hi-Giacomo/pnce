@@ -1,47 +1,47 @@
-# PNCE CLI 架构设计文档
+# PNCE CLI Architecture Design Document
 
-本文档描述了 PNCE CLI 的整体架构、设计原则和核心组件。
+This document describes the overall architecture, design principles, and core components of PNCE CLI.
 
-## 目录
+## Table of Contents
 
-1. [概述](#概述)
-2. [设计原则](#设计原则)
-3. [项目结构](#项目结构)
-4. [核心模块](#核心模块)
-5. [数据流](#数据流)
-6. [配置管理](#配置管理)
-7. [安全机制](#安全机制)
-8. [扩展机制](#扩展机制)
-
----
-
-## 概述
-
-PNCE CLI 是一个基于 TypeScript 的模块化命令行工具，用于管理和分发代码模块。它提供了一套完整的模块生命周期管理功能，包括上传、下载、安装、搜索等。
-
-### 主要特性
-
-- 🚦 模块化架构，易于扩展
-- 🔐 OAuth2 认证机制
-- 📦 模块版本管理
-- 💾 离线缓存支持
-- 🔧 可配置性强
-- 📝 完整的日志系统
+1. [Overview](#overview)
+2. [Design Principles](#design-principles)
+3. [Project Structure](#project-structure)
+4. [Core Modules](#core-modules)
+5. [Data Flow](#data-flow)
+6. [Configuration Management](#configuration-management)
+7. [Security Mechanisms](#security-mechanisms)
+8. [Extension Mechanisms](#extension-mechanisms)
 
 ---
 
-## 设计原则
+## Overview
 
-### 1. 关注点分离
+PNCE CLI is a TypeScript-based modular command line tool for managing and distributing code modules. It provides a complete set of module lifecycle management features, including upload, download, installation, search, etc.
 
-- **Commands**: 处理用户交互和命令行参数
-- **Services**: 实现业务逻辑
-- **Utils**: 提供通用工具函数
-- **Config**: 管理配置
+### Key Features
 
-### 2. 依赖注入
+- 🚦 Modular architecture, easy to extend
+- 🔐 OAuth2 authentication mechanism
+- 📦 Module version management
+- 💾 Offline cache support
+- 🔧 Highly configurable
+- 📝 Complete logging system
 
-服务通过构造函数接收依赖，便于测试和替换。
+---
+
+## Design Principles
+
+### 1. Separation of Concerns
+
+- **Commands**: Handle user interaction and command line arguments
+- **Services**: Implement business logic
+- **Utils**: Provide common utility functions
+- **Config**: Manage configuration
+
+### 2. Dependency Injection
+
+Services receive dependencies through constructors, making them easy to test and replace.
 
 ```typescript
 class ApiService {
@@ -49,64 +49,64 @@ class ApiService {
 }
 ```
 
-### 3. 单一职责
+### 3. Single Responsibility
 
-每个类/模块只负责一个功能领域。
+Each class/module is responsible for only one functional area.
 
-### 4. 错误处理
+### 4. Error Handling
 
-统一的错误处理机制，友好的用户提示。
+Unified error handling mechanism with friendly user prompts.
 
-### 5. 可扩展性
+### 5. Extensibility
 
-通过插件和钩子机制支持功能扩展。
+Support feature extensions through plugins and hooks.
 
 ---
 
-## 项目结构
+## Project Structure
 
 ```
 pnce-cli/
 ├── src/
-│   ├── commands/           # 命令定义
+│   ├── commands/           # Command definitions
 │   │   ├── auth.commands.ts
 │   │   ├── module.commands.ts
 │   │   ├── install.commands.ts
 │   │   ├── init.commands.ts
 │   │   └── index.ts
-│   ├── services/           # 业务服务
+│   ├── services/           # Business services
 │   │   ├── api.service.ts
 │   │   ├── auth.service.ts
 │   │   ├── module.service.ts
 │   │   ├── module-upload.service.ts
 │   │   └── module-download.service.ts
-│   ├── config/             # 配置管理
+│   ├── config/             # Configuration management
 │   │   ├── manager.ts
 │   │   └── default.config.ts
-│   ├── utils/              # 工具函数
+│   ├── utils/              # Utility functions
 │   │   ├── logger.ts
 │   │   ├── errors.ts
 │   │   ├── performance.ts
 │   │   ├── version-lock.ts
 │   │   ├── version-check.ts
 │   │   └── offline-cache.ts
-│   ├── templates/          # 模板文件
-│   └── index.ts            # 入口文件
-├── tests/                  # 测试文件
-├── scripts/                # 构建脚本
-├── dist/                   # 编译输出
-└── docs/                   # 文档
+│   ├── templates/          # Template files
+│   └── index.ts            # Entry file
+├── tests/                  # Test files
+├── scripts/                # Build scripts
+├── dist/                   # Build output
+└── docs/                   # Documentation
 ```
 
 ---
 
-## 核心模块
+## Core Modules
 
-### 1. Commands 模块
+### 1. Commands Module
 
-**职责**: 处理命令行输入，参数解析，调用相应服务。
+**Responsibility**: Handle command line input, parse arguments, call corresponding services.
 
-**示例**:
+**Example**:
 
 ```typescript
 export function registerModuleCommands(
@@ -116,24 +116,24 @@ export function registerModuleCommands(
 ): void {
   program
     .command('upload')
-    .option('-d, --directory <dir>', '模块目录')
+    .option('-d, --directory <dir>', 'Module directory')
     .action(async (options) => {
       await uploadService.upload(options.directory);
     });
 }
 ```
 
-### 2. Services 模块
+### 2. Services Module
 
 #### ApiService
 
-**职责**: 处理所有 HTTP 请求，封装 axios 实例。
+**Responsibility**: Handle all HTTP requests, wrap axios instance.
 
-**特性**:
-- 统一的错误处理
-- 请求重试机制
-- 超时控制
-- 代理支持
+**Features**:
+- Unified error handling
+- Request retry mechanism
+- Timeout control
+- Proxy support
 
 ```typescript
 class ApiService {
@@ -143,7 +143,7 @@ class ApiService {
       timeout: 30000,
     });
 
-    // 配置重试
+    // Configure retry
     axiosRetry(this.axiosInstance, { retries: 3 });
   }
 }
@@ -151,241 +151,241 @@ class ApiService {
 
 #### AuthService
 
-**职责**: 处理用户认证，Token 管理。
+**Responsibility**: Handle user authentication, token management.
 
-**特性**:
-- OAuth2 流程
-- Token 刷新
-- 登录状态检查
+**Features**:
+- OAuth2 flow
+- Token refresh
+- Login status check
 
 #### ModuleService
 
-**职责**: 模块信息查询，模块列表管理。
+**Responsibility**: Module information query, module list management.
 
 #### ModuleUploadService
 
-**职责**: 模块上传，打包，压缩。
+**Responsibility**: Module upload, packaging, compression.
 
 #### ModuleDownloadService
 
-**职责**: 模块下载，解压，安装。
+**Responsibility**: Module download, extraction, installation.
 
-### 3. Config 模块
+### 3. Config Module
 
 #### ConfigManager
 
-**职责**: 管理配置加载、保存、合并。
+**Responsibility**: Manage configuration loading, saving, merging.
 
-**配置优先级**:
+**Configuration Priority**:
 ```
-环境变量 > 项目配置 > 用户配置 > 默认配置
+Environment Variables > Project Config > User Config > Default Config
 ```
 
-**特性**:
-- 多层配置合并
-- 环境变量支持
-- 配置档案切换
-- 配置验证
+**Features**:
+- Multi-layer configuration merging
+- Environment variable support
+- Configuration profile switching
+- Configuration validation
 
-### 4. Utils 模块
+### 4. Utils Module
 
 #### Logger
 
-**职责**: 统一日志输出。
+**Responsibility**: Unified logging output.
 
-**日志级别**:
-- DEBUG: 调试信息
-- INFO: 一般信息
-- WARN: 警告信息
-- ERROR: 错误信息
+**Log Levels**:
+- DEBUG: Debug information
+- INFO: General information
+- WARN: Warning information
+- ERROR: Error information
 
-**特性**:
-- 文件日志
-- 控制台输出
-- 日志分级
-- 日志轮转
+**Features**:
+- File logging
+- Console output
+- Log level separation
+- Log rotation
 
 #### ErrorHandler
 
-**职责**: 统一错误处理。
+**Responsibility**: Unified error handling.
 
-**特性**:
-- 错误代码
-- 友好提示
-- 错误日志
-- 堆栈追踪
+**Features**:
+- Error codes
+- Friendly prompts
+- Error logging
+- Stack traces
 
 #### PerformanceMonitor
 
-**职责**: 性能监控，指标收集。
+**Responsibility**: Performance monitoring, metrics collection.
 
-**特性**:
-- 耗时统计
-- 慢操作检测
-- 性能报告
+**Features**:
+- Duration statistics
+- Slow operation detection
+- Performance reports
 
 #### VersionLockManager
 
-**职责**: 模块版本锁定。
+**Responsibility**: Module version locking.
 
-**特性**:
-- 单个版本锁定
-- 批量版本锁定
-- 版本依赖管理
+**Features**:
+- Single version locking
+- Batch version locking
+- Version dependency management
 
 #### VersionChecker
 
-**职责**: 版本检查和更新通知。
+**Responsibility**: Version checking and update notifications.
 
-**特性**:
-- 检查最新版本
-- 版本对比
-- 变更日志
+**Features**:
+- Check latest version
+- Version comparison
+- Changelog
 
 #### OfflineCacheManager
 
-**职责**: 离线缓存管理。
+**Responsibility**: Offline cache management.
 
-**特性**:
-- 缓存存储
-- 缓存过期
-- 缓存清理
-- 缓存统计
+**Features**:
+- Cache storage
+- Cache expiration
+- Cache cleanup
+- Cache statistics
 
 ---
 
-## 数据流
+## Data Flow
 
-### 安装模块流程
+### Install Module Flow
 
 ```
-用户命令
-  → Commands 解析参数
+User command
+  → Commands parse arguments
   → ModuleDownloadService.download()
   → ApiService.getModuleInfo()
-  → 检查缓存
-  → 下载模块文件
-  → 解压到目标目录
-  → 更新版本锁定
-  → 记录性能指标
-  → 输出结果
+  → Check cache
+  → Download module files
+  → Extract to target directory
+  → Update version lock
+  → Record performance metrics
+  → Output result
 ```
 
-### 上传模块流程
+### Upload Module Flow
 
 ```
-用户命令
-  → Commands 解析参数
-  → 读取 module.config.json
+User command
+  → Commands parse arguments
+  → Read module.config.json
   → ModuleUploadService.upload()
-  → 打包模块文件
+  → Package module files
   → ApiService.uploadModule()
-  → 服务器验证
-  → 保存模块信息
-  → 记录性能指标
-  → 输出结果
+  → Server validation
+  → Save module information
+  → Record performance metrics
+  → Output result
 ```
 
-### 登录流程
+### Login Flow
 
 ```
-用户命令
+User command
   → AuthService.login()
-  → 启动本地 OAuth 服务器
-  → 等待回调
-  → 接收 authorization_code
+  → Start local OAuth server
+  → Wait for callback
+  → Receive authorization_code
   → ApiService.getToken()
-  → 保存 Token 到配置
-  → 输出成功信息
+  → Save token to configuration
+  → Output success message
 ```
 
 ---
 
-## 配置管理
+## Configuration Management
 
-### 配置结构
+### Configuration Structure
 
 ```typescript
 interface PnceConfig {
-  // API 配置
+  // API configuration
   apiServer: string;
   oauthEndpoint: string;
   oauthPort: number;
 
-  // 认证
+  // Authentication
   token?: string;
   refreshToken?: string;
   tokenExpiresAt?: number;
 
-  // 输出
+  // Output
   outputDir: string;
 
-  // 网络配置
+  // Network configuration
   useProxy: boolean;
   proxyUrl?: string;
   downloadTimeout: number;
   uploadTimeout: number;
   maxConcurrentDownloads: number;
 
-  // 缓存
+  // Cache
   enableCache: boolean;
   cacheDir: string;
   cacheExpireTime: number;
 
-  // 日志
+  // Logging
   logLevel: 'error' | 'warn' | 'info' | 'debug';
   verbose: boolean;
 }
 ```
 
-### 配置文件位置
+### Configuration File Locations
 
-- **用户配置**: `~/.pnce/config.json`
-- **项目配置**: `./.pnce/config.json`
-- **配置档案**: `~/.pnce/profiles/*.json`
+- **User config**: `~/.pnce/config.json`
+- **Project config**: `./.pnce/config.json`
+- **Configuration profiles**: `~/.pnce/profiles/*.json`
 
-### 环境变量
+### Environment Variables
 
 ```bash
-PNCE_API_SERVER         # API 服务器地址
-PNCE_OAUTH_ENDPOINT     # OAuth 授权端点
-PNCE_OAUTH_PORT         # OAuth 回调端口
-PNCE_TOKEN              # 认证 Token
-PNCE_OUTPUT_DIR         # 输出目录
-PNCE_PROXY_URL          # 代理地址
-PNCE_LOG_LEVEL          # 日志级别
-PNCE_VERBOSE            # 详细输出
-PNCE_NO_CACHE           # 禁用缓存
+PNCE_API_SERVER         # API server address
+PNCE_OAUTH_ENDPOINT     # OAuth authorization endpoint
+PNCE_OAUTH_PORT         # OAuth callback port
+PNCE_TOKEN              # Authentication token
+PNCE_OUTPUT_DIR         # Output directory
+PNCE_PROXY_URL          # Proxy address
+PNCE_LOG_LEVEL          # Log level
+PNCE_VERBOSE            # Verbose output
+PNCE_NO_CACHE           # Disable cache
 ```
 
 ---
 
-## 安全机制
+## Security Mechanisms
 
-### 1. 认证机制
+### 1. Authentication
 
-- **OAuth2**: 使用标准的 OAuth2 授权流程
-- **Token 管理**: Token 加密存储在本地配置文件
-- **Token 刷新**: 自动刷新过期的 Token
-- **Token 过期**: 5 分钟过期保护
+- **OAuth2**: Use standard OAuth2 authorization flow
+- **Token Management**: Tokens are encrypted and stored in local configuration file
+- **Token Refresh**: Automatically refresh expired tokens
+- **Token Expiration**: 5-minute expiration protection
 
-### 2. 数据安全
+### 2. Data Security
 
-- **HTTPS**: 所有通信使用 HTTPS 加密
-- **代理支持**: 支持安全代理配置
-- **敏感信息过滤**: 日志中不输出 Token 等敏感信息
+- **HTTPS**: All communication uses HTTPS encryption
+- **Proxy Support**: Support secure proxy configuration
+- **Sensitive Data Filtering**: Do not output tokens and other sensitive information in logs
 
-### 3. 输入验证
+### 3. Input Validation
 
-- **参数验证**: 所有用户输入都经过验证
-- **路径验证**: 防止目录遍历攻击
-- **命令注入**: 防止命令注入攻击
+- **Parameter Validation**: All user inputs are validated
+- **Path Validation**: Prevent directory traversal attacks
+- **Command Injection**: Prevent command injection attacks
 
 ---
 
-## 扩展机制
+## Extension Mechanisms
 
-### 1. 插件系统（计划中）
+### 1. Plugin System (Planned)
 
 ```typescript
 interface Plugin {
@@ -402,7 +402,7 @@ class PluginManager {
 }
 ```
 
-### 2. 钩子系统（计划中）
+### 2. Hooks System (Planned)
 
 ```typescript
 interface Hooks {
@@ -413,7 +413,7 @@ interface Hooks {
 }
 ```
 
-### 3. 自定义命令（计划中）
+### 3. Custom Commands (Planned)
 
 ```typescript
 program
@@ -423,32 +423,32 @@ program
 
 ---
 
-## 性能优化
+## Performance Optimization
 
-### 1. 缓存策略
+### 1. Cache Strategy
 
-- **模块缓存**: 已下载的模块本地缓存
-- **元数据缓存**: 模块列表等元数据缓存
-- **缓存过期**: 7 天默认过期时间
-- **缓存清理**: 定期清理过期缓存
+- **Module Cache**: Locally cache downloaded modules
+- **Metadata Cache**: Cache metadata like module lists
+- **Cache Expiration**: 7-day default expiration time
+- **Cache Cleanup**: Periodically clean expired cache
 
-### 2. 并发控制
+### 2. Concurrency Control
 
-- **并发下载**: 支持并发下载多个模块
-- **并发限制**: 默认最多 3 个并发
-- **可配置**: 通过 `maxConcurrentDownloads` 配置
+- **Parallel Downloads**: Support concurrent download of multiple modules
+- **Concurrency Limit**: Maximum 3 concurrent by default
+- **Configurable**: Configure via `maxConcurrentDownloads`
 
-### 3. 重试机制
+### 3. Retry Mechanism
 
-- **网络重试**: 失败请求自动重试
-- **指数退避**: 重试间隔指数增长
-- **重试次数**: 默认最多 3 次
+- **Network Retry**: Automatically retry failed requests
+- **Exponential Backoff**: Retry intervals grow exponentially
+- **Retry Count**: Maximum 3 retries by default
 
 ---
 
-## 错误处理
+## Error Handling
 
-### 错误代码
+### Error Codes
 
 ```typescript
 enum ErrorCode {
@@ -462,68 +462,68 @@ enum ErrorCode {
 }
 ```
 
-### 错误处理流程
+### Error Handling Flow
 
 ```
-异常发生
+Exception occurs
   → ErrorHandler.handle()
-  → 记录错误日志
-  → 生成友好提示
-  → 显示解决方案
-  → 退出程序或继续执行
+  → Log error
+  → Generate friendly prompt
+  → Show solution
+  → Exit program or continue execution
 ```
 
 ---
 
-## 测试策略
+## Testing Strategy
 
-### 1. 单元测试
+### 1. Unit Tests
 
-- **Vitest**: 使用 Vitest 框架
-- **覆盖率**: 目标 > 80%
-- **Mock**: 使用 mock 隔离外部依赖
+- **Vitest**: Use Vitest framework
+- **Coverage**: Target > 80%
+- **Mock**: Use mocks to isolate external dependencies
 
-### 2. 集成测试
+### 2. Integration Tests
 
-- **API 测试**: 测试真实的 API 调用
-- **端到端测试**: 测试完整的工作流程
+- **API Tests**: Test real API calls
+- **End-to-End Tests**: Test complete workflows
 
 ### 3. CI/CD
 
-- **自动测试**: 每次提交自动运行测试
-- **代码检查**: ESLint + Prettier
-- **安全扫描**: npm audit
+- **Auto Testing**: Automatically run tests on every commit
+- **Code Checking**: ESLint + Prettier
+- **Security Scanning**: npm audit
 
 ---
 
-## 未来规划
+## Future Plans
 
-### 短期
+### Short-term
 
-- [ ] 完善插件系统
-- [ ] 添加钩子系统
-- [ ] 支持自定义命令
-- [ ] 增强错误提示
+- [ ] Improve plugin system
+- [ ] Add hooks system
+- [ ] Support custom commands
+- [ ] Enhance error prompts
 
-### 中期
+### Medium-term
 
-- [ ] 实现模块依赖管理
-- [ ] 添加模块签名验证
-- [ ] 支持模块评分系统
-- [ ] 实现模块市场
+- [ ] Implement module dependency management
+- [ ] Add module signature verification
+- [ ] Support module rating system
+- [ ] Implement module marketplace
 
-### 长期
+### Long-term
 
-- [ ] 多语言支持
-- [ ] 图形化界面
-- [ ] Web 版本
-- [ ] 云端构建
+- [ ] Multi-language support
+- [ ] Graphical interface
+- [ ] Web version
+- [ ] Cloud build
 
 ---
 
-## 相关文档
+## Related Documentation
 
-- [API 文档](./API_DOCUMENTATION.md)
-- [快速开始](./QUICKSTART.md)
-- [贡献指南](./CONTRIBUTING.md)
-- [安全文档](./SECURITY.md)
+- [API Documentation](./API_DOCUMENTATION.md)
+- [Quick Start](./QUICKSTART.md)
+- [Contributing Guide](./CONTRIBUTING.md)
+- [Security Documentation](./SECURITY.md)

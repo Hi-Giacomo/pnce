@@ -143,7 +143,7 @@ export class ConfigManager {
       DEFAULT_CONFIG.cacheDir,
     ];
 
-    dirs.forEach(dir => {
+    dirs.forEach((dir) => {
       if (!existsSync(dir)) {
         mkdirSync(dir, { recursive: true });
       }
@@ -226,7 +226,9 @@ export class ConfigManager {
       if (validLevels.includes(logLevel)) {
         env.logLevel = logLevel as 'error' | 'warn' | 'info' | 'debug';
       } else {
-        console.warn(`Invalid PNCE_LOG_LEVEL: ${process.env.PNCE_LOG_LEVEL}. Valid values are: ${validLevels.join(', ')}`);
+        console.warn(
+          `Invalid PNCE_LOG_LEVEL: ${process.env.PNCE_LOG_LEVEL}. Valid values are: ${validLevels.join(', ')}`
+        );
       }
     }
 
@@ -444,7 +446,11 @@ export class ConfigManager {
 
       // 备份当前配置
       const backupPath = path.join(profilesDir, 'backup.json');
-      require('fs-extra').writeFileSync(backupPath, JSON.stringify(this.userConfig, null, 2), 'utf-8');
+      require('fs-extra').writeFileSync(
+        backupPath,
+        JSON.stringify(this.userConfig, null, 2),
+        'utf-8'
+      );
 
       // 应用档案配置
       this.userConfig = profileConfig;
@@ -494,7 +500,9 @@ export class ConfigManager {
 
     try {
       const files = require('fs-extra').readdirSync(profilesDir);
-      return files.filter((file: string) => file.endsWith('.json')).map((file: string) => file.replace('.json', ''));
+      return files
+        .filter((file: string) => file.endsWith('.json'))
+        .map((file: string) => file.replace('.json', ''));
     } catch (error) {
       return [];
     }

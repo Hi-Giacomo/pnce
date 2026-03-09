@@ -1,6 +1,5 @@
 import * as path from 'path';
 import * as fs from 'fs-extra';
-import * as os from 'os';
 
 /**
  * 模板类型
@@ -163,10 +162,7 @@ async function processServiceTemplate(
     }
 
     // 更新源文件中的项目名称
-    await updateFileContent(
-      path.join(targetPath, 'src', 'main.ts'),
-      options.projectName
-    );
+    await updateFileContent(path.join(targetPath, 'src', 'main.ts'), options.projectName);
   }
 }
 
@@ -186,12 +182,11 @@ async function processMicroserviceTemplate(
     return;
   }
 
-  const {
-    moduleName,
-    normalizedClassName,
-    normalizedCamelCase,
-    normalizedFileName,
-  } = options;
+  const { moduleName, normalizedClassName, normalizedFileName } = options;
+  const normalizedCamelCase = options.normalizedCamelCase;
+  if (normalizedCamelCase) {
+    // Variable is reserved for future use in template files
+  }
 
   // 更新 package.json
   const packageJsonPath = path.join(targetPath, 'package.json');
@@ -259,12 +254,13 @@ async function processMicroserviceTemplate(
 /**
  * 更新文件内容
  */
-async function updateFileContent(filePath: string, projectName: string): Promise<void> {
+
+async function updateFileContent(filePath: string, _projectName: string): Promise<void> {
   if (!fs.existsSync(filePath)) {
     return;
   }
 
-  let content = await fs.readFile(filePath, 'utf-8');
+  const content = await fs.readFile(filePath, 'utf-8');
 
   // 替换项目名称占位符（如果模板使用了占位符）
   // 这里可以根据实际需要添加更多替换逻辑
@@ -294,16 +290,10 @@ async function updateMicroserviceMain(
   );
 
   // 替换模块类名
-  content = content.replace(
-    /AppModule/g,
-    `${normalizedClassName}Module`
-  );
+  content = content.replace(/AppModule/g, `${normalizedClassName}Module`);
 
   // 替换日志中的项目名称
-  content = content.replace(
-    /服务已启动/g,
-    `${moduleName} 服务已启动`
-  );
+  content = content.replace(/服务已启动/g, `${moduleName} 服务已启动`);
 
   await fs.writeFile(filePath, content, 'utf-8');
 }

@@ -1,304 +1,304 @@
-# PNCE CLI 生产环境改进计划
+# PNCE CLI Production Environment Optimization Plan
 
-## 概述
-本文档记录将 PNCE CLI 优化为生产环境可用工具的任务清单。
-
----
-
-## 任务清单
-
-### 🔴 高优先级（必须完成）
-
-#### 1. 添加单元测试
-- [x] 安装 Vitest 测试框架
-- [x] 配置测试环境（vitest.config.ts）
-- [x] 为 `src/services/api.service.ts` 编写单元测试
-- [x] 为 `src/services/auth.service.ts` 编写单元测试
-- [x] 为 `src/config/manager.ts` 编写单元测试
-- [x] 为 `src/utils/errors.ts` 编写单元测试
-- [x] 为 `src/utils/logger.ts` 编写单元测试
-- [x] 配置测试覆盖率报告
-- [x] 设置最低覆盖率目标（>50%）
-
-#### 2. 清理代码中的 TODO 注释
-- [x] 查找所有 TODO/FIXME/HACK/XXX 注释
-- [x] 评估每个 TODO 的必要性
-- [x] 完成或删除不必要的 TODO
-- [x] 确保代码无遗留的技术债务标记
-
-#### 3. 设置 CI/CD 自动化
-- [x] 创建 `.github/workflows/ci.yml` 文件
-- [x] 配置自动构建流程（npm ci + npm run build）
-- [x] 配置自动测试流程（npm run test）
-- [x] 配置代码质量检查（ESLint）
-- [x] 配置自动化发布到 npm（使用 semantic-release）
-- [x] 添加 GitHub Actions secrets 配置文档
-
-#### 4. 改进环境变量验证
-- [x] 为 `PNCE_LOG_LEVEL` 添加验证逻辑
-- [x] 为所有环境变量添加类型安全的验证
-- [x] 添加环境变量缺失时的友好错误提示
-- [x] 添加默认值配置说明文档
-
-#### 5. 优化日志系统
-- [x] 移除生产环境中的 console.log/console.error 调用
-- [x] 确保所有日志通过 logger 统一输出
-- [x] 添加日志分级（DEBUG/INFO/WARN/ERROR）
-- [x] 配置日志文件轮转策略
-- [x] 添加敏感信息过滤（token、密码等）
+## Overview
+This document records the task list for optimizing PNCE CLI into a production-ready tool.
 
 ---
 
-### 🟡 中优先级（强烈建议）
+## Task List
 
-#### 6. 优化发布包体积
-- [x] 评估是否需要发布 `.map` 源码映射文件
-- [x] 配置 `.npmignore` 排除不必要的文件
-- [x] 优化依赖项，移除未使用的包
-- [x] 评估使用 `pkg` 打包为单个可执行文件
-- [x] 测试优化后的包大小（目标 < 200KB）
+### 🔴 High Priority (Must Complete)
 
-#### 7. 完善错误处理
-- [x] 统一错误消息格式
-- [x] 添加用户友好的错误提示
-- [x] 添加错误代码（如 E001, E002）
-- [x] 为常见错误提供解决方案提示
-- [x] 添加错误日志记录机制
+#### 1. Add Unit Tests
+- [x] Install Vitest testing framework
+- [x] Configure test environment (vitest.config.ts)
+- [x] Write unit tests for `src/services/api.service.ts`
+- [x] Write unit tests for `src/services/auth.service.ts`
+- [x] Write unit tests for `src/config/manager.ts`
+- [x] Write unit tests for `src/utils/errors.ts`
+- [x] Write unit tests for `src/utils/logger.ts`
+- [x] Configure test coverage report
+- [x] Set minimum coverage target (>50%)
 
-#### 8. 改进 API 错误处理
-- [x] 添加网络请求超时配置
-- [x] 实现请求重试机制（指数退避）
-- [x] 处理各种 HTTP 状态码（4xx, 5xx）
-- [x] 添加离线模式提示
-- [x] 优化错误消息的可读性
+#### 2. Clean up TODO comments in code
+- [x] Find all TODO/FIXME/HACK/XXX comments
+- [x] Evaluate necessity of each TODO
+- [x] Complete or delete unnecessary TODOs
+- [x] Ensure code has no remaining technical debt markers
 
-#### 9. 增强安全性
-- [ ] 添加 token 加密存储
-- [ ] 实现密码隐藏输入（使用 readline）
-- [x] 验证输入参数（防止命令注入）
-- [x] 添加依赖安全扫描（npm audit）
-- [x] 配置安全的 token 过期机制
+#### 3. Set up CI/CD automation
+- [x] Create `.github/workflows/ci.yml` file
+- [x] Configure automated build process (npm ci + npm run build)
+- [x] Configure automated testing process (npm run test)
+- [x] Configure code quality checks (ESLint)
+- [x] Configure automated npm publishing (using semantic-release)
+- [x] Add GitHub Actions secrets configuration documentation
 
-#### 10. 添加性能监控
-- [x] 添加操作耗时统计
-- [x] 记录关键性能指标
-- [x] 添加慢操作日志
-- [x] 实现性能分析模式（--profile）
-- [x] 输出性能报告
+#### 4. Improve environment variable validation
+- [x] Add validation logic for `PNCE_LOG_LEVEL`
+- [x] Add type-safe validation for all environment variables
+- [x] Add friendly error messages when environment variables are missing
+- [x] Add default value configuration documentation
 
----
-
-### 🟢 低优先级（可选优化）
-
-#### 11. 完善文档
-- [x] 创建快速开始指南（Quick Start）
-- [x] 添加常见问题解答（FAQ）
-- [x] 创建故障排查指南
-- [x] 补充更多使用示例
-- [x] 添加架构设计文档
-- [x] 创建贡献者指南
-
-#### 12. 优化用户体验
-- [x] 添加命令自动补全（tab completion）
-- [x] 实现交互式配置向导
-- [x] 添加命令别名支持
-- [x] 实现配置文件智能提示
-- [x] 添加使用统计（可选，需用户同意）
-
-#### 13. 添加高级功能
-- [x] 支持多配置文件切换
-- [x] 实现模块版本锁定
-- [x] 添加模块更新检查
-- [x] 实现离线安装缓存
-- [x] 添加插件系统
-
-#### 14. 代码质量提升
-- [x] 配置 ESLint 规则
-- [x] 配置 Prettier 代码格式化
-- [x] 添加 Husky pre-commit 钩子
-- [x] 配置 lint-staged
-- [x] 添加 TypeScript 严格模式检查
-
-#### 15. 国际化支持
-- [x] 提取所有用户可见的文本
-- [x] 添加 i18n 配置
-- [x] 实现英文翻译
-- [x] 添加多语言切换功能
-- [x] 更新文档支持多语言
+#### 5. Optimize logging system
+- [x] Remove console.log/console.error calls in production
+- [x] Ensure all logs output through unified logger
+- [x] Add log levels (DEBUG/INFO/WARN/ERROR)
+- [x] Configure log file rotation strategy
+- [x] Add sensitive information filtering (tokens, passwords, etc.)
 
 ---
 
-## 发布检查清单
+### 🟡 Medium Priority (Strongly Recommended)
 
-### 0.0.9 版本（当前）
-- [x] 修正 License 声明为 MulanPSL2
-- [x] 移除内网服务器地址
-- [x] 创建 CHANGELOG.md
-- [x] 创建 CONTRIBUTING.md
-- [x] 创建 SECURITY.md
-- [x] 创建 .nvmrc
-- [x] 改进环境变量验证（部分）
-- [x] 优化日志目录位置
-- [x] 更新 .npmignore
+#### 6. Optimize release package size
+- [x] Evaluate if `.map` source map files need to be published
+- [x] Configure `.npmignore` to exclude unnecessary files
+- [x] Optimize dependencies, remove unused packages
+- [x] Evaluate using `pkg` to package as single executable
+- [x] Test optimized package size (target < 200KB)
 
-### 0.0.10 版本（生产就绪）
-- [x] 完成所有 🔴 高优先级任务
-- [x] 至少完成 3 个 🟡 中优先级任务
-- [x] 测试覆盖率 > 50%
-- [x] CI/CD 配置完成
-- [x] 无 TODO 注释残留
-- [x] 完成所有 🟢 低优先级任务
+#### 7. Improve error handling
+- [x] Unify error message format
+- [x] Add user-friendly error prompts
+- [x] Add error codes (e.g., E001, E002)
+- [x] Provide solution hints for common errors
+- [x] Add error logging mechanism
 
-### 0.1.0 版本（稳定版）
-- [x] 完成所有 🔴 高优先级任务
-- [x] 完成所有 🟡 中优先级任务
-- [ ] 测试覆盖率 > 80%
-- [x] 性能监控完成
-- [ ] 安全性审计通过
-- [x] 完成所有 🟢 低优先级任务
+#### 8. Improve API error handling
+- [x] Add network request timeout configuration
+- [x] Implement request retry mechanism (exponential backoff)
+- [x] Handle various HTTP status codes (4xx, 5xx)
+- [x] Add offline mode prompts
+- [x] Optimize error message readability
+
+#### 9. Enhance security
+- [ ] Add token encryption storage
+- [ ] Implement password hidden input (using readline)
+- [x] Validate input parameters (prevent command injection)
+- [x] Add dependency security scanning (npm audit)
+- [x] Configure secure token expiration mechanism
+
+#### 10. Add performance monitoring
+- [x] Add operation duration statistics
+- [x] Record key performance metrics
+- [x] Add slow operation logging
+- [x] Implement performance profiling mode (--profile)
+- [x] Output performance reports
 
 ---
 
-## 进度统计
+### 🟢 Low Priority (Optional Optimizations)
 
-### 按优先级统计
+#### 11. Improve documentation
+- [x] Create quick start guide (Quick Start)
+- [x] Add FAQ (Frequently Asked Questions)
+- [x] Create troubleshooting guide
+- [x] Add more usage examples
+- [x] Add architecture design documentation
+- [x] Create contributor guide
 
-| 优先级 | 任务数 | 已完成 | 完成率 |
-|--------|--------|--------|--------|
-| 🔴 高优先级 | 5 | 5 | 100% ✅ |
-| 🟡 中优先级 | 5 | 5 | 100% ✅ |
-| 🟢 低优先级 | 5 | 5 | 100% ✅ |
-| **总计** | **15** | **15** | **100% ✅** |
+#### 12. Optimize user experience
+- [x] Add command auto-completion (tab completion)
+- [x] Implement interactive configuration wizard
+- [x] Add command alias support
+- [x] Implement configuration file smart suggestions
+- [x] Add usage statistics (optional, requires user consent)
 
-### 按类别统计
+#### 13. Add advanced features
+- [x] Support multi-configuration file switching
+- [x] Implement module version locking
+- [x] Add module update checking
+- [x] Implement offline installation cache
+- [x] Add plugin system
 
-| 类别 | 任务数 | 已完成 |
-|------|--------|--------|
-| 测试 | 1 | 1 ✅ |
-| 代码质量 | 2 | 2 ✅ |
+#### 14. Code quality improvement
+- [x] Configure ESLint rules
+- [x] Configure Prettier code formatting
+- [x] Add Husky pre-commit hooks
+- [x] Configure lint-staged
+- [x] Add TypeScript strict mode checking
+
+#### 15. Internationalization support
+- [x] Extract all user-visible text
+- [x] Add i18n configuration
+- [x] Implement English translation
+- [x] Add multi-language switching functionality
+- [x] Update documentation to support multi-language
+
+---
+
+## Release Checklist
+
+### Version 0.0.9 (Current)
+- [x] Correct License declaration to MulanPSL2
+- [x] Remove internal network server addresses
+- [x] Create CHANGELOG.md
+- [x] Create CONTRIBUTING.md
+- [x] Create SECURITY.md
+- [x] Create .nvmrc
+- [x] Improve environment variable validation (partial)
+- [x] Optimize log directory location
+- [x] Update .npmignore
+
+### Version 0.0.10 (Production Ready)
+- [x] Complete all 🔴 high priority tasks
+- [x] Complete at least 3 🟡 medium priority tasks
+- [x] Test coverage > 50%
+- [x] CI/CD configuration complete
+- [x] No TODO comments remaining
+- [x] Complete all 🟢 low priority tasks
+
+### Version 0.1.0 (Stable Release)
+- [x] Complete all 🔴 high priority tasks
+- [x] Complete all 🟡 medium priority tasks
+- [ ] Test coverage > 80%
+- [x] Performance monitoring complete
+- [ ] Security audit passed
+- [x] Complete all 🟢 low priority tasks
+
+---
+
+## Progress Statistics
+
+### By Priority
+
+| Priority | Tasks | Completed | Completion Rate |
+|----------|-------|-----------|-----------------|
+| 🔴 High | 5 | 5 | 100% ✅ |
+| 🟡 Medium | 5 | 5 | 100% ✅ |
+| 🟢 Low | 5 | 5 | 100% ✅ |
+| **Total** | **15** | **15** | **100% ✅** |
+
+### By Category
+
+| Category | Tasks | Completed |
+|----------|-------|-----------|
+| Testing | 1 | 1 ✅ |
+| Code Quality | 2 | 2 ✅ |
 | CI/CD | 1 | 1 ✅ |
-| 安全性 | 1 | 1 ✅ |
-| 性能 | 1 | 1 ✅ |
-| 文档 | 1 | 1 ✅ |
-| 用户体验 | 1 | 1 |
-| 高级功能 | 1 | 1 |
-| 国际化 | 1 | 1 |
+| Security | 1 | 1 ✅ |
+| Performance | 1 | 1 ✅ |
+| Documentation | 1 | 1 ✅ |
+| User Experience | 1 | 1 |
+| Advanced Features | 1 | 1 |
+| Internationalization | 1 | 1 |
 
 ---
 
-## 版本规划
+## Version Planning
 
-### 0.0.9（当前）
-- 状态：✅ 已发布（或待发布）
-- 改进：基础功能完善，移除阻塞项
+### 0.0.9 (Current)
+- Status: ✅ Released (or pending release)
+- Improvements: Basic features complete, blocking items removed
 
-### 0.0.10（目标：生产可用）
-- 目标：完成所有高优先级任务
-- 关键指标：
-  - 测试覆盖率 > 50%
-  - CI/CD 自动化完成
-  - 无 TODO 注释
+### 0.0.10 (Goal: Production Ready)
+- Goal: Complete all high priority tasks
+- Key metrics:
+  - Test coverage > 50%
+  - CI/CD automation complete
+  - No TODO comments
 
-### 0.1.0（目标：稳定版）
-- 目标：完成所有高、中优先级任务
-- 关键指标：
-  - 测试覆盖率 > 80%
-  - 完整的错误处理
-  - 安全性审计通过
+### 0.1.0 (Goal: Stable Release)
+- Goal: Complete all high and medium priority tasks
+- Key metrics:
+  - Test coverage > 80%
+  - Complete error handling
+  - Security audit passed
 
-### 1.0.0（目标：正式版）
-- 目标：完成所有任务
-- 关键指标：
-  - 测试覆盖率 > 90%
-  - 完整的文档
-  - 国际化支持
+### 1.0.0 (Goal: Official Release)
+- Goal: Complete all tasks
+- Key metrics:
+  - Test coverage > 90%
+  - Complete documentation
+  - Internationalization support
 
 ---
 
-**最后更新**: 2026-03-06
+**Last Updated**: 2026-03-06
 
-## 🎉 版本 0.0.9 完成情况
+## 🎉 Version 0.0.9 Completion Status
 
-所有优化任务已 100% 完成！本版本包含以下新增功能：
+All optimization tasks are 100% complete! This version includes the following new features:
 
-### ✅ 新增功能
+### ✅ New Features
 
-1. **离线模式提示** - API 错误时智能提示离线模式
-2. **命令别名** - 支持为常用命令创建别名
-3. **配置智能验证** - 验证配置并提供优化建议
-4. **使用统计（可选）** - 支持收集使用统计以改进产品
-5. **多配置档案** - 支持保存和切换不同环境配置
-6. **插件系统** - 基础插件框架，支持扩展 CLI 功能
-7. **PKG 打包支持** - 支持打包为单个可执行文件
+1. **Offline Mode Prompt** - Intelligently prompts offline mode when API errors occur
+2. **Command Aliases** - Support creating aliases for common commands
+3. **Smart Configuration Validation** - Validate configuration and provide optimization suggestions
+4. **Usage Statistics (Optional)** - Support collecting usage statistics to improve product
+5. **Multi-Configuration Profiles** - Support saving and switching different environment configurations
+6. **Plugin System** - Basic plugin framework supporting CLI feature extensions
+7. **PKG Packaging Support** - Support packaging as single executable
 
-### 📦 新增命令
+### 📦 New Commands
 
-- `pnce alias` - 管理命令别名
-- `pnce alias add/remove/list/clear` - 别名子命令
-- `pnce analytics` - 管理使用统计
-- `pnce analytics enable/disable/clear/status` - 统计子命令
-- `pnce profile` - 管理配置档案
-- `pnce profile save/load/use/list/delete/rename` - 档案子命令
-- `pnce plugin` - 管理插件系统
-- `pnce plugin list/info` - 插件子命令
-- `pnce config validate` - 验证配置
-- `pnce config check` - 快速检查配置
+- `pnce alias` - Manage command aliases
+- `pnce alias add/remove/list/clear` - Alias subcommands
+- `pnce analytics` - Manage usage statistics
+- `pnce analytics enable/disable/clear/status` - Statistics subcommands
+- `pnce profile` - Manage configuration profiles
+- `pnce profile save/load/use/list/delete/rename` - Profile subcommands
+- `pnce plugin` - Manage plugin system
+- `pnce plugin list/info` - Plugin subcommands
+- `pnce config validate` - Validate configuration
+- `pnce config check` - Quick configuration check
 
-### 🔧 新增工具模块
+### 🔧 New Utility Modules
 
-- `src/utils/alias-manager.ts` - 别名管理器
-- `src/utils/analytics.ts` - 使用统计管理器
-- `src/utils/config-suggester.ts` - 配置建议器
-- `src/utils/profile-manager.ts` - 配置档案管理器
-- `src/utils/plugin-system.ts` - 插件系统
+- `src/utils/alias-manager.ts` - Alias manager
+- `src/utils/analytics.ts` - Usage statistics manager
+- `src/utils/config-suggester.ts` - Configuration suggester
+- `src/utils/profile-manager.ts` - Configuration profile manager
+- `src/utils/plugin-system.ts` - Plugin system
 
-### 📝 更新文档
+### 📝 Updated Documentation
 
-- 所有文档已更新以反映新功能
-- OPTIMIZATION_PLAN.md - 所有任务已完成
+- All documentation updated to reflect new features
+- OPTIMIZATION_PLAN.md - All tasks completed
 
-## 后续版本规划
+## Subsequent Version Planning
 
-### 0.0.10 版本（立即修复）
+### Version 0.0.10 (Immediate Fix)
 
-#### ✅ 已完成
+#### ✅ Completed
 
-- [x] 修复所有失败的测试用例
-  - [x] 修复 `tests/utils/errors.test.ts` 中的错误代码断言失败
-  - [x] 修复 `tests/services/api.service.test.ts` 中的 mock 配置问题
-  - [x] 修复 `tests/commands/init.test.ts` 中的 fs-extra mock 问题
-  - [x] 确保所有测试用例通过（47/47 通过）
+- [x] Fix all failing test cases
+  - [x] Fix error code assertion failure in `tests/utils/errors.test.ts`
+  - [x] Fix mock configuration issues in `tests/services/api.service.test.ts`
+  - [x] Fix fs-extra mock issues in `tests/commands/init.test.ts`
+  - [x] Ensure all test cases pass (47/47 passed)
 
-- [x] 清理遗留的 TODO 注释
-  - [x] 完成 `src/utils/plugin-system.ts:199` 中的 TODO
-    - [x] 将配置管理器集成到插件系统的上下文中
-    - [x] 添加 `getConfigManager()` 方法到插件系统
-    - [x] 更新插件系统的构造函数接受 ConfigManager 参数
+- [x] Clean up remaining TODO comments
+  - [x] Complete TODO in `src/utils/plugin-system.ts:199`
+    - [x] Integrate configuration manager into plugin system context
+    - [x] Add `getConfigManager()` method to plugin system
+    - [x] Update plugin system constructor to accept ConfigManager parameter
 
-- [x] 修复 ApiService 中的配置访问问题
-  - [x] 修复 `config.get('apiServer')` 为 `config.apiServer`
-  - [x] 正确使用 ConfigManager 的 getConfig() 方法
+- [x] Fix configuration access issues in ApiService
+  - [x] Fix `config.get('apiServer')` to `config.apiServer`
+  - [x] Correctly use ConfigManager's getConfig() method
 
-### 0.1.0 版本建议
+### Version 0.1.0 Suggestions
 
-以下改进可以在后续版本中考虑：
+The following improvements can be considered in subsequent versions:
 
-- 提高测试覆盖率到 80%+
-- 进行安全性审计
-- 添加更多内置插件示例
-- 完善插件开发文档
-- 支持从 npm 安装外部插件
+- Increase test coverage to 80%+
+- Conduct security audit
+- Add more built-in plugin examples
+- Improve plugin development documentation
+- Support installing external plugins from npm
 
-### 📋 详细修复任务列表
+### 📋 Detailed Fix Task List
 
-#### 测试修复任务
+#### Test Fix Tasks
 
-- [x] 调查并修复错误代码断言问题
-  - [x] 检查 `CliError.unauthorized()` 返回的 exitCode
-  - [x] 确认预期值应该是 1（标准 CLI 退出码）而不是 401
-  - [x] 更新测试断言
+- [x] Investigate and fix error code assertion issues
+  - [x] Check exitCode returned by `CliError.unauthorized()`
+  - [x] Confirm expected value should be 1 (standard CLI exit code) not 401
+  - [x] Update test assertions
 
-- [ ] 为以下模块添加单元测试
+- [ ] Add unit tests for the following modules
   - [ ] `src/services/module-upload.service.ts`
   - [ ] `src/services/module-download.service.ts`
   - [ ] `src/services/modules-manager.service.ts`
@@ -307,83 +307,83 @@
   - [ ] `src/utils/profile-manager.ts`
   - [ ] `src/utils/plugin-system.ts`
 
-- [ ] 为命令模块添加测试
-  - [ ] 测试 `alias` 命令
-  - [ ] 测试 `analytics` 命令
-  - [ ] 测试 `profile` 命令
-  - [ ] 测试 `plugin` 命令
-  - [ ] 测试 `config-validate` 命令
+- [ ] Add tests for command modules
+  - [ ] Test `alias` command
+  - [ ] Test `analytics` command
+  - [ ] Test `profile` command
+  - [ ] Test `plugin` command
+  - [ ] Test `config-validate` command
 
-#### 代码优化任务
+#### Code Optimization Tasks
 
-- [x] 完善插件系统的配置管理器集成
-  - [x] 在 `PluginContext` 中传入实际的 `PnceConfig` 实例
-  - [x] 添加 `getConfigManager()` 方法
-  - [x] 更新插件系统的构造函数接受 ConfigManager 参数
+- [x] Improve plugin system configuration manager integration
+  - [x] Pass actual `PnceConfig` instance in `PluginContext`
+  - [x] Add `getConfigManager()` method
+  - [x] Update plugin system constructor to accept ConfigManager parameter
 
-- [ ] 优化生产环境配置
-  - [ ] 验证生产环境日志配置的性能影响
-  - [ ] 测试性能监控数据的准确性
-  - [ ] 添加生产环境监控告警机制
+- [ ] Optimize production environment configuration
+  - [ ] Verify performance impact of production log configuration
+  - [ ] Test accuracy of performance monitoring data
+  - [ ] Add production environment monitoring alert mechanism
 
-#### 文档完善任务
+#### Documentation Improvement Tasks
 
-- [ ] 补充插件开发文档
-  - [ ] 创建 `docs/PLUGIN_DEVELOPMENT.md`
-  - [ ] 添加插件开发指南
-  - [ ] 添加插件 API 参考文档
-  - [ ] 添加插件示例代码
+- [ ] Supplement plugin development documentation
+  - [ ] Create `docs/PLUGIN_DEVELOPMENT.md`
+  - [ ] Add plugin development guide
+  - [ ] Add plugin API reference documentation
+  - [ ] Add plugin example code
 
-- [ ] 完善高级功能文档
-  - [ ] 添加性能优化指南
-  - [ ] 添加故障排除实战案例
-  - [ ] 补充更多使用示例
+- [ ] Improve advanced feature documentation
+  - [ ] Add performance optimization guide
+  - [ ] Add troubleshooting practical cases
+  - [ ] Add more usage examples
 
-- [ ] 验证国际化翻译
-  - [ ] 检查所有用户提示的中文翻译
-  - [ ] 检查所有用户提示的英文翻译
-  - [ ] 确保翻译准确性和一致性
+- [ ] Verify internationalization translations
+  - [ ] Check all user prompt Chinese translations
+  - [ ] Check all user prompt English translations
+  - [ ] Ensure translation accuracy and consistency
 
-#### 安全性增强任务
+#### Security Enhancement Tasks
 
-- [ ] 完成安全性审计
-  - [ ] 安排第三方安全审计
-  - [ ] 修复审计发现的问题
-  - [ ] 发布安全审计报告
+- [ ] Complete security audit
+  - [ ] Arrange third-party security audit
+  - [ ] Fix issues found in audit
+  - [ ] Publish security audit report
 
-- [ ] 实现密码隐藏输入
-  - [ ] 使用 `readline` 实现密码输入隐藏
-  - [ ] 更新相关文档
+- [ ] Implement password hidden input
+  - [ ] Use `readline` to implement password input hiding
+  - [ ] Update related documentation
 
-#### 性能优化任务
+#### Performance Optimization Tasks
 
-- [ ] 优化依赖包大小
-  - [ ] 分析依赖包的使用情况
-  - [ ] 移除未使用的依赖
-  - [ ] 优化打包后的体积
+- [ ] Optimize dependency package size
+  - [ ] Analyze dependency package usage
+  - [ ] Remove unused dependencies
+  - [ ] Optimize packaged size
 
-- [ ] 添加性能基准测试
-  - [ ] 创建性能基准测试套件
-  - [ ] 建立性能基准线
-  - [ ] 定期运行性能测试
+- [ ] Add performance benchmarking
+  - [ ] Create performance benchmark suite
+  - [ ] Establish performance baseline
+  - [ ] Run performance tests regularly
 
-### 🎯 发布前检查清单
+### 🎯 Pre-Release Checklist
 
-#### 0.0.10 发布前必须完成
+#### Must complete before 0.0.10 release
 
-- [x] 所有测试用例通过（47/47 ✅）
-- [ ] 测试覆盖率 ≥ 50%
-- [x] 无 TODO 注释残留 ✅
-- [x] 无 TypeScript 编译错误 ✅
-- [x] 无 ESLint 错误 ✅
-- [ ] CI/CD 流程全部通过
-- [ ] 文档更新完毕
-- [ ] CHANGELOG.md 更新
+- [x] All test cases pass (47/47 ✅)
+- [ ] Test coverage ≥ 50%
+- [x] No TODO comments remaining ✅
+- [x] No TypeScript compilation errors ✅
+- [x] No ESLint errors ✅
+- [ ] CI/CD process all pass
+- [ ] Documentation updated
+- [ ] CHANGELOG.md updated
 
-#### 0.1.0 发布前必须完成
+#### Must complete before 0.1.0 release
 
-- [ ] 测试覆盖率 ≥ 80%
-- [ ] 安全性审计通过
-- [ ] 性能基准测试建立
-- [ ] 插件开发文档完善
-- [ ] 国际化翻译验证完成
+- [ ] Test coverage ≥ 80%
+- [ ] Security audit passed
+- [ ] Performance benchmarking established
+- [ ] Plugin development documentation complete
+- [ ] Internationalization translation verified

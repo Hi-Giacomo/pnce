@@ -28,12 +28,14 @@ export const configValidateCommand = new Command('validate')
 
       // 自动修复
       if (options.fix && issues.length > 0) {
-        const fixableIssues = issues.filter(i => i.suggestion !== undefined);
+        const fixableIssues = issues.filter((i) => i.suggestion !== undefined);
         if (fixableIssues.length > 0) {
           console.log(chalk.yellow('\n🔧 自动修复 / Auto-fixing...'));
 
           const fixedConfig = suggester.autoFix(config, issues);
-          configManager.setUserConfig(fixedConfig as Partial<ReturnType<typeof configManager.getConfig>>);
+          configManager.setUserConfig(
+            fixedConfig as Partial<ReturnType<typeof configManager.getConfig>>
+          );
 
           console.log(chalk.green(`✓ 已修复 ${fixableIssues.length} 个问题\n`));
           logger.info(`自动修复配置: ${fixableIssues.length} 个问题`);
@@ -46,7 +48,7 @@ export const configValidateCommand = new Command('validate')
       console.log(chalk.gray('配置文件位置:'));
       console.log(chalk.gray(`  ${configManager.getUserConfigPath()}\n`));
 
-      if (issues.some(i => i.type === 'error')) {
+      if (issues.some((i) => i.type === 'error')) {
         process.exit(1);
       }
     } catch (error: unknown) {
@@ -68,7 +70,7 @@ export const configCheckCommand = new Command('check')
       const suggester = createConfigSuggester();
 
       const issues = suggester.validate(config);
-      const errors = issues.filter(i => i.type === 'error');
+      const errors = issues.filter((i) => i.type === 'error');
 
       if (errors.length === 0) {
         console.log(chalk.green('✓ 配置有效\n'));
@@ -84,7 +86,7 @@ export const configCheckCommand = new Command('check')
   });
 
 export function register(program: Command): void {
-  const configCmd = program.commands.find(cmd => cmd.name() === 'config');
+  const configCmd = program.commands.find((cmd) => cmd.name() === 'config');
   if (configCmd) {
     configCmd.addCommand(configValidateCommand);
     configCmd.addCommand(configCheckCommand);

@@ -1,24 +1,26 @@
 #!/usr/bin/env node
 
-import { Command } from "commander";
-import { registerCommands } from "./commands";
-import { CLI_VERSION } from "./config/default.config";
-import { initLogger, getLogger } from "./utils/logger";
-import { ErrorHandler } from "./utils/errors";
-import { getAliasManager } from "./utils/alias-manager";
+import { Command } from 'commander';
+import { registerCommands } from './commands';
+import { CLI_VERSION } from './config/default.config';
+import { initLogger, getLogger } from './utils/logger';
+import { ErrorHandler } from './utils/errors';
+import { getAliasManager } from './utils/alias-manager';
 
-// 初始化日志系统
-initLogger().then(() => {
-  const logger = getLogger();
-  logger.info('Pnce CLI启动', {
-    version: CLI_VERSION,
-    cwd: process.cwd(),
+// Initialize logging system
+initLogger()
+  .then(() => {
+    const logger = getLogger();
+    logger.info('Pnce CLI started', {
+      version: CLI_VERSION,
+      cwd: process.cwd(),
+    });
+  })
+  .catch((error) => {
+    console.warn('Failed to initialize logging system:', error.message);
   });
-}).catch(error => {
-  console.warn('初始化日志系统失败:', error.message);
-});
 
-// 全局错误处理
+// Global error handling
 process.on('uncaughtException', (error) => {
   ErrorHandler.handle(error);
 });
@@ -30,55 +32,63 @@ process.on('unhandledRejection', (reason) => {
 const program = new Command();
 
 program
-  .name("pnce")
-  .description("Pnce CLI Tool - 模块化快速开发命令行工具")
-  .version(CLI_VERSION, "-v, --version");
+  .name('pnce')
+  .description('Pnce CLI Tool - Modular rapid development CLI tool')
+  .version(CLI_VERSION, '-v, --version')
+  .addHelpText(
+    'before',
+    '\nTip: Some commands support flat access, e.g., pnce set can also be accessed via pnce lang set\n'
+  )
+  .addHelpText(
+    'after',
+    '\n\nCommand Group Help:\n  - lang: Language settings (set, list)\n  - alias: Command aliases (add, remove, list, clear)\n  - analytics: Usage analytics (enable, disable, clear, status)\n  - profile: Configuration profiles (save, load, use, list, delete, rename)\n  - plugin: Plugin management (list, info)\n'
+  );
 
-// 设置初始工作目录环境变量
+// Set initial working directory environment variable
 if (!process.env.INIT_CWD) {
-  // 优先从 MODULE_INIT_CWD_FILE 读取（cli-wrapper.js 保存的调用目录）
+  // Read from MODULE_INIT_CWD_FILE first (directory saved by cli-wrapper.js)
   if (process.env.MODULE_INIT_CWD_FILE) {
     try {
-      const fs = require("fs-extra");
+      const fs = require('fs-extra');
       if (fs.existsSync(process.env.MODULE_INIT_CWD_FILE)) {
-        process.env.INIT_CWD = fs
-          .readFileSync(process.env.MODULE_INIT_CWD_FILE, "utf-8")
-          .trim();
+        process.env.INIT_CWD = fs.readFileSync(process.env.MODULE_INIT_CWD_FILE, 'utf-8').trim();
         fs.removeSync(process.env.MODULE_INIT_CWD_FILE);
       }
     } catch (error) {
-      // 忽略错误，使用 process.cwd() 作为后备
+      // Ignore error, use process.cwd() as fallback
     }
   }
 
-  // 如果仍然没有 INIT_CWD，使用 process.cwd()
+  // If still no INIT_CWD, use process.cwd()
   if (!process.env.INIT_CWD) {
     process.env.INIT_CWD = process.cwd();
   }
 }
 
-// 解析命令别名
+// Parse command aliases
 let argv = process.argv.slice();
 const aliasManager = getAliasManager();
 
-// 尝试解析第一个参数是否为别名
+// Try to parse if the first argument is an alias
 if (argv.length > 2) {
   const command = argv[2];
-  if (aliasManager.isAlias(command)) {
+  if (command && aliasManager.isAlias(command)) {
     const resolvedArgs = aliasManager.resolve(argv.slice(2));
     if (resolvedArgs.length > 0) {
-      argv = [argv[0], ...resolvedArgs];
+      argv = [argv[0], ...resolvedArgs] as string[];
     }
   }
 }
 
-// 异步注册所有命令
-registerCommands(program).then(() => {
-  program.parse(argv);
+// Register all commands asynchronously
+registerCommands(program)
+  .then(() => {
+    program.parse(argv);
 
-  if (!argv.slice(2).length) {
-    program.outputHelp();
-  }
-}).catch(error => {
-  ErrorHandler.handle(error);
-});
+    if (!argv.slice(2).length) {
+      program.outputHelp();
+    }
+  })
+  .catch((error) => {
+    ErrorHandler.handle(error);
+  });

@@ -16,7 +16,10 @@ export function registerPortCommands(program: Command): void {
     .option('-s, --show', '显示端口分配信息')
     .action(async (options) => {
       try {
-        const portCachePath = path.join(process.env.INIT_CWD || process.cwd(), '.module-port-cache.json');
+        const portCachePath = path.join(
+          process.env.INIT_CWD || process.cwd(),
+          '.module-port-cache.json'
+        );
 
         // 清除端口缓存
         if (options.clear) {

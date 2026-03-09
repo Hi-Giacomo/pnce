@@ -90,7 +90,7 @@ export class VersionChecker {
       return result;
     } catch (error) {
       logger.error(`检查版本失败: ${error}`);
-      throw new Error(`检查版本失败: ${error}`);
+      throw new Error(`检查版本失败: ${error}`, { cause: error });
     }
   }
 
@@ -101,15 +101,15 @@ export class VersionChecker {
     const currentParts = current.split('.').map(Number);
     const latestParts = latest.split('.').map(Number);
 
-    if (latestParts[0] > currentParts[0]) {
+    if (latestParts[0] && currentParts[0] && latestParts[0] > currentParts[0]) {
       return 'major';
     }
 
-    if (latestParts[1] > currentParts[1]) {
+    if (latestParts[1] && currentParts[1] && latestParts[1] > currentParts[1]) {
       return 'minor';
     }
 
-    if (latestParts[2] > currentParts[2]) {
+    if (latestParts[2] && currentParts[2] && latestParts[2] > currentParts[2]) {
       return 'patch';
     }
 

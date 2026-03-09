@@ -2,461 +2,343 @@
 
 <div align="center">
 
-**Pnce CLI Tool** - NestJS 模块化快速开发命令行工具
+**Pnce CLI Tool** - NestJS Modular Rapid Development CLI Tool
 
 [![npm version](https://img.shields.io/npm/v/pnce.svg)](https://www.npmjs.com/package/pnce)
 [![downloads](https://img.shields.io/npm/dm/pnce.svg)](https://www.npmjs.com/package/pnce)
 [![license](https://img.shields.io/npm/l/pnce.svg)](LICENSE)
+[![Node](https://img.shields.io/node/v/pnce.svg)](https://nodejs.org/)
 
-专为 NestJS 设计的模块化开发工具，帮助开发者快速创建、管理、发布和部署 NestJS 服务与微服务模块。
+A modular development tool designed for NestJS, helping developers quickly create, manage, publish, and deploy NestJS services and microservice modules.
+
+[中文文档](./README_CN.md) | [English](./README.md)
 
 </div>
 
-## ✨ 核心特性
+## ✨ Core Features
 
-- 🚀 **快速创建** - 一键生成服务/微服务脚手架
-- 📦 **模块管理** - 统一的模块发布和安装流程
-- 🔗 **依赖管理** - 自动处理模块间的依赖关系
-- 📥 **并行下载** - 支持3倍速度的批量模块安装
-- 📊 **进度显示** - 实时显示下载和安装进度
-- 🔐 **安全认证** - 支持 OAuth2 和邮箱密码登录
-- 🛠️ **自动部署** - 一键部署到 Linux 服务器
-- ⚙️ **灵活配置** - 支持环境变量和多级配置
-- 📝 **完整日志** - 详细的操作日志和错误追踪
+- 🚀 **Quick Setup** - One-click generate service/microservice scaffolding
+- 📦 **Module Management** - Unified module publishing and installation workflow
+- 🔗 **Dependency Management** - Automatic handling of module dependencies
+- 📥 **Parallel Downloads** - Support 3x faster batch module installation
+- 📊 **Progress Display** - Real-time display of download and installation progress
+- 🔐 **Secure Authentication** - Support OAuth2 and email/password login
+- ⚙️ **Flexible Configuration** - Support environment variables and multi-level configuration
+- 📝 **Complete Logging** - Detailed operation logs and error tracking
+- 🔌 **Plugin System** - Extensible plugin architecture
+- 📁 **Profile Management** - Multi-environment configuration switching
+- 🌍 **i18n Support** - Multi-language support (English/Chinese)
+- 📊 **Analytics** - Optional usage analytics for improvement
 
-## 📋 目录
+## 📋 Table of Contents
 
-- [安装](#安装)
-- [快速开始](#快速开始)
-- [功能列表](#功能列表)
-- [详细使用指南](#详细使用指南)
-- [命令参考](#命令参考)
-- [配置说明](#配置说明)
-- [常见问题](#常见问题)
+- [Installation](#installation)
+- [Quick Start](#quick-start)
+- [Command Reference](#command-reference)
+- [Configuration Guide](#configuration-guide)
+- [Advanced Features](#advanced-features)
+- [FAQ](#faq)
+- [Contributing](#contributing)
 
-## 📚 文档
+## 📚 Documentation
 
-更多详细文档请查看：
-- [快速开始](docs/QUICKSTART.md) - 快速上手指南
-- [API 文档](docs/API_DOCUMENTATION.md) - API 参考文档
-- [架构文档](docs/ARCHITECTURE.md) - 项目架构说明
-- [常见问题](docs/FAQ.md) - 常见问题解答
-- [故障排除](docs/TROUBLESHOOTING.md) - 问题排查指南
-- [变更日志](docs/CHANGELOG.md) - 版本变更记录
-- [贡献指南](docs/CONTRIBUTING.md) - 如何参与贡献
-- [安全策略](docs/SECURITY.md) - 安全相关政策
+For more detailed documentation, please see:
+- [Quick Start](docs/QUICKSTART.md) - Quick start guide
+- [API Documentation](docs/API_DOCUMENTATION.md) - API reference documentation
+- [Architecture](docs/ARCHITECTURE.md) - Project architecture overview
+- [FAQ](docs/FAQ.md) - Frequently asked questions
+- [Troubleshooting](docs/TROUBLESHOOTING.md) - Troubleshooting guide
+- [Changelog](docs/CHANGELOG.md) - Version changelog
+- [Contributing](docs/CONTRIBUTING.md) - How to contribute
+- [Security](docs/SECURITY.md) - Security policy
 
-## 🚀 安装
+## 🚀 Installation
 
-### 全局安装
+### Requirements
+
+- Node.js >= 18.0.0
+- npm >= 8.0.0
+- OS: macOS, Linux, Windows
+
+### Global Installation
 
 ```bash
 npm install -g pnce
 ```
 
-### 验证安装
+### Verify Installation
 
 ```bash
 pnce --version
 pnce --help
 ```
 
-## 🎯 快速开始
+### Standalone Binary
 
-### 1. 登录账户（仅上传模块时需要）
+Pre-built binaries are available in the [releases](https://github.com/hi-giacomo/pnce/releases) page for macOS, Linux, and Windows.
 
-> ⚠️ **注意**：只有在**上传模块到云端**、**删除云端模块**、**更新云端模块版本**时才需要登录。
+## 🎯 Quick Start
+
+### 1. Login (Only required when uploading modules)
+
+> ⚠️ **Note**: Login is **only required when uploading modules to cloud**, **deleting cloud modules**, or **updating cloud module versions**.
 >
-> 安装模块、搜索模块、查看模块信息等操作**不需要登录**。
+> Operations like installing modules, searching modules, and viewing module info **do not require login**.
 
 ```bash
-# OAuth2 浏览器登录
+# OAuth2 browser login
 pnce login
 
-# 邮箱密码登录
+# Email/password login
 pnce login -e your@email.com -p your-password
 
-# 注册新账户
+# Register new account
 pnce register
 
-# 查看当前登录状态
+# View current login status
 pnce me
 
-# 登出
+# Logout
 pnce logout
 ```
 
-### 2. 创建服务（无需登录）
+### 2. Create Service (No login required)
 
 ```bash
-# 创建一个服务
+# Create a service
 pnce init service my-app
 
-# 创建一个微服务
+# Create a microservice
 pnce init microservice my-service
 ```
 
-### 3. 安装模块（无需登录）
+### 3. Configure Registry (Optional)
 
 ```bash
-# 安装单个模块
+# Set module registry URL
+pnce registry set http://your-registry.com
+
+# View current registry
+pnce registry get
+
+# Test registry connection
+pnce registry ping
+
+# Reset to default registry
+pnce registry reset
+```
+
+### 4. Install Modules (No login required)
+
+```bash
+# Install a single module
 pnce install user-module
 
-# 安装指定版本
+# Install specific version
 pnce install user-module@1.0.0
 
-# 批量安装（并行，无需登录）
+# Install as external dependency (adds to modules.json)
+pnce install user-module --link
+
+# Install as local integration (adds to package.json)
+pnce install user-module --save
+
+# Batch install (parallel, no login required)
 pnce install-batch auth-module user-module payment-module
 ```
 
-### 4. 发布模块（需要登录）
+### 5. Publish Module (Login required)
 
 ```bash
-# 先登录
+# Login first
 pnce login
 
-# 在模块目录中上传
+# Upload from module directory
 pnce upload
 
-# 或者从指定目录上传
+# Or upload from specified directory
 pnce upload -d ./modules/my-module
 ```
 
-## 🎨 功能列表
+## 📖 Command Reference
 
-### 模块管理
-
-| 功能 | 命令 | 说明 | 需要登录 |
-|------|------|------|----------|
-| 安装模块 | `pnce install <module>` | 安装单个模块到项目 | ❌ 否 |
-| 批量安装 | `pnce install-batch <modules...>` | 并行安装多个模块（3倍速度） | ❌ 否 |
-| 上传模块 | `pnce upload` | 发布模块到注册中心 | ✅ 是 |
-| 搜索模块 | `pnce search <keyword>` | 搜索可用模块 | ❌ 否 |
-| 查看信息 | `pnce info <name>` | 查看模块详细信息 | ❌ 否 |
-| 查看列表 | `pnce list` | 列出所有可用模块 | ❌ 否 |
-| 查看热门 | `pnce trending` | 查看热门模块 | ❌ 否 |
-| 查看统计 | `pnce stats` | 查看全局统计信息 | ❌ 否 |
-
-### 依赖管理
-
-| 功能 | 命令 | 说明 |
-|------|------|------|
-| 添加依赖 | `pnce modules add <name>` | 添加模块到依赖配置 |
-| 移除依赖 | `pnce modules remove <name>` | 从依赖配置中移除 |
-| 安装依赖 | `pnce modules install` | 安装配置中的所有依赖 |
-| 更新依赖 | `pnce modules update` | 更新所有依赖 |
-| 查看依赖 | `pnce modules list` | 查看当前依赖配置 |
-
-### 端口管理
-
-| 功能 | 命令 | 说明 |
-|------|------|------|
-| 分配端口 | `pnce port assign <name>` | 为模块分配端口 |
-| 释放端口 | `pnce port release <name>` | 释放模块端口 |
-| 查看端口 | `pnce port list` | 查看端口分配情况 |
-
-### 部署管理
-
-| 功能 | 命令 | 说明 |
-|------|------|------|
-| 查看配置 | `pnce registry` | 查看注册中心配置 |
-
-### 认证管理
-
-> 💡 **提示**：认证仅在**上传模块到云端**、**删除云端模块**、**更新云端模块版本**时需要。
->
-> **不需要登录的操作**：安装模块、搜索模块、查看信息、创建服务等。
-
-| 功能 | 命令 | 说明 |
-|------|------|------|
-| 登录 | `pnce login` | 登录账户（上传模块前需要） |
-| 注册 | `pnce register` | 注册新账户 |
-| 查看用户 | `pnce me` | 查看当前用户信息 |
-| 登出 | `pnce logout` | 登出账户 |
-
-## 📖 详细使用指南
-
-### 模块安装
-
-#### 基础安装
+### Global Options
 
 ```bash
-# 安装最新版本
-pnce install user-module
-
-# 安装指定版本
-pnce install user-module@1.2.0
-
-# 显示详细日志
-pnce install user-module --verbose
+--version, -v    # Display version
+--help, -h       # Display help information
 ```
 
-#### 安装模式
+### Module Commands
 
-```bash
-# 外部依赖模式（添加到 modules.json）
-pnce install user-module --link
+| Command | Description | Login Required |
+|---------|-------------|----------------|
+| `pnce install <module>` | Install a single module | ❌ No |
+| `pnce install-batch <modules...>` | Parallel install multiple modules | ❌ No |
+| `pnce upload` | Publish module to registry | ✅ Yes |
+| `pnce fix-imports <module>` | Fix import paths | ❌ No |
 
-# 本地集成模式（添加到 package.json）
-pnce install user-module --save
-
-# 临时安装（不加入依赖管理）
-pnce install user-module
-```
-
-#### 批量安装（推荐）
-
-```bash
-# 批量安装（默认并发数3）
-pnce install-batch auth-module user-module payment-module
-
-# 自定义并发数（最多5个）
-pnce install-batch auth-module user-module --concurrency 5
-
-# 批量安装并添加到依赖
-pnce install-batch auth-module user-module --save
-```
-
-### 模块发布（需要登录）
-
-> ⚠️ **上传模块到云端需要登录**
-
-#### 准备模块
-
-确保你的模块目录包含以下文件：
-
-```
-my-module/
-├── package.json          # 必需：模块名称、版本
-├── module.config.json    # 必需：模块配置
-├── src/                  # 源代码
-└── README.md             # 可选：文档
-```
-
-#### package.json 示例
-
-```json
-{
-  "name": "user-module",
-  "version": "1.0.0",
-  "description": "用户管理模块",
-  "main": "dist/index.js",
-  "scripts": {
-    "build": "tsc"
-  }
-}
-```
-
-#### module.config.json 示例
-
-```json
-{
-  "name": "user-module",
-  "description": "用户管理模块",
-  "author": "your-username",
-  "version": "1.0.0",
-  "type": "service",
-  "appId": "",
-  "teamId": ""
-}
-```
-
-#### 发布流程
-
-```bash
-# 1. 登录（如果未登录）
-pnce login
-
-# 2. 在模块目录中执行
-cd my-module
-
-# 3. 上传模块
-pnce upload
-
-# 4. 发布成功！
-```
-
-### 依赖管理
-
-#### modules.json 配置
-
-```json
-{
-  "modules": {
-    "auth-module": "^1.0.0",
-    "user-module": "^2.0.0",
-    "payment-module": "^1.5.0"
-  }
-}
-```
-
-#### 常用命令
-
-```bash
-# 添加依赖
-pnce modules add auth-module
-
-# 安装所有依赖
-pnce modules install
-
-# 查看依赖列表
-pnce modules list
-
-# 移除依赖
-pnce modules remove auth-module
-
-# 更新所有依赖
-pnce modules update
-```
-
-### 端口管理
-
-```bash
-# 为模块分配端口
-pnce port assign user-module
-
-# 指定端口
-pnce port assign user-module -p 3001
-
-# 释放端口
-pnce port release user-module
-
-# 查看端口分配
-pnce port list
-```
-
-### 创建服务
-
-```bash
-# 创建服务
-pnce init service my-app
-
-# 创建微服务
-pnce init microservice my-service
-
-# 进入目录
-cd my-app
-
-# 安装依赖
-npm install
-
-# 运行
-npm run start:dev
-```
-
-生成的项目结构：
-
-```
-my-app/
-├── src/
-│   ├── main.ts
-│   └── app.module.ts
-├── test/
-├── package.json
-├── tsconfig.json
-├── nest-cli.json
-└── README.md
-```
-
-## 📚 命令参考
-
-### 全局选项
-
-```bash
---version, -v    # 显示版本号
---help, -h       # 显示帮助信息
---verbose        # 显示详细日志
-```
-
-### 安装命令选项
+### Install Command Options
 
 ```bash
 pnce install <module> [options]
 
-选项:
-  -p, --port <port>        # 指定端口
-  --link                   # 添加到 modules.json（外部依赖）
-  --save                   # 添加到 package.json（本地集成）
-  --parallel               # 启用并行下载（默认）
-  --no-parallel            # 禁用并行下载
-  --concurrency <num>      # 并发下载数量（默认3）
+Options:
+  -p, --port <port>        # Specify port
+  --link                   # Add to modules.json (external dependency)
+  --save                   # Add to package.json (local integration)
+  --parallel               # Enable parallel download (default)
+  --no-parallel            # Disable parallel download
+  --concurrency <num>      # Concurrent download count (default 3)
 ```
 
-### 批量安装选项
+### Batch Install Options
 
 ```bash
 pnce install-batch <modules...> [options]
 
-选项:
-  --concurrency <num>      # 并发下载数量（默认3）
-  --link                   # 添加到 modules.json
-  --save                   # 添加到 package.json
+Options:
+  --concurrency <num>      # Concurrent download count (default 3)
+  --link                   # Add to modules.json
+  --save                   # Add to package.json
 ```
 
-### 上传命令选项
+### Module Dependency Management
+
+| Command | Description |
+|---------|-------------|
+| `pnce modules-init` | Initialize modules.json configuration |
+| `pnce modules-add <module> [version]` | Add module to modules.json |
+| `pnce modules-remove <module>` | Remove module from modules.json |
+| `pnce modules-install` | Install all modules from modules.json |
+| `pnce modules-list` | List all module dependencies |
+| `pnce modules-prune` | Remove unused modules |
+
+### Project Initialization
+
+| Command | Description |
+|---------|-------------|
+| `pnce init [name]` | Initialize service or microservice project |
+| `pnce init service <name>` | Create a service project |
+| `pnce init microservice <name>` | Create a microservice project |
+
+### Authentication Commands
+
+| Command | Description |
+|---------|-------------|
+| `pnce login` | Login to registry (OAuth2 or email/password) |
+| `pnce register` | Register new account |
+| `pnce me` | View current user info |
+| `pnce logout` | Logout from account |
+
+### Registry Commands
+
+| Command | Description |
+|---------|-------------|
+| `pnce registry set <url>` | Set module registry URL |
+| `pnce registry get` | View current registry configuration |
+| `pnce registry ping` | Test registry connection |
+| `pnce registry reset` | Reset to default registry |
+
+### Port Management
+
+| Command | Description |
+|---------|-------------|
+| `pnce ports` | View port allocation |
+| `pnce ports -c, --clear` | Clear port cache |
+| `pnce ports -s, --show` | Show port allocation information |
+
+### Language Settings
+
+| Command | Description |
+|---------|-------------|
+| `pnce lang` | View or set language |
+| `pnce lang set <lang>` | Set interface language (zh/en) |
+| `pnce lang list` | List supported languages |
+
+### Command Aliases
+
+| Command | Description |
+|---------|-------------|
+| `pnce alias` | Manage command aliases |
+| `pnce alias add <alias> <command>` | Add command alias |
+| `pnce alias remove <alias>` | Remove alias |
+| `pnce alias list` | List all aliases |
+| `pnce alias clear` | Clear all aliases |
+
+### Configuration Profiles
+
+| Command | Description |
+|---------|-------------|
+| `pnce profile` | Manage configuration profiles |
+| `pnce profile save <name>` | Save current config as profile |
+| `pnce profile load <name>` | Load profile (without switching) |
+| `pnce profile use <name>` | Switch to profile |
+| `pnce profile list` | List all profiles |
+| `pnce profile delete <name>` | Delete profile |
+| `pnce profile rename <old> <new>` | Rename profile |
+
+### Analytics (Optional)
+
+| Command | Description |
+|---------|-------------|
+| `pnce analytics` | Manage usage analytics |
+| `pnce analytics enable [endpoint]` | Enable analytics |
+| `pnce analytics disable` | Disable analytics |
+| `pnce analytics clear` | Clear local events |
+| `pnce analytics status` | Show analytics status |
+
+### Plugin System
+
+| Command | Description |
+|---------|-------------|
+| `pnce plugin` | Manage plugin system |
+| `pnce plugin list` | List all installed plugins |
+| `pnce plugin info` | Show plugin system information |
+
+### Configuration Validation
+
+| Command | Description |
+|---------|-------------|
+| `pnce config validate` | Validate configuration file with suggestions |
+| `pnce config validate --fix` | Auto-fix configuration issues |
+| `pnce config check` | Quick configuration check |
+
+## ⚙️ Configuration Guide
+
+### Environment Variable Configuration
+
+Support configuring CLI behavior through environment variables:
 
 ```bash
-pnce upload [options]
-
-选项:
-  -d, --directory <dir>    # 模块目录路径（默认：.）
-```
-
-### 搜索命令选项
-
-```bash
-pnce search <keyword> [options]
-
-选项:
-  --limit <num>            # 限制结果数量（默认20）
-  --author <name>          # 按作者搜索
-```
-
-### 登录命令选项
-
-```bash
-pnce login [options]
-
-选项:
-  -e, --email <email>      # 邮箱地址
-  -p, --password <pwd>     # 密码
-```
-
-## ⚙️ 配置说明
-
-### 环境变量配置
-
-支持通过环境变量配置 CLI 行为：
-
-```bash
-# API 服务器地址
+# API server address
 export PNCE_API_SERVER="http://localhost:3000"
 
-# OAuth2 端点
+# OAuth2 endpoint
 export PNCE_OAUTH_ENDPOINT="http://localhost:5173/authorize"
 
-# OAuth2 回调端口
+# OAuth2 callback port
 export PNCE_OAUTH_PORT=3001
 
-# 访问 Token（可选，用于 CI/CD）
+# Access token (optional, for CI/CD)
 export PNCE_TOKEN="your-access-token"
 
-# 日志级别
+# Log level
 export PNCE_LOG_LEVEL="debug"  # error, warn, info, debug
 
-# 代理设置
+# Proxy settings
 export PNCE_PROXY_URL="http://proxy:8080"
 
-# 禁用缓存
+# Disable cache
 export PNCE_NO_CACHE="true"
 
-# 详细输出
+# Verbose output
 export PNCE_VERBOSE="true"
 ```
 
-### 用户配置文件
+### User Configuration File
 
-配置文件位置：`~/.pnce/config.json`
+Configuration file location: `~/.pnce/config.json`
 
 ```json
 {
@@ -473,13 +355,14 @@ export PNCE_VERBOSE="true"
   "cacheDir": "/home/user/.pnce/cache",
   "cacheExpireTime": 604800000,
   "logLevel": "info",
-  "verbose": false
+  "verbose": false,
+  "language": "en"
 }
 ```
 
-### 项目配置文件
+### Project Configuration File
 
-配置文件位置：`.pnce/config.json`
+Configuration file location: `.pnce/config.json`
 
 ```json
 {
@@ -489,184 +372,296 @@ export PNCE_VERBOSE="true"
 }
 ```
 
-### 配置优先级
+### Configuration Priority
 
-1. 环境变量（最高优先级）
-2. 项目配置（`.pnce/config.json`）
-3. 用户配置（`~/.pnce/config.json`）
-4. 默认配置（最低优先级）
+1. Environment variables (highest priority)
+2. Project config (`.pnce/config.json`)
+3. User config (`~/.pnce/config.json`)
+4. Default config (lowest priority)
 
-### 日志文件
+### Log Files
 
-日志文件位置：`~/.pnce/logs/`
+Log file location: `~/.pnce/logs/`
 
 ```
 ~/.pnce/logs/
-├── error.log      # 错误日志
-└── combined.log   # 所有日志
+├── error.log      # Error logs
+└── combined.log   # All logs
 ```
 
-## 🔍 高级用法
+## 🔍 Advanced Features
 
-### 1. 批量安装优化
+### 1. Module Installation Modes
 
 ```bash
-# 根据网络情况调整并发数
-# 网络快：增加并发数
+# External dependency mode (adds to modules.json)
+pnce install user-module --link
+# Installs to: src/external_modules/
+# Added to: modules.json
+
+# Local integration mode (adds to package.json)
+pnce install user-module --save
+# Installs to: src/local_modules/
+# Added to: package.json -> localModules
+
+# Temporary install (not tracked)
+pnce install user-module
+# Installs to: src/external_modules/
+# No configuration changes
+```
+
+### 2. Dependency Management with modules.json
+
+```bash
+# Initialize modules.json
+pnce modules-init
+
+# Add dependency
+pnce modules-add user-module ^1.0.0
+
+# Add dependency without installing
+pnce modules-add user-module --no-install
+
+# Install all dependencies
+pnce modules-install
+
+# Force reinstall all modules
+pnce modules-install --force
+
+# List dependencies
+pnce modules-list
+
+# Remove dependency
+pnce modules-remove user-module
+
+# Clean up unused modules
+pnce modules-prune
+```
+
+### 3. Profile Management
+
+```bash
+# Save current configuration as a profile
+pnce profile save production
+
+# Switch to a profile
+pnce profile use production
+
+# List all profiles
+pnce profile list
+
+# Rename a profile
+pnce profile rename production prod
+
+# Delete a profile
+pnce profile delete production
+```
+
+### 4. Command Aliases
+
+```bash
+# Add alias for frequently used commands
+pnce alias add i install
+pnce alias add ib install-batch
+pnce alias add up upload
+
+# Now you can use shorter commands
+pnce i user-module
+pnce ib auth user payment
+pnce up
+
+# List all aliases
+pnce alias list
+
+# Remove an alias
+pnce alias remove i
+```
+
+### 5. Batch Installation Optimization
+
+```bash
+# Adjust concurrency based on network conditions
+# Fast network: increase concurrency
 pnce install-batch m1 m2 m3 m4 m5 --concurrency 5
 
-# 网络慢：减少并发数
+# Slow network: reduce concurrency
 pnce install-batch m1 m2 m3 --concurrency 2
 ```
 
-### 2. 调试模式
+### 6. Debug Mode
 
 ```bash
-# 启用详细日志
+# Enable detailed logs
 export PNCE_LOG_LEVEL="debug"
 pnce install module-name
 
-# 查看详细日志文件
+# View detailed log files
 cat ~/.pnce/logs/combined.log
 
-# 只查看错误
+# View only errors
 cat ~/.pnce/logs/error.log
 ```
 
-### 3. 清理缓存
+### 7. Clear Cache
 
 ```bash
-# 清理模块缓存
+# Clear module cache
 rm -rf ~/.pnce/cache
 
-# 清理日志
+# Clear logs
 rm -rf ~/.pnce/logs
 
-# 清理所有配置
+# Clear all configurations
 rm -rf ~/.pnce
+
+# Clear port cache
+pnce ports --clear
 ```
 
-### 4. 临时下载目录
+## 📊 Performance Optimization
 
-下载时会在 `~/.module-temp/` 创建临时文件：
+### Parallel Downloads
 
+Batch installation uses parallel downloads for significant speed improvements:
+
+| Module Count | Serial Download | Parallel (3) | Improvement |
+|--------------|------------------|---------------|-------------|
+| 3 modules    | 6 seconds        | 2 seconds     | 3x          |
+| 9 modules    | 18 seconds       | 6 seconds     | 3x          |
+| 15 modules   | 30 seconds       | 10 seconds    | 3x          |
+
+### Cache Mechanism
+
+Downloaded modules are cached for 7 days to avoid repeated downloads.
+
+## 🌐 i18n Support
+
+Pnce CLI supports multiple languages:
+
+```bash
+# View current language
+pnce lang
+
+# Set language to English
+pnce lang set en
+
+# Set language to Chinese
+pnce lang set zh
+
+# List supported languages
+pnce lang list
 ```
-~/.module-temp/
-├── module-name-1.0.0.tgz
-├── module-name-2.0.0.tgz
-└── ...
+
+## 🔌 Plugin System
+
+Pnce CLI features an extensible plugin system:
+
+```bash
+# List installed plugins
+pnce plugin list
+
+# View plugin system info
+pnce plugin info
 ```
 
-### 5. 自动重试
+Currently, the plugin system supports:
+- Command extension
+- Hook system
+- Config validation
+- Event tracking
 
-CLI 会自动重试失败的请求（最多3次），无需手动处理。
+## ❓ FAQ
 
-## 📊 性能优化
+### Q1: What should I do if login fails?
 
-### 并行下载
+**A:** Check the following:
 
-批量安装时，CLI 会使用并行下载大幅提升速度：
+1. Network connection is normal
+2. API server is accessible (`pnce registry ping`)
+3. Account credentials are correct
+4. Check error logs: `cat ~/.pnce/logs/error.log`
 
-| 模块数量 | 串行下载 | 并行下载（3） | 提升 |
-|----------|----------|--------------|------|
-| 3 个     | 6 秒     | 2 秒         | 3x   |
-| 9 个     | 18 秒    | 6 秒         | 3x   |
-| 15 个    | 30 秒    | 10 秒        | 3x   |
+### Q2: What if the token expires?
 
-### 缓存机制
-
-已下载的模块会缓存 7 天，避免重复下载。
-
-## ❓ 常见问题
-
-### Q1: 登录失败怎么办？
-
-**A:** 检查以下几点：
-
-1. 网络连接是否正常
-2. API 服务器是否可访问
-3. 账户密码是否正确
-4. 检查错误日志：`cat ~/.pnce/logs/error.log`
-
-### Q2: Token 过期了怎么办？
-
-**A:** Token 过期后，CLI 会自动提示重新登录：
+**A:** After token expiration, CLI will prompt you to re-login:
 
 ```bash
 pnce login
 ```
 
-### Q3: 如何更改 API 服务器？
+### Q3: How to change the API server?
 
-**A:** 通过环境变量或配置文件：
+**A:** Through registry commands:
 
 ```bash
-# 环境变量
-export PNCE_API_SERVER="http://localhost:3000"
+pnce registry set http://your-server.com
 
-# 或修改配置文件
-# ~/.pnce/config.json
+# Or reset to default
+pnce registry reset
 ```
 
-### Q4: 安装模块失败？
+### Q4: Module installation failed?
 
-**A:** 可能的原因：
+**A:** Possible reasons:
 
-1. 模块不存在：使用 `pnce search` 搜索
-2. 网络问题：检查网络连接
-3. 权限问题：检查写入权限
-4. 查看详细日志：`export PNCE_LOG_LEVEL="debug"`
+1. Module doesn't exist: verify with registry
+2. Network issues: check connection with `pnce registry ping`
+3. Permission issues: check write permissions
+4. View detailed logs: `export PNCE_LOG_LEVEL="debug"`
 
-### Q5: 如何查看已安装的模块？
+### Q5: How to view installed modules?
 
-**A:** 查看项目配置文件：
+**A:** View project configuration files:
 
 ```bash
 # modules.json
 cat modules.json
 
-# package.json 的 localModules
+# package.json's localModules
 cat package.json | grep localModules
 
-# .pnce/modules.json
-cat .pnce/modules.json
+# List dependencies
+pnce modules-list
 ```
 
-### Q6: 批量安装时遇到错误？
+### Q6: Error during batch installation?
 
-**A:** CLI 会继续安装其他模块，错误信息会显示在最后。可以单独重试失败的模块：
+**A:** CLI will continue installing other modules, error messages will be shown at the end. You can retry failed modules individually:
 
 ```bash
 pnce install failed-module-name
 ```
 
-### Q7: 如何卸载模块？
+### Q7: How to uninstall a module?
 
-**A:** 手动删除模块目录和配置：
+**A:** Manually delete module directory and configuration:
 
 ```bash
-# 删除模块目录
-rm -rf src/external_modules/module-name
-rm -rf src/local_modules/module-name
+# Remove from dependencies
+pnce modules-remove user-module
 
-# 从配置中移除
-# 编辑 modules.json 或 package.json
+# Clean up unused modules
+pnce modules-prune
+
+# Or manually delete
+rm -rf src/external_modules/user-module
+rm -rf src/local_modules/user-module
 ```
 
-### Q8: 如何更新 CLI？
+### Q8: How to update CLI?
 
-**A:** 使用 npm 更新：
+**A:** Use npm to update:
 
 ```bash
 npm update -g pnce
 ```
 
-### Q9: 支持 CI/CD 吗？
+### Q9: Does it support CI/CD?
 
-**A:** 支持！使用环境变量配置 Token：
+**A:** Yes! Use environment variable to configure token:
 
 ```yaml
-# GitHub Actions 示例
+# GitHub Actions example
 env:
   PNCE_API_SERVER: "https://api.example.com"
   PNCE_TOKEN: ${{ secrets.PNCE_TOKEN }}
@@ -675,58 +670,58 @@ steps:
   - run: pnce install user-module
 ```
 
-### Q10: 模块安装在哪里？
+### Q10: Where are modules installed?
 
-**A:** 取决于安装模式：
+**A:** Depends on installation mode:
 
-- **外部依赖**（`--link`）：`src/external_modules/`
-- **本地集成**（`--save`）：`src/local_modules/`
-- **临时安装**：`src/external_modules/`
+- **External dependency** (`--link`): `src/external_modules/`
+- **Local integration** (`--save`): `src/local_modules/`
+- **Temporary install**: `src/external_modules/`
 
-## 🤝 贡献
+## ⚠️ Important Notes
 
-欢迎贡献代码、报告问题或提出建议！
+### Login Requirements
 
-## ⚠️ 重要说明
+**Operations requiring login** (cloud operations only):
+- ✅ Upload module to cloud (`pnce upload`)
+- ✅ Delete cloud module
+- ✅ Update cloud module version
 
-### 登录要求
+**Operations not requiring login** (local operations and public access):
+- ❌ Install module (`pnce install`)
+- ❌ Batch install (`pnce install-batch`)
+- ❌ Search module (via registry)
+- ❌ View module info (via registry)
+- ❌ Create service (`pnce init`)
+- ❌ Dependency management (`pnce modules`)
+- ❌ Port management (`pnce ports`)
+- ❌ Registry management (`pnce registry`)
 
-**需要登录的操作**（仅限云端操作）：
-- ✅ 上传模块到云端（`pnce upload`）
-- ✅ 删除云端模块
-- ✅ 更新云端模块版本
-
-**不需要登录的操作**（本地操作和公开访问）：
-- ❌ 安装模块（`pnce install`）
-- ❌ 批量安装（`pnce install-batch`）
-- ❌ 搜索模块（`pnce search`）
-- ❌ 查看模块信息（`pnce info`）
-- ❌ 查看模块列表（`pnce list`）
-- ❌ 创建服务（`pnce init`）
-- ❌ 依赖管理（`pnce modules`）
-- ❌ 端口管理（`pnce port`）
-
-**示例**：
+**Example**:
 
 ```bash
-# ❌ 安装模块 - 无需登录，直接使用
+# ❌ Install module - No login required, use directly
 pnce install user-module
 
-# ✅ 上传模块 - 需要登录
-pnce login           # 先登录
-pnce upload          # 再上传
+# ✅ Upload module - Login required
+pnce login           # Login first
+pnce upload          # Then upload
 ```
 
-## 📄 许可证
+## 🤝 Contributing
 
-[MIT](LICENSE)
+Contributions of code, issue reports, or suggestions are welcome! Please see [CONTRIBUTING.md](docs/CONTRIBUTING.md) for details.
 
-## 🔗 相关链接
+## 📄 License
 
-- [npm 包](https://www.npmjs.com/package/pnce)
-- [GitHub 仓库](https://github.com/hi-giacomo/pnce)
-- [问题反馈](https://github.com/hi-giacomo/pnce/issues)
+[MulanPSL2](LICENSE)
+
+## 🔗 Related Links
+
+- [npm package](https://www.npmjs.com/package/pnce)
+- [GitHub repository](https://github.com/hi-giacomo/pnce)
+- [Issue tracker](https://github.com/hi-giacomo/pnce/issues)
 
 ---
 
-**让 NestJS 开发更简单、更高效！** 🚀
+**Make NestJS development simpler and more efficient!** 🚀

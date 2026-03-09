@@ -69,8 +69,8 @@ export class ProgressBar {
   }
 
   /**
-   * 更新进度
-   * @param chunkSize 本次下载的字节数
+   * Update progress
+   * @param chunkSize Bytes downloaded this time
    */
   update(chunkSize: number): void {
     this.downloadedBytes += chunkSize;
@@ -78,10 +78,10 @@ export class ProgressBar {
       speed: this.calculateSpeed(),
     });
 
-    // 每秒记录一次日志
+    // Log once per second
     const now = Date.now();
     if (this.logger && now - this.lastLogTime > 1000) {
-      this.logger.debug('下载进度', {
+      this.logger.debug('Download progress', {
         downloaded: this.downloadedBytes,
         total: this.totalSize,
         percentage: ((this.downloadedBytes / this.totalSize) * 100).toFixed(2),
@@ -92,7 +92,7 @@ export class ProgressBar {
   }
 
   /**
-   * 完成进度
+   * Complete progress
    */
   stop(): void {
     const elapsed = (Date.now() - this.startTime) / 1000;
@@ -101,18 +101,18 @@ export class ProgressBar {
     this.bar.stop();
 
     if (this.logger) {
-      this.logger.info('下载完成', {
+      this.logger.info('Download complete', {
         downloaded: this.downloadedBytes,
         elapsed: elapsed.toFixed(2),
         avgSpeed,
       });
     }
 
-    console.log(`✓ 下载完成 (${avgSpeed}/s, ${elapsed.toFixed(2)}s)`);
+    console.log(`✓ Download complete (${avgSpeed}/s, ${elapsed.toFixed(2)}s)`);
   }
 
   /**
-   * 计算当前速度
+   * Calculate current speed
    */
   private calculateSpeed(): string {
     const elapsed = (Date.now() - this.startTime) / 1000;
@@ -122,7 +122,7 @@ export class ProgressBar {
   }
 
   /**
-   * 格式化字节数
+   * Format bytes
    */
   private formatBytes(bytes: number): string {
     if (bytes === 0) return '0 B';
@@ -134,7 +134,7 @@ export class ProgressBar {
 }
 
 /**
- * 多进度条管理器（用于并行下载）
+ * Multi-progress bar manager (for parallel downloads)
  */
 export class MultiProgressManager {
   private progressBars: Map<string, ProgressBar> = new Map();
@@ -145,7 +145,7 @@ export class MultiProgressManager {
   }
 
   /**
-   * 创建一个新的进度条
+   * Create a new progress bar
    */
   create(id: string, options: Omit<ProgressBarOptions, 'title'>): ProgressBar {
     const progressBar = new ProgressBar({
@@ -159,7 +159,7 @@ export class MultiProgressManager {
   }
 
   /**
-   * 更新指定ID的进度条
+   * Update progress bar for specified ID
    */
   update(id: string, chunkSize: number): void {
     const progressBar = this.progressBars.get(id);
@@ -169,7 +169,7 @@ export class MultiProgressManager {
   }
 
   /**
-   * 停止指定ID的进度条
+   * Stop progress bar for specified ID
    */
   stop(id: string): void {
     const progressBar = this.progressBars.get(id);
@@ -180,7 +180,7 @@ export class MultiProgressManager {
   }
 
   /**
-   * 停止所有进度条
+   * Stop all progress bars
    */
   stopAll(): void {
     this.progressBars.forEach((bar, id) => {
@@ -190,7 +190,7 @@ export class MultiProgressManager {
   }
 
   /**
-   * 获取进行中的进度条数量
+   * Get number of active progress bars
    */
   getActiveCount(): number {
     return this.progressBars.size;
@@ -198,7 +198,7 @@ export class MultiProgressManager {
 }
 
 /**
- * 创建简单的进度条（用于通用进度显示）
+ * Create simple progress bar (for general progress display)
  */
 export function createSimpleProgressBar(title: string, total: number): SingleBar {
   const bar = new cliProgress.SingleBar(

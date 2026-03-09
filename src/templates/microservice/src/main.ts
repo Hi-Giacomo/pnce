@@ -112,26 +112,29 @@ function handleEnvFileChange(): void {
       console.log('✅ 配置已应用，无需重启服务');
     }
   } catch (error) {
-    console.error('处理 .env 文件变化失败:', error instanceof Error ? error.message : String(error));
+    console.error(
+      '处理 .env 文件变化失败:',
+      error instanceof Error ? error.message : String(error)
+    );
   }
 }
 
 async function restartServer() {
   console.log('\n⚠️  准备重启服务...\n');
-  
+
   try {
     // 先停止监听，避免重启时触发重复事件
     if (envWatcher) {
       await envWatcher.close();
       envWatcher = null;
     }
-    
+
     if (app) {
       // 关闭现有服务器
       await app.close();
       console.log('✅ 旧服务器已关闭');
     }
-    
+
     // 启动新服务器
     await bootstrap();
     console.log('✅ 服务重启成功\n');

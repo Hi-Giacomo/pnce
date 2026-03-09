@@ -3,12 +3,12 @@ import * as path from 'path';
 import * as tar from 'tar';
 import { ApiService } from './api.service';
 import { CliError, ErrorCode } from '../utils/errors';
-import { Logger, initLogger } from '../utils/logger';
+import { Logger } from '../utils/logger';
 import { ProgressBar, MultiProgressManager } from '../utils/progress';
 import axios from 'axios';
 import retry from 'axios-retry';
 import winston from 'winston';
-import { DOWNLOAD, HTTP, PATHS } from '../constants';
+import { DOWNLOAD, HTTP } from '../constants';
 import { ApiResponse, ModuleInfo } from '../types';
 
 /**
@@ -51,7 +51,7 @@ export class ModuleDownloadService {
   ): Promise<void> {
     const initialCwd = process.env.INIT_CWD || process.cwd();
     let targetVersion = version;
-    let installPath = path.resolve(initialCwd, installDir, moduleName);
+    const installPath = path.resolve(initialCwd, installDir, moduleName);
 
     // 如果没有指定版本，获取最新版本
     if (!targetVersion) {
@@ -59,7 +59,12 @@ export class ModuleDownloadService {
     }
 
     if (!targetVersion) {
-      throw new CliError(ErrorCode.VERSION_NOT_FOUND, `模块 "${moduleName}" 的版本 "latest" 不存在`, 404, { name: moduleName, version: 'latest' });
+      throw new CliError(
+        ErrorCode.VERSION_NOT_FOUND,
+        `模块 "${moduleName}" 的版本 "latest" 不存在`,
+        404,
+        { name: moduleName, version: 'latest' }
+      );
     }
 
     // 检查是否已安装且版本匹配
@@ -76,18 +81,15 @@ export class ModuleDownloadService {
     }
 
     if (moduleStatus.isInstalled && moduleStatus.needsUpdate) {
-      console.log(`🔄 ${moduleName} 需要重新安装${moduleStatus.installedVersion ? ` (当前: ${moduleStatus.installedVersion})` : ''}...`);
+      console.log(
+        `🔄 ${moduleName} 需要重新安装${moduleStatus.installedVersion ? ` (当前: ${moduleStatus.installedVersion})` : ''}...`
+      );
     }
 
     console.log(`下载 ${moduleName}@${targetVersion}...`);
 
     // 下载并安装
-    await this.downloadAndExtract(
-      moduleName,
-      targetVersion,
-      installPath,
-      initialCwd
-    );
+    await this.downloadAndExtract(moduleName, targetVersion, installPath, initialCwd);
 
     console.log(`✓ ${moduleName}@${targetVersion} 安装成功`);
   }
@@ -107,19 +109,13 @@ export class ModuleDownloadService {
     const progressManager = new MultiProgressManager(this.logger);
 
     // 创建安装任务
-    const tasks = modules.map(module => ({
+    const tasks = modules.map((module) => ({
       ...module,
       installPath: path.resolve(initialCwd, installDir, module.name),
     }));
 
     // 并发执行
-    await this.concurrentExecute(
-      tasks,
-      concurrency,
-      progressManager,
-      installDir,
-      initialCwd
-    );
+    await this.concurrentExecute(tasks, concurrency, progressManager, installDir, initialCwd);
 
     progressManager.stopAll();
   }
@@ -128,13 +124,12 @@ export class ModuleDownloadService {
    * 获取模块的最新版本
    */
   private async getLatestVersion(moduleName: string): Promise<string> {
-    const response = await this.api.get<ApiResponse<{ module: ModuleInfo }>>(`/api/modules/${moduleName}`);
+    const response = await this.api.get<ApiResponse<{ module: ModuleInfo }>>(
+      `/api/modules/${moduleName}`
+    );
 
     if (!response.success || !response.module?.latest) {
-      throw new CliError(
-        ErrorCode.MODULE_NOT_FOUND,
-        `模块 "${moduleName}" 不存在`
-      );
+      throw new CliError(ErrorCode.MODULE_NOT_FOUND, `模块 "${moduleName}" 不存在`);
     }
 
     return response.module.latest;
@@ -169,7 +164,7 @@ export class ModuleDownloadService {
     }
 
     const moduleConfigPath = path.join(modulePath, 'module.config.json');
-    if (!await fs.pathExists(moduleConfigPath)) {
+    if (!(await fs.pathExists(moduleConfigPath))) {
       return {
         isInstalled: true,
         needsUpdate: true,
@@ -195,11 +190,12 @@ export class ModuleDownloadService {
   /**
    * 下载并解压模块
    */
+
   private async downloadAndExtract(
     moduleName: string,
     version: string,
     installPath: string,
-    initialCwd: string,
+    _initialCwd: string,
     progressManager?: MultiProgressManager
   ): Promise<void> {
     const downloadUrl = `${this.api['axiosInstance'].defaults.baseURL}/api/modules/${moduleName}/${version}/download`;
@@ -208,7 +204,7 @@ export class ModuleDownloadService {
     const axiosInstance = axios.create();
     retry(axiosInstance, {
       retries: HTTP.RETRY_COUNT,
-      retryDelay: retryCount => retryCount * HTTP.RETRY_DELAY_MS,
+      retryDelay: (retryCount) => retryCount * HTTP.RETRY_DELAY_MS,
     });
 
     const response = await axiosInstance({
@@ -276,7 +272,6 @@ export class ModuleDownloadService {
     installDir: string,
     initialCwd: string
   ): Promise<void> {
-    const semaphore = new Array(concurrency).fill(null);
     const executing: Set<Promise<void>> = new Set();
 
     for (const task of tasks) {
@@ -285,12 +280,7 @@ export class ModuleDownloadService {
         await Promise.race(executing);
       }
 
-      const promise = this.installTask(
-        task,
-        progressManager,
-        installDir,
-        initialCwd
-      ).then(() => {
+      const promise = this.installTask(task, progressManager, installDir, initialCwd).then(() => {
         executing.delete(promise);
       });
 
@@ -318,12 +308,7 @@ export class ModuleDownloadService {
       }
 
       // 检查状态
-      const status = await this.checkModuleStatus(
-        task.name,
-        targetVersion,
-        installDir,
-        initialCwd
-      );
+      const status = await this.checkModuleStatus(task.name, targetVersion, installDir, initialCwd);
 
       if (status.isInstalled && !status.needsUpdate) {
         console.log(`✓ ${task.name}@${targetVersion} 已安装`);

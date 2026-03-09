@@ -52,7 +52,7 @@ export class ModuleHashService {
   async readInstalledModuleHash(modulePath: string): Promise<string | null> {
     const hashFilePath = path.join(modulePath, '.module-hash');
 
-    if (!await fs.pathExists(hashFilePath)) {
+    if (!(await fs.pathExists(hashFilePath))) {
       return null;
     }
 
@@ -108,7 +108,7 @@ export class ModuleHashService {
       } else if (stat.isFile()) {
         // 跳过 lock 文件和临时文件
         const skipPatterns = ['.lock', '.log', '.DS_Store', 'npm-debug'];
-        const shouldSkip = skipPatterns.some(pattern => file.endsWith(pattern));
+        const shouldSkip = skipPatterns.some((pattern) => file.endsWith(pattern));
 
         if (!shouldSkip) {
           callback(filePath);

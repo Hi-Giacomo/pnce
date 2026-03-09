@@ -91,7 +91,7 @@ export class AliasManager {
    */
   resolve(args: string[]): string[] {
     const command = args[0];
-    const alias = this.config.aliases[command];
+    const alias = command !== undefined ? this.config.aliases[command] : undefined;
 
     if (alias) {
       // 替换别名为原始命令

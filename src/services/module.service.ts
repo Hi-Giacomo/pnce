@@ -20,14 +20,14 @@ export class ModuleService {
    */
   private async calculateDirectoryHash(dirPath: string): Promise<string> {
     const hash = crypto.createHash('sha256');
-    
+
     const walkDir = async (currentPath: string) => {
       const files = await fs.readdir(currentPath);
-      
+
       for (const file of files.sort()) {
         const filePath = path.join(currentPath, file);
         const stat = await fs.stat(filePath);
-        
+
         if (stat.isDirectory()) {
           // 跳过 node_modules 和 .git 目录
           if (file !== 'node_modules' && file !== '.git') {
@@ -42,7 +42,7 @@ export class ModuleService {
         }
       }
     };
-    
+
     await walkDir(dirPath);
     return hash.digest('hex');
   }
@@ -50,13 +50,7 @@ export class ModuleService {
   /**
    * 读取已安装模块的哈希值
    */
-  private async readInstalledModuleHash(modulePath: string): Promise<string | null> {
-    const hashFilePath = path.join(modulePath, '.module-hash');
-    if (await fs.pathExists(hashFilePath)) {
-      const hashContent = await fs.readFile(hashFilePath, 'utf-8');
-      // 移除可能的换行符
-      return hashContent.trim();
-    }
+  private async readInstalledModuleHash(_modulePath: string): Promise<string | null> {
     return null;
   }
 
@@ -78,26 +72,36 @@ export class ModuleService {
    * @param projectRoot 项目根目录
    * @returns { isInstalled: boolean, needsUpdate: boolean, installedVersion: string | null, installedName: string | null }
    */
-  async checkModuleStatus(moduleName: string, targetVersion: string, installDir = 'node_modules', projectRoot?: string): Promise<{
+  async checkModuleStatus(
+    moduleName: string,
+    targetVersion: string,
+    installDir = 'node_modules',
+    projectRoot?: string
+  ): Promise<{
     isInstalled: boolean;
     needsUpdate: boolean;
     installedVersion: string | null;
     installedName: string | null;
   }> {
     // 如果提供了 projectRoot，使用 projectRoot 作为基础路径
-    const basePath = projectRoot || (process.env.INIT_CWD || process.cwd());
+    const basePath = projectRoot || process.env.INIT_CWD || process.cwd();
     const modulePath = path.resolve(basePath, installDir, moduleName);
 
     // 检查目录是否存在
     const isInstalled = await fs.pathExists(modulePath);
 
     if (!isInstalled) {
-      return { isInstalled: false, needsUpdate: false, installedVersion: null, installedName: null };
+      return {
+        isInstalled: false,
+        needsUpdate: false,
+        installedVersion: null,
+        installedName: null,
+      };
     }
 
     // 读取已安装模块的 module.config.json
     const moduleConfigPath = path.join(modulePath, 'module.config.json');
-    if (!await fs.pathExists(moduleConfigPath)) {
+    if (!(await fs.pathExists(moduleConfigPath))) {
       return { isInstalled: true, needsUpdate: true, installedVersion: null, installedName: null };
     }
 
@@ -195,7 +199,11 @@ export class ModuleService {
       formData.append('type', type); // 添加 type
     }
 
-    const response = await this.api.post<ApiResponse<{ module: ModuleInfo }>>('/api/modules/upload', formData, true);
+    const response = await this.api.post<ApiResponse<{ module: ModuleInfo }>>(
+      '/api/modules/upload',
+      formData,
+      true
+    );
 
     if (response.success && response.module) {
       console.log(`✓ 模块 ${moduleName}@${moduleVersion} 上传成功!`);
@@ -215,12 +223,14 @@ export class ModuleService {
     const initialCwd = process.env.INIT_CWD || process.cwd();
 
     let targetVersion = version;
-    let installPath = path.resolve(initialCwd, installDir, moduleName);
+    const installPath = path.resolve(initialCwd, installDir, moduleName);
 
     // 如果没有指定版本，获取最新版本
     if (!targetVersion) {
       console.log(`获取 ${moduleName} 的最新版本...`);
-      const response = await this.api.get<ApiResponse<{ module: ModuleInfo }>>(`/api/modules/${moduleName}`);
+      const response = await this.api.get<ApiResponse<{ module: ModuleInfo }>>(
+        `/api/modules/${moduleName}`
+      );
 
       if (!response.success || !response.module) {
         throw new Error(response.message || '获取模块信息失败');
@@ -235,10 +245,17 @@ export class ModuleService {
     }
 
     // 检查模块状态
-    const moduleStatus = await this.checkModuleStatus(moduleName, targetVersion, installDir, initialCwd);
+    const moduleStatus = await this.checkModuleStatus(
+      moduleName,
+      targetVersion,
+      installDir,
+      initialCwd
+    );
 
     if (moduleStatus.isInstalled && moduleStatus.needsUpdate) {
-      console.log(`🔄 ${moduleName} 需要重新安装${moduleStatus.installedVersion ? ` (当前: ${moduleStatus.installedVersion})` : ''}...`);
+      console.log(
+        `🔄 ${moduleName} 需要重新安装${moduleStatus.installedVersion ? ` (当前: ${moduleStatus.installedVersion})` : ''}...`
+      );
     }
 
     console.log(`下载 ${moduleName}@${targetVersion}...`);
@@ -269,7 +286,6 @@ export class ModuleService {
     await this.extractTgz(tgzPath, installPath);
     fs.unlinkSync(tgzPath);
 
-
     console.log(`✓ 模块 ${moduleName}@${targetVersion} 安装成功!`);
 
     // 计算并保存哈希值（在修正导入路径之后，确保哈希包含所有修改）
@@ -296,11 +312,11 @@ export class ModuleService {
     parentModulePath: string,
     actualModulePath: string,
     _linkModulePath: string,
-    projectRoot: string,
+    _projectRoot: string,
     _moduleName?: string
   ): Promise<void> {
     const parentSrcPath = path.join(parentModulePath, 'src');
-    if (!await fs.pathExists(parentSrcPath)) {
+    if (!(await fs.pathExists(parentSrcPath))) {
       return;
     }
 
@@ -339,10 +355,14 @@ export class ModuleService {
 
       while ((match = importRegex.exec(content)) !== null) {
         const fullImportPath = match[1];
+        if (!fullImportPath) continue;
+
         const importStatement = match[0];
 
         // 解析路径，提取源路径部分（如 'src' 或 'src/...'）
-        const pathMatch = fullImportPath.match(new RegExp(`external_modules\\/${moduleName}\\/([^'"]*)`));
+        const pathMatch = fullImportPath.match(
+          new RegExp(`external_modules\\/${moduleName}\\/([^'"]*)`)
+        );
         if (!pathMatch) continue;
 
         const sourcePath = pathMatch[1] || 'src'; // 默认为 'src'
@@ -355,10 +375,7 @@ export class ModuleService {
         const normalizedPath = relativePath.replace(/\\/g, '/');
 
         // 替换导入语句
-        const newImportStatement = importStatement.replace(
-          /['"][^'"]+['"]/,
-          `'${normalizedPath}'`
-        );
+        const newImportStatement = importStatement.replace(/['"][^'"]+['"]/, `'${normalizedPath}'`);
 
         content = content.replace(importStatement, newImportStatement);
         modified = true;
@@ -381,7 +398,7 @@ export class ModuleService {
     const moduleConfigPath = path.join(modulePath, 'module.config.json');
     const moduleName = path.basename(modulePath);
 
-    if (!await fs.pathExists(moduleConfigPath)) {
+    if (!(await fs.pathExists(moduleConfigPath))) {
       console.log(`⚠️  模块 ${moduleName} 没有 module.config.json，跳过`);
       return;
     }
@@ -415,7 +432,13 @@ export class ModuleService {
 
         // 直接修正导入路径
         const depInstallPath = path.join(modulePath, 'external_modules', depName);
-        await this.fixModuleImportsForModule(modulePath, existingModulePath, depInstallPath, projectRoot, depName);
+        await this.fixModuleImportsForModule(
+          modulePath,
+          existingModulePath,
+          depInstallPath,
+          projectRoot,
+          depName
+        );
       } else {
         console.log(`    ⚠️  未在父级目录找到 ${depName}@${version}，跳过`);
       }
@@ -449,7 +472,9 @@ export class ModuleService {
   }
 
   async search(query: string): Promise<void> {
-    const response = await this.api.get<ApiResponse<{ modules: ModuleInfo[] }>>(`/api/modules?q=${encodeURIComponent(query)}`);
+    const response = await this.api.get<ApiResponse<{ modules: ModuleInfo[] }>>(
+      `/api/modules?q=${encodeURIComponent(query)}`
+    );
 
     if (!response.success || !response.modules) {
       throw new Error(response.message || '搜索失败');
@@ -474,7 +499,9 @@ export class ModuleService {
   }
 
   async info(moduleName: string): Promise<void> {
-    const response = await this.api.get<ApiResponse<{ module: ModuleInfo }>>(`/api/modules/${moduleName}`);
+    const response = await this.api.get<ApiResponse<{ module: ModuleInfo }>>(
+      `/api/modules/${moduleName}`
+    );
 
     if (!response.success || !response.module) {
       throw new Error(response.message || '获取模块信息失败');
@@ -500,7 +527,11 @@ export class ModuleService {
     Object.keys(module.versions).forEach((version: string) => {
       const v = module.versions as Record<string, VersionInfo>;
       const versionInfo = v[version];
-      console.log(`  ${version} - ${this.formatSize(versionInfo.size)} (${versionInfo.uploadedAt})`);
+      if (versionInfo) {
+        console.log(
+          `  ${version} - ${this.formatSize(versionInfo.size)} (${versionInfo.uploadedAt})`
+        );
+      }
     });
   }
 
@@ -537,14 +568,14 @@ export class ModuleService {
 
         // npm pack 的输出是生成的文件名
         const generatedFileName = stdout.trim();
-        
+
         if (!generatedFileName) {
           reject(new Error('npm pack 未返回文件名'));
           return;
         }
 
         const tgzPath = path.join(moduleDir, generatedFileName);
-        
+
         // 检查文件是否存在
         if (!fs.existsSync(tgzPath)) {
           reject(new Error(`打包文件不存在: ${tgzPath}`));
@@ -563,16 +594,19 @@ export class ModuleService {
     // tarball 格式需要先解压到 package 目录
     return new Promise((resolve, reject) => {
       fs.ensureDirSync(extractDir);
-      tar.x({
-        file: tgzPath,
-        cwd: extractDir,
-        strip: 1, // 移除 package 目录层级
-      }).then(() => {
-        // 删除可能存在的 tarball 文件（npm pack 生成的残留）
-        const tarballFiles = fs.readdirSync(extractDir).filter(f => f.endsWith('.tgz'));
-        tarballFiles.forEach(f => fs.removeSync(path.join(extractDir, f)));
-        resolve();
-      }).catch(reject);
+      tar
+        .x({
+          file: tgzPath,
+          cwd: extractDir,
+          strip: 1, // 移除 package 目录层级
+        })
+        .then(() => {
+          // 删除可能存在的 tarball 文件（npm pack 生成的残留）
+          const tarballFiles = fs.readdirSync(extractDir).filter((f) => f.endsWith('.tgz'));
+          tarballFiles.forEach((f) => fs.removeSync(path.join(extractDir, f)));
+          resolve();
+        })
+        .catch(reject);
     });
   }
 
@@ -637,18 +671,28 @@ export class ModuleService {
       let updated = false;
 
       // 确保包含 external_modules 排除规则
-      if (!lines.some(line => line.trim() === 'external_modules' || line.trim() === '/external_modules')) {
-        lines.unshift('# External modules (不打包，通过 modules.json 运行时安装）', 'external_modules', '');
+      if (
+        !lines.some(
+          (line) => line.trim() === 'external_modules' || line.trim() === '/external_modules'
+        )
+      ) {
+        lines.unshift(
+          '# External modules (不打包，通过 modules.json 运行时安装）',
+          'external_modules',
+          ''
+        );
         updated = true;
       }
 
       // 确保不包含 local_modules 的排除规则（local_modules 应该保留在包中）
-      const updatedLines = lines.filter(line => {
+      const updatedLines = lines.filter((line) => {
         const trimmed = line.trim();
-        return !(trimmed === 'local_modules' ||
-                 trimmed === '/local_modules' ||
-                 trimmed === 'local_modules/' ||
-                 trimmed === '/local_modules/');
+        return !(
+          trimmed === 'local_modules' ||
+          trimmed === '/local_modules' ||
+          trimmed === 'local_modules/' ||
+          trimmed === '/local_modules/'
+        );
       });
 
       if (updated || updatedLines.length !== lines.length) {
@@ -695,7 +739,9 @@ export class ModuleService {
         console.log(`    - 跳过框架核心: ${depName} (项目已包含)`);
       } else if (depName.startsWith('@module-registry/')) {
         // @module-registry/ 开头的依赖不处理，由 modules.json 管理
-        console.log(`    - 模块依赖（由 modules.json 管理）: ${depName}${depVersion ? '@' + depVersion : ''}`);
+        console.log(
+          `    - 模块依赖（由 modules.json 管理）: ${depName}${depVersion ? '@' + depVersion : ''}`
+        );
       } else {
         // 第三方 npm 包 - 使用 npm/yarn 安装
         npmDependencies.push({ name: depName, version: depVersion as string });
@@ -717,7 +763,9 @@ export class ModuleService {
 
         // 依赖应该安装在模块的 src/local_modules/ 下
         const depInstallPath = path.join(localModulesPath, depName);
-        console.log(`[DEBUG] checking if ${depInstallPath} exists: ${fs.existsSync(depInstallPath)}`);
+        console.log(
+          `[DEBUG] checking if ${depInstallPath} exists: ${fs.existsSync(depInstallPath)}`
+        );
 
         if (!fs.existsSync(depInstallPath)) {
           console.log(`    安装 local_modules 依赖: ${depName} 到 ${localModulesPath}...`);
@@ -732,10 +780,18 @@ export class ModuleService {
 
           if (existingModulePath) {
             // 在父级目录中找到了已安装的模块，直接修正导入路径
-            console.log(`    🔗 在父级目录中找到 ${depName}@${version}，直接修正导入路径指向 ${existingModulePath}`);
+            console.log(
+              `    🔗 在父级目录中找到 ${depName}@${version}，直接修正导入路径指向 ${existingModulePath}`
+            );
 
             // 直接修正导入路径，不创建物理链接/拷贝
-            await this.createSymlinkOrCopy(existingModulePath, depInstallPath, modulePath, depName, projectRoot);
+            await this.createSymlinkOrCopy(
+              existingModulePath,
+              depInstallPath,
+              modulePath,
+              depName,
+              projectRoot
+            );
 
             // 递归处理依赖
             await this.installDependencies(depName, existingModulePath, projectRoot);
@@ -750,9 +806,10 @@ export class ModuleService {
             let targetVersion = version;
             if (version.startsWith('^') || version.startsWith('~')) {
               // 获取模块信息解析版本
-              const response = await this.api.get<ApiResponse<{ module: ModuleInfo }>>(`/api/modules/${depName}`);
+              const response = await this.api.get<ApiResponse<{ module: ModuleInfo }>>(
+                `/api/modules/${depName}`
+              );
               if (response.success && response.module) {
-                const availableVersions = Object.keys(response.module.versions);
                 // 简单的版本范围解析：取最新版本
                 targetVersion = response.module.latest;
               }
@@ -761,11 +818,7 @@ export class ModuleService {
             // 安装到模块的 src/local_modules/ 目录
             // 需要计算相对于 projectRoot 的路径
             const installDir = path.relative(projectRoot, relativeInstallDir);
-            await this.install(
-              depName,
-              targetVersion,
-              installDir
-            );
+            await this.install(depName, targetVersion, installDir);
           }
         } else {
           console.log(`    local_modules 依赖 ${depName} 已安装，检查依赖...`);
@@ -777,14 +830,18 @@ export class ModuleService {
 
     // 检查并安装 modules.json 中的本地模块依赖（local_modules）
     const modulesJsonPath = path.join(modulePath, 'modules.json');
-    console.log(`[DEBUG] modulesJsonPath: ${modulesJsonPath}, exists: ${fs.existsSync(modulesJsonPath)}`);
+    console.log(
+      `[DEBUG] modulesJsonPath: ${modulesJsonPath}, exists: ${fs.existsSync(modulesJsonPath)}`
+    );
     if (fs.existsSync(modulesJsonPath)) {
       try {
         const modulesConfig = fs.readJsonSync(modulesJsonPath);
         console.log(`[DEBUG] modulesConfig: ${JSON.stringify(modulesConfig)}`);
 
         if (modulesConfig.localModules && Object.keys(modulesConfig.localModules).length > 0) {
-          console.log(`\n  [modules.json] 发现模块 ${moduleName} 的本地微服务依赖 (local_modules)...`);
+          console.log(
+            `\n  [modules.json] 发现模块 ${moduleName} 的本地微服务依赖 (local_modules)...`
+          );
 
           // 计算依赖的安装目录：应该在当前模块的 src/local_modules/ 下
           // 与 external_modules 保持一致，都安装在 src 目录中
@@ -810,7 +867,9 @@ export class ModuleService {
 
               if (existingModulePath) {
                 // 在父级目录中找到了已安装的模块，创建软链接
-                console.log(`    🔗 在父级目录中找到 ${depName}@${version}，创建软链接指向 ${existingModulePath}`);
+                console.log(
+                  `    🔗 在父级目录中找到 ${depName}@${version}，创建软链接指向 ${existingModulePath}`
+                );
 
                 const linkPath = depInstallPath;
 
@@ -836,9 +895,10 @@ export class ModuleService {
                 let targetVersion = version;
                 if (version.startsWith('^') || version.startsWith('~')) {
                   // 获取模块信息解析版本
-                  const response = await this.api.get<ApiResponse<{ module: ModuleInfo }>>(`/api/modules/${depName}`);
+                  const response = await this.api.get<ApiResponse<{ module: ModuleInfo }>>(
+                    `/api/modules/${depName}`
+                  );
                   if (response.success && response.module) {
-                    const availableVersions = Object.keys(response.module.versions);
                     // 简单的版本范围解析：取最新版本
                     targetVersion = response.module.latest;
                   }
@@ -847,11 +907,7 @@ export class ModuleService {
                 // 安装到模块的 src/local_modules/ 目录
                 // 需要计算相对于 projectRoot 的路径
                 const installDir = path.relative(projectRoot, relativeInstallDir);
-                await this.install(
-                  depName,
-                  targetVersion,
-                  installDir
-                );
+                await this.install(depName, targetVersion, installDir);
               }
             } else {
               console.log(`    local_modules 依赖 ${depName} 已安装，检查依赖...`);
@@ -862,8 +918,13 @@ export class ModuleService {
         }
 
         // 检查并安装 modules.json 中的外部模块依赖（多级微服务支持）
-        if (modulesConfig.externalModules && Object.keys(modulesConfig.externalModules).length > 0) {
-          console.log(`\n  [modules.json] 发现模块 ${moduleName} 的外部微服务依赖 (external_modules)...`);
+        if (
+          modulesConfig.externalModules &&
+          Object.keys(modulesConfig.externalModules).length > 0
+        ) {
+          console.log(
+            `\n  [modules.json] 发现模块 ${moduleName} 的外部微服务依赖 (external_modules)...`
+          );
 
           // 计算依赖的安装目录：应该在当前模块的 src/external_modules/ 下
           // 如果 modulePath 是 projectRoot/src/external_modules/user
@@ -878,7 +939,9 @@ export class ModuleService {
             const depInstallPath = path.join(parentExternalModulesPath, depName);
 
             if (!fs.existsSync(depInstallPath)) {
-              console.log(`    安装 external_modules 依赖: ${depName} 到 ${parentExternalModulesPath}...`);
+              console.log(
+                `    安装 external_modules 依赖: ${depName} 到 ${parentExternalModulesPath}...`
+              );
 
               // 先检查父级目录中是否已安装该模块
               const existingModulePath = await this.findExistingModuleInAncestors(
@@ -890,7 +953,9 @@ export class ModuleService {
 
               if (existingModulePath) {
                 // 在父级目录中找到了已安装的模块，创建软链接
-                console.log(`    🔗 在父级目录中找到 ${depName}@${version}，创建软链接指向 ${existingModulePath}`);
+                console.log(
+                  `    🔗 在父级目录中找到 ${depName}@${version}，创建软链接指向 ${existingModulePath}`
+                );
 
                 const linkPath = depInstallPath;
 
@@ -917,9 +982,10 @@ export class ModuleService {
                 let targetVersion = version;
                 if (version.startsWith('^') || version.startsWith('~')) {
                   // 获取模块信息解析版本
-                  const response = await this.api.get<ApiResponse<{ module: ModuleInfo }>>(`/api/modules/${depName}`);
+                  const response = await this.api.get<ApiResponse<{ module: ModuleInfo }>>(
+                    `/api/modules/${depName}`
+                  );
                   if (response.success && response.module) {
-                    const availableVersions = Object.keys(response.module.versions);
                     // 简单的版本范围解析：取最新版本
                     targetVersion = response.module.latest;
                   }
@@ -928,11 +994,7 @@ export class ModuleService {
                 // 安装到父模块的 src/external_modules/ 目录
                 // 需要计算相对于 projectRoot 的路径
                 const installDir = path.relative(projectRoot, relativeInstallDir);
-                await this.install(
-                  depName,
-                  targetVersion,
-                  installDir
-                );
+                await this.install(depName, targetVersion, installDir);
               }
             } else {
               console.log(`    external_modules 依赖 ${depName} 已安装，检查依赖...`);
@@ -942,7 +1004,10 @@ export class ModuleService {
           }
         }
       } catch (error: unknown) {
-        console.error(`  [modules.json] 解析 ${moduleName} 的 modules.json 失败:`, error instanceof Error ? error.message : String(error));
+        console.error(
+          `  [modules.json] 解析 ${moduleName} 的 modules.json 失败:`,
+          error instanceof Error ? error.message : String(error)
+        );
         // 不抛出错误，继续执行
       }
     }
@@ -964,7 +1029,7 @@ export class ModuleService {
   private async installConfiguredModules(modulePath: string, projectRoot: string): Promise<void> {
     const moduleConfigPath = path.join(modulePath, 'module.config.json');
 
-    if (!await fs.pathExists(moduleConfigPath)) {
+    if (!(await fs.pathExists(moduleConfigPath))) {
       return;
     }
 
@@ -976,7 +1041,9 @@ export class ModuleService {
     }
 
     const moduleName = path.basename(modulePath);
-    console.log(`\n  [module.config.json] ${moduleName} 配置的模块: ${Object.keys(installedModules).join(', ')}`);
+    console.log(
+      `\n  [module.config.json] ${moduleName} 配置的模块: ${Object.keys(installedModules).join(', ')}`
+    );
 
     for (const [modName, modVersion] of Object.entries(installedModules)) {
       const version = String(modVersion);
@@ -1009,13 +1076,24 @@ export class ModuleService {
           console.log(`      🔗 在父级目录找到 ${modName}@${version}，直接修正导入路径`);
 
           // 直接修正导入路径，不创建物理链接/拷贝
-          await this.createSymlinkOrCopy(existingModulePath, depInstallPath, modulePath, modName, projectRoot);
+          await this.createSymlinkOrCopy(
+            existingModulePath,
+            depInstallPath,
+            modulePath,
+            modName,
+            projectRoot
+          );
 
           // 递归处理已配置模块
           await this.installConfiguredModules(existingModulePath, projectRoot);
         } else {
           // 检查模块是否已安装
-          const moduleStatus = await this.checkModuleStatus(modName, version, relativeInstallDir, projectRoot);
+          const moduleStatus = await this.checkModuleStatus(
+            modName,
+            version,
+            relativeInstallDir,
+            projectRoot
+          );
 
           if (moduleStatus.isInstalled && !moduleStatus.needsUpdate) {
             console.log(`      ⏭️  ${modName}@${version} 已安装且未修改（跳过下载）`);
@@ -1033,11 +1111,19 @@ export class ModuleService {
 
             // 修正导入路径
             console.log(`      🔧 修正 ${moduleName} 中 ${modName} 的导入路径...`);
-            await this.fixModuleImportsForModule(modulePath, depInstallPath, depInstallPath, projectRoot);
+            await this.fixModuleImportsForModule(
+              modulePath,
+              depInstallPath,
+              depInstallPath,
+              projectRoot
+            );
           }
         }
       } catch (error: unknown) {
-        console.error(`      ❌ 安装 ${modName} 失败:`, error instanceof Error ? error.message : String(error));
+        console.error(
+          `      ❌ 安装 ${modName} 失败:`,
+          error instanceof Error ? error.message : String(error)
+        );
         // 继续安装其他模块
       }
     }
@@ -1069,7 +1155,12 @@ export class ModuleService {
     if (await fs.pathExists(projectModulePath)) {
       const relativePath = 'src/external_modules';
       console.log(`[findExistingModuleInAncestors] 模块存在于项目根目录`);
-      const moduleStatus = await this.checkModuleStatus(moduleName, targetVersion, relativePath, projectRoot);
+      const moduleStatus = await this.checkModuleStatus(
+        moduleName,
+        targetVersion,
+        relativePath,
+        projectRoot
+      );
 
       if (moduleStatus.isInstalled && !moduleStatus.needsUpdate) {
         console.log(`      ✓ 在项目根目录 ${relativePath} 找到 ${moduleName}@${targetVersion}`);
@@ -1098,14 +1189,23 @@ export class ModuleService {
           // 检查该模块的版本和状态
           const relativePath = path.relative(projectRoot, searchPath);
           console.log(`[findExistingModuleInAncestors] 模块存在, relativePath: ${relativePath}`);
-          const moduleStatus = await this.checkModuleStatus(moduleName, targetVersion, relativePath, projectRoot);
+          const moduleStatus = await this.checkModuleStatus(
+            moduleName,
+            targetVersion,
+            relativePath,
+            projectRoot
+          );
 
           if (moduleStatus.isInstalled && !moduleStatus.needsUpdate) {
-            console.log(`      ✓ 在 ${relativePath} 找到 ${moduleName}@${targetVersion}，已安装且未修改`);
+            console.log(
+              `      ✓ 在 ${relativePath} 找到 ${moduleName}@${targetVersion}，已安装且未修改`
+            );
             // 找到匹配的模块
             return path.join(projectRoot, relativePath, moduleName);
           } else if (moduleStatus.isInstalled && moduleStatus.needsUpdate) {
-            console.log(`      ⚠️  在 ${relativePath} 找到 ${moduleName}，但代码已修改或版本不匹配`);
+            console.log(
+              `      ⚠️  在 ${relativePath} 找到 ${moduleName}，但代码已修改或版本不匹配`
+            );
           }
         }
       } else {
@@ -1121,14 +1221,23 @@ export class ModuleService {
             // 检查该模块的版本和状态
             const relativePath = path.relative(projectRoot, externalModulesPath);
             console.log(`[findExistingModuleInAncestors] 模块存在, relativePath: ${relativePath}`);
-            const moduleStatus = await this.checkModuleStatus(moduleName, targetVersion, relativePath, projectRoot);
+            const moduleStatus = await this.checkModuleStatus(
+              moduleName,
+              targetVersion,
+              relativePath,
+              projectRoot
+            );
 
             if (moduleStatus.isInstalled && !moduleStatus.needsUpdate) {
-              console.log(`      ✓ 在 ${relativePath} 找到 ${moduleName}@${targetVersion}，已安装且未修改`);
+              console.log(
+                `      ✓ 在 ${relativePath} 找到 ${moduleName}@${targetVersion}，已安装且未修改`
+              );
               // 找到匹配的模块
               return path.join(projectRoot, relativePath, moduleName);
             } else if (moduleStatus.isInstalled && moduleStatus.needsUpdate) {
-              console.log(`      ⚠️  在 ${relativePath} 找到 ${moduleName}，但代码已修改或版本不匹配`);
+              console.log(
+                `      ⚠️  在 ${relativePath} 找到 ${moduleName}，但代码已修改或版本不匹配`
+              );
             }
           }
         }
@@ -1166,7 +1275,13 @@ export class ModuleService {
   ): Promise<void> {
     // Windows 环境下软链接经常失败，直接修正导入路径即可
     console.log(`    📝 直接修正导入路径指向: ${path.relative(projectRoot, sourcePath)}`);
-    await this.fixModuleImportsForModule(parentModulePath, sourcePath, targetPath, projectRoot, moduleName);
+    await this.fixModuleImportsForModule(
+      parentModulePath,
+      sourcePath,
+      targetPath,
+      projectRoot,
+      moduleName
+    );
   }
 
   /**
@@ -1183,9 +1298,7 @@ export class ModuleService {
     const packageManager = useYarn ? 'yarn' : 'npm';
 
     // 构建 install 命令
-    const depsToInstall = dependencies
-      .map((dep) => `${dep.name}@${dep.version}`)
-      .join(' ');
+    const depsToInstall = dependencies.map((dep) => `${dep.name}@${dep.version}`).join(' ');
 
     console.log(`    使用 ${packageManager} 安装: ${depsToInstall}`);
 

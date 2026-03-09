@@ -1,158 +1,158 @@
-# PNCE CLI 常见问题解答 (FAQ)
+# PNCE CLI FAQ
 
-本文档回答了 PNCE CLI 使用过程中的常见问题。
+This document answers common questions during the use of PNCE CLI.
 
-## 安装和配置
+## Installation and Configuration
 
-### Q1: 安装后提示找不到命令？
+### Q1: Command not found after installation?
 
-**A:** 确保全局安装路径在系统的 PATH 环境变量中。
+**A:** Ensure the global installation path is in the system's PATH environment variable.
 
-检查 npm 全局路径：
+Check npm global path:
 
 ```bash
 npm config get prefix
 ```
 
-将输出的路径（如 `/usr/local`）添加到 PATH。
+Add the output path (e.g., `/usr/local`) to your PATH.
 
-### Q2: 如何卸载 PNCE CLI？
+### Q2: How to uninstall PNCE CLI?
 
-**A:** 运行以下命令：
+**A:** Run the following commands:
 
 ```bash
 npm uninstall -g pnce
-# 或
+# or
 yarn global remove pnce
 ```
 
-### Q3: 如何升级到最新版本？
+### Q3: How to upgrade to the latest version?
 
-**A:** 运行以下命令：
+**A:** Run the following commands:
 
 ```bash
 npm update -g pnce
-# 或
+# or
 yarn global upgrade pnce
 ```
 
-## 认证和登录
+## Authentication and Login
 
-### Q4: 登录时浏览器没有打开？
+### Q4: Browser doesn't open when logging in?
 
-**A:** 尝试以下方法：
+**A:** Try the following methods:
 
-1. 检查是否已安装浏览器
-2. 手动访问授权页面，复制回调地址
-3. 使用 `--port` 参数指定其他端口：
+1. Check if a browser is installed
+2. Manually visit the authorization page and copy the callback URL
+3. Use `--port` parameter to specify a different port:
 
 ```bash
 pnce login --port 8080
 ```
 
-### Q5: Token 过期了怎么办？
+### Q5: What to do if the token expires?
 
-**A:** Token 有效期通常是 24 小时。过期后需要重新登录：
+**A:** Token validity is typically 24 hours. You need to re-login after expiration:
 
 ```bash
 pnce login
 ```
 
-### Q6: 如何在 CI/CD 环境中使用？
+### Q6: How to use in CI/CD environment?
 
-**A:** 使用环境变量设置 Token：
+**A:** Set token via environment variable:
 
 ```bash
 export PNCE_TOKEN=your_token_here
 pnce install <module>
 ```
 
-或在配置文件中设置 Token。
+Or set token in configuration file.
 
-## 模块管理
+## Module Management
 
-### Q7: 如何查看已安装的模块？
+### Q7: How to view installed modules?
 
-**A:** 运行以下命令：
+**A:** Run the following command:
 
 ```bash
 pnce list
 ```
 
-### Q8: 如何指定安装特定版本的模块？
+### Q8: How to install a specific version of a module?
 
-**A:** 使用 `@` 符号指定版本：
+**A:** Use `@` symbol to specify version:
 
 ```bash
 pnce install module-name@1.0.0
 pnce install module-name@latest
 ```
 
-### Q9: 如何卸载已安装的模块？
+### Q9: How to uninstall installed modules?
 
-**A:** 手动删除模块目录即可：
+**A:** Simply delete the module directory:
 
 ```bash
 rm -rf ./modules/module-name
 ```
 
-### Q10: 如何发布私有模块？
+### Q10: How to publish private modules?
 
-**A:** 确保已登录，然后运行：
+**A:** Ensure you are logged in, then run:
 
 ```bash
 pnce upload
 ```
 
-私有模块通常需要相应的权限。
+Private modules usually require appropriate permissions.
 
-### Q11: 上传模块时提示权限错误？
+### Q11: Permission error when uploading module?
 
-**A:** 检查以下几点：
+**A:** Check the following:
 
-1. 是否已登录：`pnce login`
-2. 是否有上传权限
-3. `module.config.json` 配置是否正确
+1. If logged in: `pnce login`
+2. If you have upload permission
+3. If `module.config.json` configuration is correct
 
-### Q12: 如何锁定模块版本？
+### Q12: How to lock module versions?
 
-**A:** 使用版本锁定功能：
+**A:** Use version locking feature:
 
 ```bash
 pnce lock module-name@1.0.0
 ```
 
-这将创建版本锁定文件，确保团队使用相同的版本。
+This creates a version lock file to ensure the team uses the same version.
 
-## 配置
+## Configuration
 
-### Q13: 配置文件的优先级是什么？
+### Q13: What is the configuration file priority?
 
-**A:** 优先级从高到低：
+**A:** Priority from high to low:
 
-1. 环境变量
-2. 项目配置 (`./.pnce/config.json`)
-3. 用户配置 (`~/.pnce/config.json`)
-4. 默认配置
+1. Environment variables
+2. Project config (`./.pnce/config.json`)
+3. User config (`~/.pnce/config.json`)
+4. Default config
 
-### Q14: 如何切换不同的配置环境？
+### Q14: How to switch between different configuration environments?
 
-**A:** 使用配置档案功能：
+**A:** Use configuration profile feature:
 
 ```bash
-# 保存当前配置为档案
+# Save current configuration as a profile
 pnce profile save prod
 
-# 切换到指定档案
+# Switch to specified profile
 pnce profile use prod
 
-# 列出所有档案
+# List all profiles
 pnce profile list
 ```
 
-### Q15: 如何配置代理？
+### Q15: How to configure proxy?
 
-**A:** 在配置文件中设置：
+**A:** Set in configuration file:
 
 ```json
 {
@@ -161,47 +161,47 @@ pnce profile list
 }
 ```
 
-或使用环境变量：
+Or use environment variable:
 
 ```bash
 export PNCE_PROXY_URL=http://127.0.0.1:7890
 ```
 
-### Q16: 日志级别有哪些？
+### Q16: What are the log levels?
 
-**A:** 支持以下日志级别：
+**A:** Supports the following log levels:
 
-- `error`: 只显示错误
-- `warn`: 显示警告和错误
-- `info`: 显示一般信息（默认）
-- `debug`: 显示调试信息
+- `error`: Show only errors
+- `warn`: Show warnings and errors
+- `info`: Show general information (default)
+- `debug`: Show debug information
 
-设置方法：
+Setting method:
 
 ```bash
 export PNCE_LOG_LEVEL=debug
-# 或在配置文件中设置
+# or set in configuration file
 ```
 
-## 性能和缓存
+## Performance and Cache
 
-### Q17: 如何清理缓存？
+### Q17: How to clear cache?
 
-**A:** 运行以下命令：
+**A:** Run the following command:
 
 ```bash
 pnce cache clean
 ```
 
-### Q18: 如何禁用缓存？
+### Q18: How to disable cache?
 
-**A:** 使用环境变量：
+**A:** Use environment variable:
 
 ```bash
 export PNCE_NO_CACHE=true
 ```
 
-或在配置文件中设置：
+Or set in configuration file:
 
 ```json
 {
@@ -209,67 +209,67 @@ export PNCE_NO_CACHE=true
 }
 ```
 
-### Q19: 上传/下载速度慢怎么办？
+### Q19: Slow upload/download speed?
 
-**A:** 尝试以下方法：
+**A:** Try the following methods:
 
-1. 检查网络连接
-2. 配置代理（如适用）
-3. 调整超时时间（在配置文件中设置 `downloadTimeout` 和 `uploadTimeout`）
+1. Check network connection
+2. Configure proxy (if applicable)
+3. Adjust timeout (set `downloadTimeout` and `uploadTimeout` in config file)
 
-## 错误排查
+## Troubleshooting
 
-### Q20: 提示 "网络错误" 怎么办？
+### Q20: What to do when getting "Network Error"?
 
-**A:** 检查：
+**A:** Check:
 
-1. 网络连接是否正常
-2. 服务器地址是否正确
-3. 代理配置是否正确
-4. 防火墙是否阻止连接
+1. If network connection is normal
+2. If server address is correct
+3. If proxy configuration is correct
+4. If firewall is blocking the connection
 
-### Q21: 提示 "模块不存在" 怎么办？
+### Q21: What to do when getting "Module doesn't exist"?
 
-**A:** 确认：
+**A:** Confirm:
 
-1. 模块名称拼写正确
-2. 已登录到正确的注册中心
-3. 模块确实已发布到注册中心
+1. Module name spelling is correct
+2. Logged in to the correct registry
+3. Module is actually published to the registry
 
-使用搜索命令确认：
+Use search command to confirm:
 
 ```bash
 pnce search module-name
 ```
 
-### Q22: 如何查看详细的错误信息？
+### Q22: How to view detailed error information?
 
-**A:** 使用 `--verbose` 选项：
+**A:** Use `--verbose` option:
 
 ```bash
 pnce install module-name --verbose
 ```
 
-或设置日志级别为 debug：
+Or set log level to debug:
 
 ```bash
 export PNCE_LOG_LEVEL=debug
 ```
 
-## 高级功能
+## Advanced Features
 
-### Q23: 如何离线使用？
+### Q23: How to use offline?
 
-**A:** 离线模式需要：
+**A:** Offline mode requires:
 
-1. 提前安装所需模块并启用缓存
-2. 使用缓存中的模块进行开发
+1. Install required modules in advance and enable cache
+2. Use cached modules for development
 
-PNCE CLI 会自动使用缓存的模块。
+PNCE CLI will automatically use cached modules.
 
-### Q24: 如何批量安装多个模块？
+### Q24: How to batch install multiple modules?
 
-**A:** 创建一个依赖清单文件，然后逐个安装：
+**A:** Create a dependency list file, then install one by one:
 
 ```bash
 for module in module1 module2 module3; do
@@ -277,68 +277,68 @@ for module in module1 module2 module3; do
 done
 ```
 
-### Q25: 如何自定义模块安装路径？
+### Q25: How to customize module installation path?
 
-**A:** 使用 `-d` 选项：
+**A:** Use `-d` option:
 
 ```bash
 pnce install module-name -d /custom/path
 ```
 
-或在配置文件中设置 `outputDir`。
+Or set `outputDir` in configuration file.
 
-## 开发和调试
+## Development and Debugging
 
-### Q26: 如何启用调试模式？
+### Q26: How to enable debug mode?
 
-**A:** 设置日志级别为 debug：
+**A:** Set log level to debug:
 
 ```bash
 export PNCE_LOG_LEVEL=debug
 ```
 
-### Q27: 如何查看日志文件？
+### Q27: How to view log files?
 
-**A:** 日志文件位置：
+**A:** Log file location:
 
 ```
 ~/.pnce/logs/
 ```
 
-按日期分类保存。
+Saved by date.
 
-### Q28: 如何报告 Bug？
+### Q28: How to report bugs?
 
-**A:** 访问 [GitHub Issues](https://github.com/hi-giacomo/pnce/issues) 提交问题报告，请包含：
+**A:** Visit [GitHub Issues](https://github.com/hi-giacomo/pnce/issues) to submit bug reports, please include:
 
-- PNCE CLI 版本
-- Node.js 版本
-- 操作系统
-- 错误信息
-- 复现步骤
+- PNCE CLI version
+- Node.js version
+- Operating system
+- Error message
+- Steps to reproduce
 
-## 其他
+## Others
 
-### Q29: PNCE CLI 支持哪些操作系统？
+### Q29: Which operating systems does PNCE CLI support?
 
-**A:** 支持：
+**A:** Supports:
 
 - macOS (Darwin)
 - Linux
 - Windows
 
-### Q30: 最低 Node.js 版本要求是什么？
+### Q30: What is the minimum Node.js version requirement?
 
-**A:** 要求 Node.js >= 18.0.0
+**A:** Requires Node.js >= 18.0.0
 
-### Q31: 如何获取更多帮助？
+### Q31: How to get more help?
 
 **A:**
 
-- 查看文档: [https://github.com/hi-giacomo/pnce](https://github.com/hi-giacomo/pnce)
-- 提交 Issue: [https://github.com/hi-giacomo/pnce/issues](https://github.com/hi-giacomo/pnce/issues)
-- 查看源代码: [https://github.com/hi-giacomo/pnce](https://github.com/hi-giacomo/pnce)
+- View documentation: [https://github.com/hi-giacomo/pnce](https://github.com/hi-giacomo/pnce)
+- Submit Issue: [https://github.com/hi-giacomo/pnce/issues](https://github.com/hi-giacomo/pnce/issues)
+- View source code: [https://github.com/hi-giacomo/pnce](https://github.com/hi-giacomo/pnce)
 
 ---
 
-还有其他问题？欢迎提交 Issue 或参与讨论！
+Still have questions? Welcome to submit an Issue or join the discussion!

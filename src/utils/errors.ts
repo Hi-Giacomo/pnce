@@ -1,5 +1,5 @@
 /**
- * CLI错误类 - 统一的错误处理系统
+ * CLI Error class - Unified error handling system
  */
 export class CliError extends Error {
   public readonly code: string;
@@ -20,93 +20,98 @@ export class CliError extends Error {
     Error.captureStackTrace(this, this.constructor);
   }
 
-  // 静态方法快速创建常见错误（使用标准退出码）
-  static unauthorized(message = '未授权，请先登录') {
+  // Static methods for quick creation of common errors (using standard exit codes)
+  static unauthorized(message = 'Unauthorized, please login first') {
     return new CliError('AUTH_UNAUTHORIZED', message, 1);
   }
 
-  static tokenExpired(message = 'Token已过期，请重新登录') {
+  static tokenExpired(message = 'Token expired, please login again') {
     return new CliError('AUTH_TOKEN_EXPIRED', message, 1);
   }
 
-  static networkError(message = '网络请求失败') {
+  static networkError(message = 'Network request failed') {
     return new CliError('NETWORK_ERROR', message, 2);
   }
 
   static moduleNotFound(name: string) {
-    return new CliError('MODULE_NOT_FOUND', `模块 "${name}" 不存在`, 3, { name });
+    return new CliError('MODULE_NOT_FOUND', `Module "${name}" not found`, 3, { name });
   }
 
   static versionNotFound(name: string, version: string) {
-    return new CliError('VERSION_NOT_FOUND', `模块 "${name}" 的版本 "${version}" 不存在`, 3, { name, version });
+    return new CliError(
+      'VERSION_NOT_FOUND',
+      `Version "${version}" of module "${name}" not found`,
+      3,
+      { name, version }
+    );
   }
 
-  static uploadFailed(message = '上传失败') {
+  static uploadFailed(message = 'Upload failed') {
     return new CliError('UPLOAD_FAILED', message, 4);
   }
 
-  static configError(message = '配置错误') {
+  static configError(message = 'Configuration error') {
     return new CliError('CONFIG_ERROR', message, 5);
   }
 
-  static invalidInput(message = '输入参数无效') {
+  static invalidInput(message = 'Invalid input parameter') {
     return new CliError('INVALID_INPUT', message, 6);
   }
 
-  static serverError(message = '服务器错误') {
+  static serverError(message = 'Server error') {
     return new CliError('SERVER_ERROR', message, 7);
   }
 
   static fileNotFound(path: string) {
-    return new CliError('FILE_NOT_FOUND', `文件不存在: ${path}`, 8, { path });
+    return new CliError('FILE_NOT_FOUND', `File not found: ${path}`, 8, { path });
   }
 
   static fileAccessDenied(path: string) {
-    return new CliError('FILE_ACCESS_DENIED', `无法访问文件: ${path}`, 9, { path });
+    return new CliError('FILE_ACCESS_DENIED', `Cannot access file: ${path}`, 9, { path });
   }
 }
 
 /**
- * 错误码规范
+ * Error code specification
  */
 export enum ErrorCode {
-  // 认证错误 (4xx)
+  // Authentication errors (4xx)
   AUTH_UNAUTHORIZED = 'AUTH_UNAUTHORIZED',
   AUTH_TOKEN_EXPIRED = 'AUTH_TOKEN_EXPIRED',
   AUTH_LOGIN_FAILED = 'AUTH_LOGIN_FAILED',
   AUTH_REGISTER_FAILED = 'AUTH_REGISTER_FAILED',
 
-  // OAuth2错误
+  // OAuth2 errors
   OAUTH_REDIRECT_FAILED = 'OAUTH_REDIRECT_FAILED',
   OAUTH_TOKEN_EXCHANGE_FAILED = 'OAUTH_TOKEN_EXCHANGE_FAILED',
   OAUTH_INVALID_STATE = 'OAUTH_INVALID_STATE',
 
-  // 模块错误
+  // Module errors
   MODULE_NOT_FOUND = 'MODULE_NOT_FOUND',
   VERSION_NOT_FOUND = 'VERSION_NOT_FOUND',
   UPLOAD_FAILED = 'UPLOAD_FAILED',
   DOWNLOAD_FAILED = 'DOWNLOAD_FAILED',
   INVALID_MODULE_FORMAT = 'INVALID_MODULE_FORMAT',
 
-  // 配置错误
+  // Configuration errors
   CONFIG_ERROR = 'CONFIG_ERROR',
   CONFIG_NOT_FOUND = 'CONFIG_NOT_FOUND',
 
-  // 文件错误
+  // File errors
   FILE_NOT_FOUND = 'FILE_NOT_FOUND',
   FILE_ACCESS_DENIED = 'FILE_ACCESS_DENIED',
   FILE_READ_ERROR = 'FILE_READ_ERROR',
   FILE_WRITE_ERROR = 'FILE_WRITE_ERROR',
 
-  // 网络错误
+  // Network errors
   NETWORK_ERROR = 'NETWORK_ERROR',
   TIMEOUT_ERROR = 'TIMEOUT_ERROR',
 
-  // 输入错误
+  // Input errors
   INVALID_INPUT = 'INVALID_INPUT',
   INVALID_VERSION = 'INVALID_VERSION',
 
-  // 服务器错误 (5xx)
+  // Server errors (5xx)
   SERVER_ERROR = 'SERVER_ERROR',
   INTERNAL_ERROR = 'INTERNAL_ERROR',
 }
@@ -189,7 +194,7 @@ export class ErrorHandler {
    */
   private static displayError(error: CliError) {
     const chalk = require('chalk');
-    console.error(chalk.red('✗ 错误:'), error.message);
+    console.error(chalk.red('✗ Error:'), error.message);
 
     if (error.details && Object.keys(error.details).length > 0) {
       console.error(chalk.gray('详细信息:'));
@@ -201,7 +206,7 @@ export class ErrorHandler {
     // 显示帮助提示
     const hint = this.getHelpHint(error.code);
     if (hint) {
-      console.error(chalk.yellow('\n提示:'), hint);
+      console.error(chalk.yellow('\nTip:'), hint);
     }
   }
 
@@ -210,18 +215,18 @@ export class ErrorHandler {
    */
   private static getHelpHint(code: string): string | null {
     const hints: Record<string, string> = {
-      'AUTH_UNAUTHORIZED': '请使用 `pnce login` 登录',
-      'AUTH_TOKEN_EXPIRED': '请使用 `pnce login` 重新登录',
-      'MODULE_NOT_FOUND': '请检查模块名称是否正确，或使用 `pnce list` 查看所有可用模块',
-      'VERSION_NOT_FOUND': '请使用 `pnce info <name>` 查看可用版本',
-      'UPLOAD_FAILED': '请检查网络连接和模块格式，确保项目已正确配置',
-      'CONFIG_ERROR': '请检查配置文件或运行 `pnce init` 初始化配置',
-      'NETWORK_ERROR': '请检查网络连接或稍后重试',
-      'TIMEOUT_ERROR': '请求超时，请检查网络或稍后重试',
-      'INVALID_INPUT': '请检查输入参数是否正确',
-      'FILE_NOT_FOUND': '请检查文件路径是否正确',
-      'FILE_ACCESS_DENIED': '请检查文件权限',
-      'INTERNAL_ERROR': '发生未知错误，请重试或联系支持团队',
+      AUTH_UNAUTHORIZED: '请使用 `pnce login` 登录',
+      AUTH_TOKEN_EXPIRED: '请使用 `pnce login` 重新登录',
+      MODULE_NOT_FOUND: '请检查模块名称是否正确，或使用 `pnce list` 查看所有可用模块',
+      VERSION_NOT_FOUND: '请使用 `pnce info <name>` 查看可用版本',
+      UPLOAD_FAILED: '请检查网络连接和模块格式，确保项目已正确配置',
+      CONFIG_ERROR: '请检查配置文件或运行 `pnce init` 初始化配置',
+      NETWORK_ERROR: '请检查网络连接或稍后重试',
+      TIMEOUT_ERROR: '请求超时，请检查网络或稍后重试',
+      INVALID_INPUT: '请检查输入参数是否正确',
+      FILE_NOT_FOUND: '请检查文件路径是否正确',
+      FILE_ACCESS_DENIED: '请检查文件权限',
+      INTERNAL_ERROR: '发生未知错误，请重试或联系支持团队',
     };
 
     return hints[code] || null;
@@ -254,7 +259,7 @@ export class ErrorHandler {
    */
   static async wrap<T>(
     fn: () => Promise<T>,
-    errorMessage: string = '操作失败'
+    errorMessage: string = 'Operation failed'
   ): Promise<T> {
     try {
       return await fn();

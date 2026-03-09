@@ -3,7 +3,7 @@
 export interface ModulesConfig {
   // 外部模块依赖
   externalModules?: Record<string, string>; // { "module-name": "^1.0.0" }
-  
+
   // 模块安装选项
   options?: {
     // 安装目录
@@ -17,16 +17,19 @@ export interface ModulesConfig {
 
 export interface ModulesLock {
   // 锁定的模块版本
-  modules: Record<string, {
-    version: string;
-    resolved: string; // 下载 URL
-    integrity?: string; // 可选的完整性校验
-    dependencies?: Record<string, string>; // 模块的依赖
-  }>;
-  
+  modules: Record<
+    string,
+    {
+      version: string;
+      resolved: string; // 下载 URL
+      integrity?: string; // 可选的完整性校验
+      dependencies?: Record<string, string>; // 模块的依赖
+    }
+  >;
+
   // 锁定文件版本
   lockfileVersion: number;
-  
+
   // 生成时间
   generatedAt: string;
 }

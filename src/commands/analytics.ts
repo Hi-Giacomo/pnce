@@ -6,126 +6,122 @@ import { getLogger } from '../utils/logger';
 const logger = getLogger();
 
 /**
- * 统计命令
+ * Analytics command
  */
 export const analyticsCommand = new Command('analytics')
-  .description('管理使用统计（可选）')
+  .description('Manage usage analytics (optional)')
   .action(() => {
     const analytics = getAnalyticsManager();
     const stats = analytics.getStats();
 
-    console.log(chalk.cyan('\n📊 使用统计 / Usage Analytics\n'));
+    console.log(chalk.cyan('\n📊 Usage Analytics\n'));
 
-    console.log(chalk.gray('状态 / Status:'));
-    console.log(
-      `  ${stats.enabled ? chalk.green('✓ 已启用 / Enabled') : chalk.gray('○ 已禁用 / Disabled')}`
-    );
+    console.log(chalk.gray('Status:'));
+    console.log(`  ${stats.enabled ? chalk.green('✓ Enabled') : chalk.gray('○ Disabled')}`);
 
     if (stats.enabled) {
-      console.log(chalk.gray('\n统计信息 / Statistics:'));
-      console.log(`  本地事件数 / Local events: ${stats.eventCount}`);
+      console.log(chalk.gray('\nStatistics:'));
+      console.log(`  Local events: ${stats.eventCount}`);
       if (stats.endpoint) {
-        console.log(`  统计端点 / Endpoint: ${stats.endpoint}`);
+        console.log(`  Endpoint: ${stats.endpoint}`);
       }
     }
 
-    console.log(chalk.gray('\n使用方法 / Usage:'));
-    console.log('  pnce analytics enable  [endpoint]  - 启用统计 / Enable analytics');
-    console.log('  pnce analytics disable              - 禁用统计 / Disable analytics');
-    console.log('  pnce analytics clear                 - 清空本地统计 / Clear local events');
-    console.log('  pnce analytics status                - 查看状态 / Show status');
+    console.log(chalk.gray('\nUsage:'));
+    console.log('  pnce analytics enable  [endpoint]  - Enable analytics');
+    console.log('  pnce analytics disable              - Disable analytics');
+    console.log('  pnce analytics clear                 - Clear local events');
+    console.log('  pnce analytics status                - Show status');
   });
 
 /**
- * 启用统计子命令
+ * Enable analytics subcommand
  */
 export const enableAnalyticsCommand = new Command('enable')
-  .argument('[endpoint]', '统计端点（可选）')
-  .description('启用使用统计')
+  .argument('[endpoint]', 'Analytics endpoint (optional)')
+  .description('Enable usage analytics')
   .action((endpoint?: string) => {
     try {
       const analytics = getAnalyticsManager();
       analytics.enable(endpoint);
 
-      console.log(chalk.green('✓ 使用统计已启用\n'));
+      console.log(chalk.green('✓ Usage analytics enabled\n'));
       if (endpoint) {
-        console.log(chalk.gray(`统计端点: ${endpoint}\n`));
+        console.log(chalk.gray(`Analytics endpoint: ${endpoint}\n`));
       }
-      console.log(chalk.gray('感谢您帮助改进 PNCE CLI！\n'));
-      logger.info('使用统计已启用', { endpoint });
+      console.log(chalk.gray('Thank you for helping improve PNCE CLI!\n'));
+      logger.info('Usage analytics enabled', { endpoint });
     } catch (error) {
-      console.log(chalk.red(`启用统计失败: ${error}\n`));
-      logger.error('启用统计失败', { error });
+      console.log(chalk.red(`Failed to enable analytics: ${error}\n`));
+      logger.error('Failed to enable analytics', { error });
     }
   });
 
 /**
- * 禁用统计子命令
+ * Disable analytics subcommand
  */
 export const disableAnalyticsCommand = new Command('disable')
-  .description('禁用使用统计')
+  .description('Disable usage analytics')
   .action(() => {
     try {
       const analytics = getAnalyticsManager();
       analytics.disable();
 
-      console.log(chalk.green('✓ 使用统计已禁用\n'));
-      logger.info('使用统计已禁用');
+      console.log(chalk.green('✓ Usage analytics disabled\n'));
+      logger.info('Usage analytics disabled');
     } catch (error) {
-      console.log(chalk.red(`禁用统计失败: ${error}\n`));
-      logger.error('禁用统计失败', { error });
+      console.log(chalk.red(`Failed to disable analytics: ${error}\n`));
+      logger.error('Failed to disable analytics', { error });
     }
   });
 
 /**
- * 清空统计子命令
+ * Clear analytics subcommand
  */
 export const clearAnalyticsCommand = new Command('clear')
-  .description('清空本地统计事件')
+  .description('Clear local analytics events')
   .action(() => {
     try {
       const analytics = getAnalyticsManager();
       analytics.clearEvents();
 
-      console.log(chalk.green('✓ 本地统计事件已清空\n'));
-      logger.info('本地统计事件已清空');
+      console.log(chalk.green('✓ Local analytics events cleared\n'));
+      logger.info('Local analytics events cleared');
     } catch (error) {
-      console.log(chalk.red(`清空统计失败: ${error}\n`));
-      logger.error('清空统计失败', { error });
+      console.log(chalk.red(`Failed to clear analytics: ${error}\n`));
+      logger.error('Failed to clear analytics', { error });
     }
   });
 
 /**
- * 统计状态子命令
+ * Analytics status subcommand
  */
 export const statusAnalyticsCommand = new Command('status')
-  .description('查看统计状态')
+  .description('Show analytics status')
   .action(() => {
     try {
       const analytics = getAnalyticsManager();
       const stats = analytics.getStats();
 
-      console.log(chalk.cyan('\n📊 统计状态 / Analytics Status\n'));
+      console.log(chalk.cyan('\n📊 Analytics Status\n'));
 
-      console.log(chalk.gray('状态 / Status:'));
-      console.log(
-        `  ${stats.enabled ? chalk.green('✓ 已启用 / Enabled') : chalk.gray('○ 已禁用 / Disabled')}`
-      );
+      console.log(chalk.gray('Status:'));
+      console.log(`  ${stats.enabled ? chalk.green('✓ Enabled') : chalk.gray('○ Disabled')}`);
 
       if (stats.enabled) {
-        console.log(chalk.gray('\n统计信息 / Statistics:'));
-        console.log(`  本地事件数 / Local events: ${stats.eventCount}`);
+        console.log(chalk.gray('\nStatistics:'));
+        console.log(`  Local events: ${stats.eventCount}`);
         if (stats.endpoint) {
-          console.log(`  统计端点 / Endpoint: ${stats.endpoint}`);
+          console.log(`  Endpoint: ${stats.endpoint}`);
         }
       } else {
-        console.log(chalk.gray('\n提示 / Note:'));
-        console.log(chalk.gray('  使用统计已禁用，不会收集任何使用数据'));
-        console.log(chalk.gray('  使用 "pnce analytics enable" 启用以帮助改进 CLI\n'));
+        console.log(chalk.gray('\nNote:'));
+        console.log(chalk.gray('  Usage analytics is disabled, no usage data will be collected'));
+        console.log(chalk.gray('  Use "pnce analytics enable" to help improve the CLI\n'));
       }
     } catch (error) {
-      console.log(chalk.red(`获取状态失败: ${error}\n`));
-      logger.error('获取统计状态失败', { error });
+      console.log(chalk.red(`Failed to get status: ${error}\n`));
+      logger.error('Failed to get analytics status', { error });
     }
   });
 

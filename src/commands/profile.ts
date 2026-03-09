@@ -7,45 +7,47 @@ import { getLogger } from '../utils/logger';
 const logger = getLogger();
 
 /**
- * 配置档案命令
+ * Configuration profile command
  */
 export const profileCommand = new Command('profile')
-  .description('管理配置档案（多配置切换）')
+  .description('Manage configuration profiles (multi-config switching)')
   .action(() => {
     const profileManager = getProfileManager();
     const profiles = profileManager.list();
     const currentProfile = profileManager.getCurrent();
 
-    console.log(chalk.cyan('\n📁 配置档案 / Configuration Profiles\n'));
+    console.log(chalk.cyan('\n📁 Configuration Profiles\n'));
 
     if (profiles.length === 0) {
-      console.log(chalk.gray('暂无配置档案 / No profiles configured\n'));
+      console.log(chalk.gray('No profiles configured\n'));
     } else {
-      profiles.forEach(profile => {
+      profiles.forEach((profile) => {
         const isCurrent = profile.name === currentProfile;
-        const status = isCurrent ? chalk.green('(当前 / Current)') : '';
-        const updatedAt = new Date(profile.updatedAt).toLocaleString('zh-CN');
+        const status = isCurrent ? chalk.green('(current)') : '';
+        const updatedAt = new Date(profile.updatedAt).toLocaleString('en-US');
 
-        console.log(`${isCurrent ? chalk.green('●') : chalk.gray('○')} ${chalk.white(profile.name)} ${status}`);
-        console.log(chalk.gray(`  更新于 / Updated: ${updatedAt}\n`));
+        console.log(
+          `${isCurrent ? chalk.green('●') : chalk.gray('○')} ${chalk.white(profile.name)} ${status}`
+        );
+        console.log(chalk.gray(`  Updated: ${updatedAt}\n`));
       });
     }
 
-    console.log(chalk.gray('使用方法 / Usage:'));
-    console.log('  pnce profile save <name>   - 保存当前配置为档案 / Save current config');
-    console.log('  pnce profile load <name>   - 加载配置档案 / Load profile');
-    console.log('  pnce profile use <name>    - 切换到指定档案 / Switch to profile');
-    console.log('  pnce profile list          - 列出所有档案 / List all profiles');
-    console.log('  pnce profile delete <name> - 删除配置档案 / Delete profile');
-    console.log('  pnce profile rename <old> <new> - 重命名档案 / Rename profile');
+    console.log(chalk.gray('Usage:'));
+    console.log('  pnce profile save <name>   - Save current config as profile');
+    console.log('  pnce profile load <name>   - Load profile');
+    console.log('  pnce profile use <name>    - Switch to profile');
+    console.log('  pnce profile list          - List all profiles');
+    console.log('  pnce profile delete <name> - Delete profile');
+    console.log('  pnce profile rename <old> <new> - Rename profile');
   });
 
 /**
- * 保存档案子命令
+ * Save profile subcommand
  */
 export const saveProfileCommand = new Command('save')
-  .argument('<name>', '档案名称')
-  .description('保存当前配置为档案')
+  .argument('<name>', 'Profile name')
+  .description('Save current config as profile')
   .action(async (name: string) => {
     try {
       const configManager = new ConfigManager();
@@ -54,20 +56,20 @@ export const saveProfileCommand = new Command('save')
       const config = configManager.getConfig();
       profileManager.save(name, config);
 
-      console.log(chalk.green(`✓ 配置档案已保存: ${name}\n`));
-      logger.info(`配置档案已保存: ${name}`, { name });
+      console.log(chalk.green(`✓ Configuration profile saved: ${name}\n`));
+      logger.info(`Configuration profile saved: ${name}`, { name });
     } catch (error) {
-      console.log(chalk.red(`保存档案失败: ${error}\n`));
-      logger.error('保存配置档案失败', { error });
+      console.log(chalk.red(`Failed to save profile: ${error}\n`));
+      logger.error('Failed to save configuration profile', { error });
     }
   });
 
 /**
- * 加载档案子命令
+ * Load profile subcommand
  */
 export const loadProfileCommand = new Command('load')
-  .argument('<name>', '档案名称')
-  .description('加载配置档案（不切换当前档案）')
+  .argument('<name>', 'Profile name')
+  .description('Load configuration profile (without switching current profile)')
   .action(async (name: string) => {
     try {
       const profileManager = getProfileManager();
@@ -75,26 +77,26 @@ export const loadProfileCommand = new Command('load')
       const config = profileManager.load(name);
 
       if (!config) {
-        console.log(chalk.red(`✗ 配置档案不存在: ${name}\n`));
+        console.log(chalk.red(`✗ Configuration profile not found: ${name}\n`));
         return;
       }
 
-      console.log(chalk.cyan(`📄 档案内容 / Profile Content: ${name}\n`));
+      console.log(chalk.cyan(`📄 Profile Content: ${name}\n`));
       console.log(chalk.white(JSON.stringify(config, null, 2)));
-      console.log(chalk.gray('\n提示 / Tip: 使用 "pnce profile use <name>" 切换到此档案\n'));
-      logger.info(`查看配置档案: ${name}`);
+      console.log(chalk.gray('\nTip: Use "pnce profile use <name>" to switch to this profile\n'));
+      logger.info(`Viewed configuration profile: ${name}`);
     } catch (error: unknown) {
-      console.log(chalk.red(`加载档案失败: ${error}\n`));
-      logger.error('加载配置档案失败', { error });
+      console.log(chalk.red(`Failed to load profile: ${error}\n`));
+      logger.error('Failed to load configuration profile', { error });
     }
   });
 
 /**
- * 使用档案子命令
+ * Use profile subcommand
  */
 export const useProfileCommand = new Command('use')
-  .argument('<name>', '档案名称')
-  .description('切换到指定配置档案')
+  .argument('<name>', 'Profile name')
+  .description('Switch to specified configuration profile')
   .action(async (name: string) => {
     try {
       const configManager = new ConfigManager();
@@ -103,86 +105,94 @@ export const useProfileCommand = new Command('use')
       const config = profileManager.load(name);
 
       if (!config) {
-        console.log(chalk.red(`✗ 配置档案不存在: ${name}\n`));
+        console.log(chalk.red(`✗ Configuration profile not found: ${name}\n`));
         return;
       }
 
-      // 更新配置文件
+      // Update configuration file
       configManager.setUserConfig(config);
 
-      // 设置为当前档案
+      // Set as current profile
       profileManager.setCurrent(name);
 
-      console.log(chalk.green(`✓ 已切换到配置档案: ${name}\n`));
-      logger.info(`已切换到配置档案: ${name}`, { name });
+      console.log(chalk.green(`✓ Switched to configuration profile: ${name}\n`));
+      logger.info(`Switched to configuration profile: ${name}`, { name });
     } catch (error) {
-      console.log(chalk.red(`切换档案失败: ${error}\n`));
-      logger.error('切换配置档案失败', { error });
+      console.log(chalk.red(`Failed to switch profile: ${error}\n`));
+      logger.error('Failed to switch configuration profile', { error });
     }
   });
 
 /**
- * 列出档案子命令
+ * List profiles subcommand
  */
 export const listProfileCommand = new Command('list')
-  .description('列出所有配置档案')
+  .description('List all configuration profiles')
   .action(() => {
     const profileManager = getProfileManager();
     const profiles = profileManager.list();
     const currentProfile = profileManager.getCurrent();
 
-    console.log(chalk.cyan('\n📁 配置档案列表 / Profile List\n'));
+    console.log(chalk.cyan('\n📁 Profile List\n'));
 
     if (profiles.length === 0) {
-      console.log(chalk.gray('暂无配置档案 / No profiles configured\n'));
+      console.log(chalk.gray('No profiles configured\n'));
     } else {
-      profiles.forEach(profile => {
+      profiles.forEach((profile) => {
         const isCurrent = profile.name === currentProfile;
-        const status = isCurrent ? chalk.green('(当前 / Current)') : '';
-        const updatedAt = new Date(profile.updatedAt).toLocaleString('zh-CN');
+        const status = isCurrent ? chalk.green('(current)') : '';
+        const updatedAt = new Date(profile.updatedAt).toLocaleString('en-US');
 
-        console.log(`${isCurrent ? chalk.green('●') : chalk.gray('○')} ${chalk.white(profile.name)} ${status}`);
-        console.log(chalk.gray(`  更新于 / Updated: ${updatedAt}\n`));
+        console.log(
+          `${isCurrent ? chalk.green('●') : chalk.gray('○')} ${chalk.white(profile.name)} ${status}`
+        );
+        console.log(chalk.gray(`  Updated: ${updatedAt}\n`));
       });
     }
   });
 
 /**
- * 删除档案子命令
+ * Delete profile subcommand
  */
 export const deleteProfileCommand = new Command('delete')
-  .argument('<name>', '档案名称')
-  .description('删除配置档案')
+  .argument('<name>', 'Profile name')
+  .description('Delete configuration profile')
   .action((name: string) => {
     try {
       const profileManager = getProfileManager();
       profileManager.delete(name);
 
-      console.log(chalk.green(`✓ 配置档案已删除: ${name}\n`));
-      logger.info(`配置档案已删除: ${name}`);
+      console.log(chalk.green(`✓ Configuration profile deleted: ${name}\n`));
+      logger.info(`Configuration profile deleted: ${name}`);
     } catch (error) {
-      console.log(chalk.red(`删除档案失败: ${error}\n`));
-      logger.error('删除配置档案失败', error instanceof Error ? error : new Error(String(error)));
+      console.log(chalk.red(`Failed to delete profile: ${error}\n`));
+      logger.error(
+        'Failed to delete configuration profile',
+        error instanceof Error ? { error } : { error: new Error(String(error)) }
+      );
     }
   });
 
 /**
- * 重命名档案子命令
+ * Rename profile subcommand
  */
 export const renameProfileCommand = new Command('rename')
-  .argument('<oldName>', '旧档案名称')
-  .argument('<newName>', '新档案名称')
-  .description('重命名配置档案')
+  .argument('<oldName>', 'Old profile name')
+  .argument('<newName>', 'New profile name')
+  .description('Rename configuration profile')
   .action((oldName: string, newName: string) => {
     try {
       const profileManager = getProfileManager();
       profileManager.rename(oldName, newName);
 
-      console.log(chalk.green(`✓ 配置档案已重命名: ${oldName} -> ${newName}\n`));
-      logger.info(`配置档案已重命名: ${oldName} -> ${newName}`);
+      console.log(chalk.green(`✓ Configuration profile renamed: ${oldName} -> ${newName}\n`));
+      logger.info(`Configuration profile renamed: ${oldName} -> ${newName}`);
     } catch (error) {
-      console.log(chalk.red(`重命名档案失败: ${error}\n`));
-      logger.error('重命名配置档案失败', error instanceof Error ? error : new Error(String(error)));
+      console.log(chalk.red(`Failed to rename profile: ${error}\n`));
+      logger.error(
+        'Failed to rename configuration profile',
+        error instanceof Error ? { error } : { error: new Error(String(error)) }
+      );
     }
   });
 
