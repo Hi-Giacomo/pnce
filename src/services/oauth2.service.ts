@@ -116,7 +116,6 @@ export class OAuth2Service {
     });
   }
 
-  // @ts-expect-error - Method is reserved for future OAuth2 token exchange
   private static async exchangeToken(
     registryUrl: string,
     code: string,

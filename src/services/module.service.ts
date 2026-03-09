@@ -50,7 +50,6 @@ export class ModuleService {
   /**
    * 读取已安装模块的哈希值
    */
-  // @ts-expect-error - Method is reserved for future use
   private async readInstalledModuleHash(_modulePath: string): Promise<string | null> {
     return null;
   }

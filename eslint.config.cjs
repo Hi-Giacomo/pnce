@@ -24,6 +24,7 @@ module.exports = [
       'no-var': 'warn',
       'no-useless-escape': 'off',
       'no-control-regex': 'off',
+      'preserve-caught-error': 'off',
     },
   },
   {

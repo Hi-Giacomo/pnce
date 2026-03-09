@@ -150,7 +150,7 @@ export class VersionChecker {
       return entries;
     } catch (error) {
       logger.error(`获取变更日志失败: ${error}`);
-      throw new Error(`获取变更日志失败: ${error}`, { cause: error });
+      throw new Error(`获取变更日志失败: ${error}`);
     }
   }
 }
