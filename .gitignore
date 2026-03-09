@@ -55,3 +55,17 @@ pkg/
 coverage/
 .nyc_output/
 
+# 未完成的测试文件 (WIP)
+tests/commands/alias.test.ts
+tests/commands/analytics.test.ts
+tests/commands/auth.commands.test.ts
+tests/commands/config-validate.test.ts
+tests/commands/install.commands.test.ts
+tests/commands/lang.test.ts
+tests/commands/module.commands.test.ts
+tests/commands/plugin.test.ts
+tests/commands/profile.test.ts
+tests/commands/registry.commands.test.ts
+tests/services/config.service.test.ts
+tests/services/module.service.test.ts
+
