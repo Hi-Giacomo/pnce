@@ -132,7 +132,7 @@ export class ProfileManager {
 
       const profiles: ConfigProfile[] = [];
 
-      files.forEach(file => {
+      files.forEach((file: string) => {
         if (file.endsWith('.json')) {
           try {
             const profilePath = path.join(this.profilesDir, file);
@@ -140,7 +140,10 @@ export class ProfileManager {
             const profile: ConfigProfile = JSON.parse(content);
             profiles.push(profile);
           } catch (error) {
-            logger.debug(`加载档案失败: ${file}`, error);
+            logger.debug(
+              `加载档案失败: ${file}`,
+              error instanceof Error ? { error } : { error: String(error) }
+            );
           }
         }
       });

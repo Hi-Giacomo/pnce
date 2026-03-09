@@ -2,46 +2,45 @@ import { readFileSync, existsSync } from 'fs';
 import path from 'path';
 
 /**
- * 语言类型
+ * Language type
  */
 export type Language = 'zh' | 'en';
 
 /**
- * 翻译消息类型
+ * Translation message type
  */
 export type Messages = Record<string, string>;
 
 /**
- * 语言包
+ * Language pack
  */
 interface Locale {
   [key: string]: string | Locale;
 }
 
 /**
- * i18n 管理器
+ * i18n manager
  */
 export class I18nManager {
   private currentLanguage: Language = 'zh';
   private locales: Map<Language, Locale> = new Map();
-  private messages: Map<Language, Messages> = new Map();
 
   constructor() {
     this.loadLocales();
   }
 
   /**
-   * 加载所有语言包
+   * Load all language packs
    */
   private loadLocales(): void {
-    // 加载中文
+    // Load Chinese
     this.loadLanguage('zh');
-    // 加载英文
+    // Load English
     this.loadLanguage('en');
   }
 
   /**
-   * 加载指定语言
+   * Load specified language
    */
   private loadLanguage(lang: Language): void {
     try {
@@ -50,40 +49,40 @@ export class I18nManager {
         const content = readFileSync(localePath, 'utf-8');
         this.locales.set(lang, JSON.parse(content));
       } else {
-        console.warn(`语言包不存在: ${localePath}`);
+        console.warn(`Language pack not found: ${localePath}`);
       }
     } catch (error) {
-      console.error(`加载语言包失败 (${lang}):`, error);
+      console.error(`Failed to load language pack (${lang}):`, error);
     }
   }
 
   /**
-   * 获取语言包路径
+   * Get language pack path
    */
   private getLocalePath(lang: Language): string {
-    // 优先查找源码目录
+    // Search source directory first
     const srcPath = path.join(__dirname, `../locales/${lang}.json`);
     if (existsSync(srcPath)) {
       return srcPath;
     }
 
-    // 其次查找编译后的目录
+    // Then search compiled directory
     const distPath = path.join(__dirname, `../locales/${lang}.json`);
     if (existsSync(distPath)) {
       return distPath;
     }
 
-    // 最后查找项目根目录
+    // Finally search project root directory
     const rootPath = path.join(process.cwd(), 'locales', `${lang}.json`);
     return rootPath;
   }
 
   /**
-   * 设置当前语言
+   * Set current language
    */
   setLanguage(lang: Language): void {
     if (!this.locales.has(lang)) {
-      console.warn(`不支持的语言: ${lang}，使用默认语言: zh`);
+      console.warn(`Unsupported language: ${lang}, using default language: zh`);
       this.currentLanguage = 'zh';
       return;
     }
@@ -92,21 +91,21 @@ export class I18nManager {
   }
 
   /**
-   * 获取当前语言
+   * Get current language
    */
   getLanguage(): Language {
     return this.currentLanguage;
   }
 
   /**
-   * 获取支持的语言列表
+   * Get list of supported languages
    */
   getSupportedLanguages(): Language[] {
     return Array.from(this.locales.keys());
   }
 
   /**
-   * 翻译文本
+   * Translate text
    */
   t(key: string, params?: Record<string, string | number>): string {
     const locale = this.locales.get(this.currentLanguage);
@@ -115,27 +114,34 @@ export class I18nManager {
       return key;
     }
 
-    // 支持嵌套键，如 'common.success'
+    // Support nested keys, e.g., 'common.success'
     const keys = key.split('.');
     let value: string | Locale = locale;
 
     for (const k of keys) {
       if (value && typeof value === 'object' && k in value) {
-        value = value[k];
+        const val = value as Record<string, string | Locale>;
+        value = val[k] as string | Locale;
       } else {
-        // 如果找不到翻译，返回 key
-        console.warn(`翻译不存在: ${key}`);
+        // If translation not found, return key
+        console.warn(`Translation not found: ${key}`);
         return key;
       }
     }
 
-    // 如果值不是字符串，返回 key
-    if (typeof value !== 'string') {
-      console.warn(`翻译值不是字符串: ${key}`);
+    // Ensure value is not undefined
+    if (value === undefined) {
+      console.warn(`Translation not found: ${key}`);
       return key;
     }
 
-    // 替换参数
+    // If value is not a string, return key
+    if (typeof value !== 'string') {
+      console.warn(`Translation value is not a string: ${key}`);
+      return key;
+    }
+
+    // Replace parameters
     if (params) {
       return this.interpolate(value, params);
     }
@@ -144,7 +150,7 @@ export class I18nManager {
   }
 
   /**
-   * 替换翻译中的参数
+   * Replace parameters in translation
    */
   private interpolate(template: string, params: Record<string, string | number>): string {
     return template.replace(/\{\{(\w+)\}\}/g, (match, key) => {
@@ -153,10 +159,11 @@ export class I18nManager {
   }
 
   /**
-   * 检测系统语言
+   * Detect system language
    */
   detectSystemLanguage(): Language {
-    const envLang = process.env.LANGUAGE || process.env.LC_ALL || process.env.LC_MESSAGES || process.env.LANG;
+    const envLang =
+      process.env.LANGUAGE || process.env.LC_ALL || process.env.LC_MESSAGES || process.env.LANG;
 
     if (envLang) {
       if (envLang.startsWith('zh') || envLang.startsWith('zh_CN')) {
@@ -167,11 +174,11 @@ export class I18nManager {
       }
     }
 
-    return 'zh'; // 默认中文
+    return 'zh'; // Default to Chinese
   }
 
   /**
-   * 自动设置语言
+   * Auto-set language
    */
   autoSetLanguage(): void {
     const systemLang = this.detectSystemLanguage();
@@ -180,12 +187,12 @@ export class I18nManager {
 }
 
 /**
- * 全局 i18n 实例
+ * Global i18n instance
  */
 let i18nManager: I18nManager | null = null;
 
 /**
- * 获取 i18n 管理器实例
+ * Get i18n manager instance
  */
 export function getI18n(): I18nManager {
   if (!i18nManager) {
@@ -196,21 +203,21 @@ export function getI18n(): I18nManager {
 }
 
 /**
- * 翻译函数的便利包装
+ * Convenience wrapper for translation function
  */
 export function t(key: string, params?: Record<string, string | number>): string {
   return getI18n().t(key, params);
 }
 
 /**
- * 设置语言
+ * Set language
  */
 export function setLanguage(lang: Language): void {
   getI18n().setLanguage(lang);
 }
 
 /**
- * 获取当前语言
+ * Get current language
  */
 export function getLanguage(): Language {
   return getI18n().getLanguage();

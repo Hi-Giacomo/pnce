@@ -7,14 +7,14 @@ import chalk from 'chalk';
 const logger = getLogger();
 
 /**
- * 交互式配置向导
+ * Interactive Configuration Wizard
  */
 export const initCommand = new Command('init')
-  .description('交互式配置向导 - 设置 PNCE CLI')
+  .description('Interactive configuration wizard - Setup PNCE CLI')
   .action(async () => {
-    logger.info('启动交互式配置向导');
-    console.log(chalk.cyan('\n🚀 PNCE CLI 配置向导\n'));
-    console.log(chalk.gray('本向导将帮助您配置 PNCE CLI 的基本设置\n'));
+    logger.info('Starting interactive configuration wizard');
+    console.log(chalk.cyan('\n🚀 PNCE CLI Configuration Wizard\n'));
+    console.log(chalk.gray('This wizard will help you configure basic settings for PNCE CLI\n'));
 
     const rl = readline.createInterface({
       input: process.stdin,
@@ -24,52 +24,50 @@ export const initCommand = new Command('init')
     const configManager = new ConfigManager();
     const config: Record<string, string> = {};
 
-    // 创建一个辅助函数来获取用户输入
+    // Create a helper function to get user input
     const question = (prompt: string): Promise<string> => {
-      return new Promise(resolve => {
-        rl.question(prompt, answer => {
+      return new Promise((resolve) => {
+        rl.question(prompt, (answer) => {
           resolve(answer.trim());
         });
       });
     };
 
     try {
-      // 服务器地址
-      console.log(chalk.yellow('步骤 1/3: 配置服务器'));
+      // Server address
+      console.log(chalk.yellow('Step 1/3: Configure Server'));
       const serverUrl =
-        (await question('  输入服务器地址 (直接回车使用默认): ')) ||
+        (await question('  Enter server URL (press Enter to use default): ')) ||
         'https://pnce.example.com';
       config.serverUrl = serverUrl;
 
-      // 日志级别
-      console.log('\n' + chalk.yellow('步骤 2/3: 配置日志级别'));
-      console.log(chalk.gray('  可选: debug, info, warn, error (默认: info)'));
-      const logLevel = (await question('  输入日志级别: ')) || 'info';
-      config.logLevel = ['debug', 'info', 'warn', 'error'].includes(logLevel)
-        ? logLevel
-        : 'info';
+      // Log level
+      console.log('\n' + chalk.yellow('Step 2/3: Configure Log Level'));
+      console.log(chalk.gray('  Options: debug, info, warn, error (default: info)'));
+      const logLevel = (await question('  Enter log level: ')) || 'info';
+      config.logLevel = ['debug', 'info', 'warn', 'error'].includes(logLevel) ? logLevel : 'info';
 
-      // 代理设置
-      console.log('\n' + chalk.yellow('步骤 3/3: 配置代理（可选）'));
-      const useProxy = await question('  是否使用代理? (y/N): ');
+      // Proxy settings
+      console.log('\n' + chalk.yellow('Step 3/3: Configure Proxy (Optional)'));
+      const useProxy = await question('  Use proxy? (y/N): ');
       if (useProxy.toLowerCase() === 'y' || useProxy.toLowerCase() === 'yes') {
-        const proxyUrl = await question('  输入代理 URL (如 http://127.0.0.1:7890): ');
+        const proxyUrl = await question('  Enter proxy URL (e.g., http://127.0.0.1:7890): ');
         config.proxyUrl = proxyUrl;
       }
 
-      // 保存配置
-      console.log('\n' + chalk.cyan('💾 保存配置...'));
+      // Save configuration
+      console.log('\n' + chalk.cyan('💾 Saving configuration...'));
       configManager.setUserConfig(config);
 
-      console.log(chalk.green('\n✅ 配置完成！\n'));
-      console.log(chalk.gray('配置文件位置: '));
+      console.log(chalk.green('\n✅ Configuration complete!\n'));
+      console.log(chalk.gray('Configuration file location: '));
       console.log(chalk.gray(`  ${configManager.getUserConfigPath()}`));
-      console.log(chalk.gray('\n您可以使用 `pnce config` 查看或修改配置\n'));
+      console.log(chalk.gray('\nYou can use `pnce config` to view or modify configuration\n'));
 
-      logger.info('配置向导完成', { config });
+      logger.info('Configuration wizard complete', { config });
     } catch (error) {
-      logger.error('配置向导失败', { error });
-      console.log(chalk.red('\n❌ 配置失败: ' + (error as Error).message));
+      logger.error('Configuration wizard failed', { error });
+      console.log(chalk.red('\n❌ Configuration failed: ' + (error as Error).message));
     } finally {
       rl.close();
     }

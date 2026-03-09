@@ -158,7 +158,7 @@ export class AnalyticsManager {
 
       // 如果配置了端点，发送到服务器
       if (this.config.endpoint) {
-        this.sendEvent(eventData).catch(error => {
+        this.sendEvent(eventData).catch((error) => {
           logger.debug(`发送统计事件失败: ${error}`);
         });
       }

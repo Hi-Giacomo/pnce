@@ -151,18 +151,19 @@ export class ConfigSuggester {
   /**
    * 获取配置建议
    */
-  getSuggestions(config: PnceConfig, issues: ConfigIssue[]): string[] {
+
+  getSuggestions(_config: PnceConfig, issues: ConfigIssue[]): string[] {
     const suggestions: string[] = [];
 
-    if (issues.some(i => i.type === 'error')) {
+    if (issues.some((i) => i.type === 'error')) {
       suggestions.push('⚠️  配置存在错误，请先修复这些问题');
     }
 
-    if (issues.some(i => i.type === 'warning')) {
+    if (issues.some((i) => i.type === 'warning')) {
       suggestions.push('⚠️  配置存在警告，建议检查');
     }
 
-    if (issues.some(i => i.type === 'suggestion')) {
+    if (issues.some((i) => i.type === 'suggestion')) {
       suggestions.push('💡  以下优化建议可能提升使用体验');
     }
 
@@ -180,13 +181,13 @@ export class ConfigSuggester {
     const lines: string[] = [];
 
     // 按类型分组
-    const errors = issues.filter(i => i.type === 'error');
-    const warnings = issues.filter(i => i.type === 'warning');
-    const suggestions = issues.filter(i => i.type === 'suggestion');
+    const errors = issues.filter((i) => i.type === 'error');
+    const warnings = issues.filter((i) => i.type === 'warning');
+    const suggestions = issues.filter((i) => i.type === 'suggestion');
 
     if (errors.length > 0) {
       lines.push('\n❌ 错误:');
-      errors.forEach(issue => {
+      errors.forEach((issue) => {
         lines.push(`  • ${issue.field}: ${issue.message}`);
         if (issue.suggestion !== undefined) {
           lines.push(`    建议值: ${JSON.stringify(issue.suggestion)}`);
@@ -196,7 +197,7 @@ export class ConfigSuggester {
 
     if (warnings.length > 0) {
       lines.push('\n⚠️  警告:');
-      warnings.forEach(issue => {
+      warnings.forEach((issue) => {
         lines.push(`  • ${issue.field}: ${issue.message}`);
         if (issue.suggestion !== undefined) {
           lines.push(`    建议值: ${JSON.stringify(issue.suggestion)}`);
@@ -206,7 +207,7 @@ export class ConfigSuggester {
 
     if (suggestions.length > 0) {
       lines.push('\n💡 建议:');
-      suggestions.forEach(issue => {
+      suggestions.forEach((issue) => {
         lines.push(`  • ${issue.field}: ${issue.message}`);
         if (issue.suggestion !== undefined) {
           lines.push(`    建议值: ${JSON.stringify(issue.suggestion)}`);
@@ -223,7 +224,7 @@ export class ConfigSuggester {
   autoFix(config: PnceConfig, issues: ConfigIssue[]): PnceConfig {
     const fixedConfig = { ...config };
 
-    issues.forEach(issue => {
+    issues.forEach((issue) => {
       if (issue.suggestion !== undefined) {
         (fixedConfig as Record<string, unknown>)[issue.field] = issue.suggestion;
         logger.debug(`自动修复配置: ${issue.field} = ${issue.suggestion}`);

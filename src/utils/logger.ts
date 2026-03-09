@@ -82,15 +82,16 @@ export async function createLogger(config?: Partial<LoggerConfig>): Promise<wins
   const transports: winston.transport[] = [
     // 控制台输出
     new winston.transports.Console({
-      format: finalConfig.format === 'json'
-        ? logFormat
-        : winston.format.combine(
-            winston.format.colorize(),
-            winston.format.timestamp({ format: 'HH:mm:ss' }),
-            winston.format.printf(({ level, message, timestamp }) => {
-              return `${timestamp} [${level}]: ${message}`;
-            })
-          ),
+      format:
+        finalConfig.format === 'json'
+          ? logFormat
+          : winston.format.combine(
+              winston.format.colorize(),
+              winston.format.timestamp({ format: 'HH:mm:ss' }),
+              winston.format.printf(({ level, message, timestamp }) => {
+                return `${timestamp} [${level}]: ${message}`;
+              })
+            ),
       level: finalConfig.level,
     }),
 
@@ -112,10 +113,7 @@ export async function createLogger(config?: Partial<LoggerConfig>): Promise<wins
       filename: path.join(finalConfig.dir, 'combined.log'),
       maxFiles: finalConfig.maxFiles,
       maxsize: parseInt(finalConfig.maxSize) * 1024 * 1024,
-      format: winston.format.combine(
-        winston.format.timestamp(),
-        winston.format.json()
-      ),
+      format: winston.format.combine(winston.format.timestamp(), winston.format.json()),
     }),
   ];
 

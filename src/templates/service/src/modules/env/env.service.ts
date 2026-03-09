@@ -1,10 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import {
-  loadEnvFile,
-  updateEnvFile,
-  deleteEnvFile as deleteEnv,
-} from '../../config/env.config';
+import { loadEnvFile, updateEnvFile, deleteEnvFile as deleteEnv } from '../../config/env.config';
 
 @Injectable()
 export class EnvService {
@@ -151,13 +147,12 @@ export class EnvService {
   reloadEnv(): { success: boolean; message: string; config: Record<string, string> } {
     try {
       const envVars = loadEnvFile();
-      
+
       // 更新 process.env
       Object.entries(envVars).forEach(([key, value]) => {
         process.env[key] = value;
       });
-     
-      
+
       this.logger.log('环境变量已重载');
       return {
         success: true,
@@ -181,4 +176,3 @@ export class EnvService {
     return this.configService.get<T>(key, defaultValue);
   }
 }
-

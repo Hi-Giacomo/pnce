@@ -127,7 +127,7 @@ function handleEnvFileChange(): void {
 
     if (changedKeys.length > 0) {
       console.log('⚠️  配置变更需要重启服务:');
-      changedKeys.forEach(change => console.log(`   - ${change}`));
+      changedKeys.forEach((change) => console.log(`   - ${change}`));
 
       // 更新已知的值
       lastKnownConfig = newConfig;
@@ -140,7 +140,10 @@ function handleEnvFileChange(): void {
       console.log('✅ 配置已应用，无需重启服务\n');
     }
   } catch (error) {
-    console.error('❌ 处理 .env 文件变化失败:', error instanceof Error ? error.message : String(error));
+    console.error(
+      '❌ 处理 .env 文件变化失败:',
+      error instanceof Error ? error.message : String(error),
+    );
   }
 }
 

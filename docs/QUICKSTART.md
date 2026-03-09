@@ -1,133 +1,133 @@
-# PNCE CLI 快速开始指南
+# PNCE CLI Quick Start Guide
 
-欢迎使用 PNCE CLI！本指南将帮助您快速上手使用 PNCE CLI 工具。
+Welcome to PNCE CLI! This guide will help you get started quickly with PNCE CLI.
 
-## 安装
+## Installation
 
-### 使用 npm 安装
+### Install using npm
 
 ```bash
 npm install -g pnce
 ```
 
-### 使用 yarn 安装
+### Install using yarn
 
 ```bash
 yarn global add pnce
 ```
 
-### 验证安装
+### Verify Installation
 
 ```bash
 pnce --version
 ```
 
-## 基本使用
+## Basic Usage
 
-### 1. 登录认证
+### 1. Login Authentication
 
-首次使用前，需要登录到 PNCE 注册中心：
+Before first use, you need to login to the PNCE registry:
 
 ```bash
 pnce login
 ```
 
-浏览器将自动打开授权页面，完成登录后即可使用。
+The browser will automatically open the authorization page. Complete the login to proceed.
 
-### 2. 查看帮助
+### 2. View Help
 
-查看所有可用命令：
+View all available commands:
 
 ```bash
 pnce --help
 ```
 
-查看特定命令的帮助：
+View help for a specific command:
 
 ```bash
 pnce upload --help
 ```
 
-### 3. 上传模块
+### 3. Upload Module
 
-上传当前目录的模块到注册中心：
+Upload the module in the current directory to the registry:
 
 ```bash
 pnce upload
 ```
 
-指定模块目录：
+Specify a module directory:
 
 ```bash
 pnce upload -d /path/to/module
 ```
 
-### 4. 安装模块
+### 4. Install Module
 
-从注册中心安装模块：
+Install a module from the registry:
 
 ```bash
 pnce install <module-name>
 ```
 
-指定版本安装：
+Install a specific version:
 
 ```bash
 pnce install <module-name>@1.0.0
 ```
 
-安装到特定目录：
+Install to a specific directory:
 
 ```bash
 pnce install <module-name> -d ./modules
 ```
 
-### 5. 管理模块
+### 5. Manage Modules
 
-列出已安装的模块：
+List installed modules:
 
 ```bash
 pnce list
 ```
 
-查看模块详情：
+View module details:
 
 ```bash
 pnce info <module-name>
 ```
 
-搜索模块：
+Search for modules:
 
 ```bash
 pnce search <keyword>
 ```
 
-### 6. 退出登录
+### 6. Logout
 
 ```bash
 pnce logout
 ```
 
-## 配置
+## Configuration
 
-### 使用交互式配置向导
+### Using Interactive Configuration Wizard
 
 ```bash
 pnce init
 ```
 
-向导将引导您配置以下内容：
-- 服务器地址
-- 日志级别
-- 代理设置
+The wizard will guide you through configuring:
+- Server URL
+- Log level
+- Proxy settings
 
-### 手动配置
+### Manual Configuration
 
-配置文件位置：
-- 用户配置: `~/.pnce/config.json`
-- 项目配置: `./.pnce/config.json`
+Configuration file locations:
+- User config: `~/.pnce/config.json`
+- Project config: `./.pnce/config.json`
 
-示例配置：
+Example configuration:
 
 ```json
 {
@@ -142,7 +142,7 @@ pnce init
 }
 ```
 
-## 自动补全
+## Auto-completion
 
 ### Bash
 
@@ -164,63 +164,63 @@ source ~/.zshrc
 pnce completion > ~/.config/fish/completions/pnce.fish
 ```
 
-## 常用场景
+## Common Use Cases
 
-### 场景1：开发新模块
+### Use Case 1: Developing a New Module
 
-1. 创建模块目录并编写代码
-2. 创建 `module.config.json` 配置文件
-3. 运行 `pnce upload` 上传模块
-4. 使用 `pnce install <module-name>` 测试安装
+1. Create module directory and write code
+2. Create `module.config.json` configuration file
+3. Run `pnce upload` to upload the module
+4. Use `pnce install <module-name>` to test installation
 
-### 场景2：团队共享模块
+### Use Case 2: Sharing Modules with Team
 
-1. 登录注册中心: `pnce login`
-2. 安装团队模块: `pnce install team-module`
-3. 团队成员可以同样安装使用
+1. Login to registry: `pnce login`
+2. Install team modules: `pnce install team-module`
+3. Team members can install and use the same way
 
-### 场景3：多环境配置
+### Use Case 3: Multi-environment Configuration
 
-1. 创建配置档案: `pnce profile save prod`
-2. 切换到生产配置: `pnce profile use prod`
-3. 列出所有档案: `pnce profile list`
+1. Create configuration profile: `pnce profile save prod`
+2. Switch to production config: `pnce profile use prod`
+3. List all profiles: `pnce profile list`
 
-## 常见问题
+## Common Questions
 
-### Q: 登录失败怎么办？
+### Q: What to do if login fails?
 
-A: 检查网络连接，确保服务器地址正确。可以使用 `pnce config` 查看当前配置。
+A: Check network connection and ensure server URL is correct. You can use `pnce config` to view current configuration.
 
-### Q: 如何更新 PNCE CLI？
+### Q: How to update PNCE CLI?
 
-A: 使用以下命令更新：
+A: Use the following commands to update:
 
 ```bash
 npm update -g pnce
-# 或
+# or
 yarn global upgrade pnce
 ```
 
-### Q: 模块安装失败怎么办？
+### Q: What to do if module installation fails?
 
-A: 检查：
-1. 是否已登录: `pnce login`
-2. 网络连接是否正常
-3. 模块名称是否正确
-4. 查看详细错误信息: `pnce install <module> --verbose`
+A: Check:
+1. If logged in: `pnce login`
+2. If network connection is normal
+3. If module name is correct
+4. View detailed error info: `pnce install <module> --verbose`
 
-## 下一步
+## Next Steps
 
-- 阅读完整的 [API 文档](./API_DOCUMENTATION.md)
-- 查看 [常见问题解答](./FAQ.md)
-- 了解 [故障排查指南](./TROUBLESHOOTING.md)
-- 查看 [贡献指南](./CONTRIBUTING.md)
+- Read full [API Documentation](./API_DOCUMENTATION.md)
+- View [FAQ](./FAQ.md)
+- Learn about [Troubleshooting Guide](./TROUBLESHOOTING.md)
+- View [Contributing Guide](./CONTRIBUTING.md)
 
-## 获取帮助
+## Get Help
 
 - GitHub Issues: [https://github.com/hi-giacomo/pnce/issues](https://github.com/hi-giacomo/pnce/issues)
-- 文档: [https://github.com/hi-giacomo/pnce](https://github.com/hi-giacomo/pnce)
+- Documentation: [https://github.com/hi-giacomo/pnce](https://github.com/hi-giacomo/pnce)
 
 ---
 
-**祝您使用愉快！** 🚀
+**Happy using!** 🚀

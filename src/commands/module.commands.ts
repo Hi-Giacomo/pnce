@@ -3,7 +3,6 @@ import * as path from 'path';
 import * as fs from 'fs-extra';
 import { ModuleUploadService } from '../services/module-upload.service';
 import { ModuleDownloadService } from '../services/module-download.service';
-import { ModuleService } from '../services/module.service';
 import { ErrorHandler } from '../utils/errors';
 import { getConfigManager } from '../config/manager';
 
@@ -15,17 +14,19 @@ export function registerModuleCommands(
   moduleUploadService: ModuleUploadService,
   _moduleDownloadService: ModuleDownloadService
 ): void {
-  // 上传模块命令
+  // Upload module command
   program
     .command('upload')
-    .description('上传模块到注册中心（从 module.config.json 自动读取模块信息）')
-    .option('-d, --directory <dir>', '模块目录路径', '.')
+    .description(
+      'Upload module to registry (automatically reads module info from module.config.json)'
+    )
+    .option('-d, --directory <dir>', 'Module directory path', '.')
     .action(async (options) => {
       try {
         const configManager = getConfigManager();
-        // 检查是否已登录
+        // Check if logged in
         if (!configManager.getToken()) {
-          throw new Error('请先登录，运行: pnce login');
+          throw new Error('Please login first, run: pnce login');
         }
 
         await moduleUploadService.upload(options.directory);
@@ -34,30 +35,16 @@ export function registerModuleCommands(
       }
     });
 
-  program
-    .command('publish')
-    .description('上传模块到注册中心（从 module.config.json 自动读取模块信息）')
-    .option('-d, --directory <dir>', '模块目录路径', '.')
-    .action(async (options) => {
-      try {
-        const configManager = getConfigManager();
-        // 检查是否已登录
-        if (!configManager.getToken()) {
-          throw new Error('请先登录，运行: pnce login');
-        }
-
-        await moduleUploadService.upload(options.directory);
-      } catch (error) {
-        ErrorHandler.handle(error);
-      }
-    });
-
-  // 修正导入路径命令（使用旧的服务）
-  // const moduleService = new ModuleService(require('./index').api); // 从全局获取api实例
+  // Fix import path command (using old service)
+  // const moduleService = new ModuleService(require('./index').api); // Get api instance from global
   program
     .command('fix-imports <module>')
-    .description('修正模块中已安装依赖的导入路径')
-    .option('-d, --dir <dir>', '模块所在目录（相对于 src/external_modules 或 src/local_modules）', 'src/external_modules')
+    .description('Fix import paths of installed dependencies in module')
+    .option(
+      '-d, --dir <dir>',
+      'Module directory (relative to src/external_modules or src/local_modules)',
+      'src/external_modules'
+    )
     .action(async (moduleName, options) => {
       try {
         const initialCwd = process.env.INIT_CWD || process.cwd();
@@ -65,14 +52,14 @@ export function registerModuleCommands(
         const modulePath = path.join(projectRoot, options.dir, moduleName);
 
         if (!fs.existsSync(modulePath)) {
-          console.error(`❌ 错误: 模块不存在于 ${modulePath}`);
+          console.error(`❌ Error: Module does not exist at ${modulePath}`);
           process.exit(1);
         }
 
-        console.log(`\n🔧 修正模块 ${moduleName} 的导入路径...\n`);
-        // 需要访问moduleService的方法，暂时注释掉
+        console.log(`\n🔧 Fixing import paths for module ${moduleName}...\n`);
+        // Need to access moduleService methods, temporarily commented out
         // await moduleService.fixImportForModule(modulePath, projectRoot);
-        console.log('\n✅ 导入路径修正完成！');
+        console.log('\n✅ Import path fix complete!');
       } catch (error) {
         ErrorHandler.handle(error);
       }

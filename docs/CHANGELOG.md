@@ -1,137 +1,137 @@
-# 变更日志
+# Changelog
 
-本文档记录 PNCE CLI 的所有重要变更。
+This document records all important changes to PNCE CLI.
 
-格式基于 [Keep a Changelog](https://keepachangelog.com/zh-CN/1.0.0/)。
+Format based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [0.0.9] - 2026-03-06
 
-### 安全
-- ✨ Token 加密存储（使用 AES-256-GCM）
-- 🔒 移除硬编码 IP 地址，使用环境变量配置
-- 🛡️ 添加加密工具类（CryptoUtil）
+### Security
+- ✨ Token encryption storage (using AES-256-GCM)
+- 🔒 Remove hardcoded IP addresses, use environment variables for configuration
+- 🛡️ Add encryption utility class (CryptoUtil)
 
-### 改进
-- 🔧 完善环境变量配置（.env.example）
-- 📝 更新文档结构（移动到 docs/ 目录）
+### Improvements
+- 🔧 Improve environment variable configuration (.env.example)
+- 📝 Update documentation structure (move to docs/ directory)
 
-### 修复
-- 🐛 修复版本号不一致问题
-- 🔐 修复 Token 明文存储的安全问题
+### Fixes
+- 🐛 Fix version number inconsistency issue
+- 🔐 Fix security issue of plaintext token storage
 
 ## [0.0.8] - 2026-03-05
 
-### 优化
+### Optimization
 
-### 优化
-- 实现统一的错误处理系统
-- 添加基于 Winston 的日志系统
-- 添加进度条显示功能
-- 实现并行下载支持（3倍速度提升）
-- 重构配置管理系统
-- 添加完整的 JSDoc 注释
-- 统一常量管理
-- 移除所有硬编码值
+### Optimization
+- Implement unified error handling system
+- Add Winston-based logging system
+- Add progress bar display feature
+- Implement parallel download support (3x speed improvement)
+- Refactor configuration management system
+- Add complete JSDoc comments
+- Unify constant management
+- Remove all hardcoded values
 
-### 新增
-- `install-batch` 命令支持批量安装
-- `pnce me` 命令查看当前用户信息
-- 多级配置支持（环境变量、项目配置、用户配置）
-- 自动 Token 过期检测
-- HTTP 请求重试机制
+### Added
+- `install-batch` command supports batch installation
+- `pnce me` command to view current user information
+- Multi-level configuration support (environment variables, project config, user config)
+- Automatic token expiration detection
+- HTTP request retry mechanism
 
-### 修复
-- 修复所有 TypeScript 编译错误
-- 修复环境变量读取问题
-- 修复日志初始化错误处理
+### Fixes
+- Fix all TypeScript compilation errors
+- Fix environment variable reading issue
+- Fix log initialization error handling
 
-### 改进
-- 提升类型安全性，移除所有 `any` 类型
-- 优化错误提示信息
-- 改进 API 错误处理
+### Improvements
+- Improve type safety, remove all `any` types
+- Optimize error prompt messages
+- Improve API error handling
 
 ## [0.0.7] - 2026-03-04
 
-### 新增
-- 模块管理命令
-- 端口管理功能
-- 搜索模块功能
-- 热门模块查询
-- 统计信息查询
+### Added
+- Module management commands
+- Port management feature
+- Module search feature
+- Trending module query
+- Statistics query
 
-### 改进
-- 优化下载速度
-- 改进缓存机制
+### Improvements
+- Optimize download speed
+- Improve cache mechanism
 
 ## [0.0.6] - 2026-03-03
 
-### 新增
-- OAuth2 浏览器登录支持
-- 邮箱密码登录支持
-- 用户注册功能
-- Token 自动管理
+### Added
+- OAuth2 browser login support
+- Email/password login support
+- User registration feature
+- Automatic token management
 
-### 改进
-- 优化认证流程
-- 改进错误提示
+### Improvements
+- Optimize authentication flow
+- Improve error prompts
 
 ## [0.0.5] - 2026-03-02
 
-### 新增
-- 模块上传功能
-- 模块下载功能
-- 模块搜索功能
-- 模块信息查询
+### Added
+- Module upload feature
+- Module download feature
+- Module search feature
+- Module information query
 
-### 改进
-- 优化文件处理
-- 改进压缩算法
+### Improvements
+- Optimize file handling
+- Improve compression algorithm
 
 ## [0.0.4] - 2026-03-01
 
-### 新增
-- 初始化服务项目功能
-- 初始化微服务项目功能
-- 项目模板系统
+### Added
+- Initialize service project feature
+- Initialize microservice project feature
+- Project template system
 
-### 改进
-- 优化项目生成流程
-- 添加项目验证
+### Improvements
+- Optimize project generation flow
+- Add project validation
 
 ## [0.0.3] - 2026-02-28
 
-### 新增
-- 模块安装功能
-- 依赖管理功能
-- 配置管理功能
+### Added
+- Module installation feature
+- Dependency management feature
+- Configuration management feature
 
-### 修复
-- 修复配置文件读取问题
+### Fixes
+- Fix configuration file reading issue
 
 ## [0.0.2] - 2026-02-27
 
-### 新增
-- 基础命令行框架
-- 认证服务
-- API 服务
+### Added
+- Basic command line framework
+- Authentication service
+- API service
 
-### 改进
-- 优化命令行参数解析
+### Improvements
+- Optimize command line argument parsing
 
 ## [0.0.1] - 2026-02-26
 
-### 新增
-- 初始版本发布
-- 基础功能框架
-- 核心服务架构
+### Added
+- Initial version release
+- Basic functionality framework
+- Core service architecture
 
 ---
 
-## 变更类型说明
+## Change Type Explanation
 
-- **新增** - 新功能
-- **改进** - 现有功能的改进
-- **废弃** - 即将移除的功能
-- **移除** - 已移除的功能
-- **修复** - 错误修复
-- **安全** - 安全相关修复
+- **Added** - New features
+- **Changed** - Changes to existing functionality
+- **Deprecated** - Features that will be removed soon
+- **Removed** - Removed features
+- **Fixed** - Bug fixes
+- **Security** - Security-related fixes

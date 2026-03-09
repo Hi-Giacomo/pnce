@@ -63,7 +63,7 @@ class PerformanceMonitor {
    * 获取指定名称的指标
    */
   getMetricsByName(name: string): PerformanceMetric[] {
-    return this.metrics.filter(m => m.name === name);
+    return this.metrics.filter((m) => m.name === name);
   }
 
   /**
@@ -84,7 +84,7 @@ class PerformanceMonitor {
 
     console.log('\n=== Performance Report ===');
     const report = this.generateReport();
-    report.forEach(item => {
+    report.forEach((item) => {
       console.log(`  ${item.name}: ${item.duration}ms (avg) - ${item.count} ops`);
     });
     console.log(`Total time: ${report.reduce((sum, item) => sum + item.total, 0)}ms`);
@@ -101,7 +101,7 @@ class PerformanceMonitor {
     duration: number;
   }> {
     const grouped = new Map<string, PerformanceMetric[]>();
-    this.metrics.forEach(m => {
+    this.metrics.forEach((m) => {
       const list = grouped.get(m.name) || [];
       list.push(m);
       grouped.set(m.name, list);

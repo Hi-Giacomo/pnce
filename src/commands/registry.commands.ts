@@ -7,9 +7,7 @@ import { ErrorHandler } from '../utils/errors';
  * @param program - Commander程序实例
  */
 export function registerRegistryCommands(program: Command): void {
-  const registryCmd = program
-    .command('registry')
-    .description('管理注册中心镜像源');
+  const registryCmd = program.command('registry').description('管理注册中心镜像源');
 
   // 设置注册中心地址
   registryCmd

@@ -48,14 +48,14 @@ export class EnvController {
   @Post()
   setEnv(@Body() body: { key: string; value: string }) {
     const { key, value } = body;
-    
+
     if (!key || value === undefined) {
       return {
         success: false,
         message: '参数不完整，需要 key 和 value',
       };
     }
-    
+
     return this.envService.setEnv(key, value);
   }
 
@@ -65,14 +65,14 @@ export class EnvController {
   @Post('batch')
   setBatchEnv(@Body() body: { envVars: Record<string, string> }) {
     const { envVars } = body;
-    
+
     if (!envVars || Object.keys(envVars).length === 0) {
       return {
         success: false,
         message: '参数不完整，需要 envVars 对象',
       };
     }
-    
+
     return this.envService.setBatchEnv(envVars);
   }
 

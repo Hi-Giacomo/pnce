@@ -7,10 +7,7 @@ import {
   normalizeCamelCase,
   normalizeFileName,
 } from '../utils';
-import {
-  generateMicroserviceFiles,
-  createProjectStructure,
-} from '../templates';
+import { generateMicroserviceFiles, createProjectStructure } from '../templates';
 import { ErrorHandler } from '../utils/errors';
 
 /**

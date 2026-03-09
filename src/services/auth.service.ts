@@ -22,11 +22,7 @@ export class AuthService {
 
     // 保存Token到配置
     const configManager = getConfigManager();
-    configManager.setAuth(
-      authResponse.access_token,
-      undefined,
-      TOKEN.DEFAULT_EXPIRE_SECONDS
-    );
+    configManager.setAuth(authResponse.access_token, undefined, TOKEN.DEFAULT_EXPIRE_SECONDS);
 
     return authResponse;
   }
@@ -37,9 +33,9 @@ export class AuthService {
    * @returns 认证响应,包含access_token和用户信息
    */
   async register(options: RegisterOptions): Promise<AuthResponse> {
-    const username = options.username || await this.prompt('请输入用户名: ');
-    const email = options.email || await this.prompt('请输入邮箱: ');
-    const password = options.password || await this.promptPassword('请输入密码: ');
+    const username = options.username || (await this.prompt('请输入用户名: '));
+    const email = options.email || (await this.prompt('请输入邮箱: '));
+    const password = options.password || (await this.promptPassword('请输入密码: '));
 
     // 验证输入
     if (!username || !email || !password) {
@@ -57,7 +53,7 @@ export class AuthService {
     const response = await this.api.post<AuthResponse>('/api/auth/register', {
       username,
       email,
-      password
+      password,
     });
 
     // 响应直接包含 access_token 和 user
@@ -72,7 +68,7 @@ export class AuthService {
 
       return {
         access_token: response.access_token,
-        user: response.user
+        user: response.user,
       };
     }
 
@@ -83,8 +79,8 @@ export class AuthService {
    * 邮箱密码登录
    */
   async login(options: LoginOptions): Promise<AuthResponse> {
-    const email = options.email || await this.prompt('请输入邮箱: ');
-    const password = options.password || await this.promptPassword('请输入密码: ');
+    const email = options.email || (await this.prompt('请输入邮箱: '));
+    const password = options.password || (await this.promptPassword('请输入密码: '));
 
     // 验证输入
     if (!email || !password) {
@@ -93,7 +89,7 @@ export class AuthService {
 
     const response = await this.api.post<AuthResponse>('/api/auth/login', {
       email,
-      password
+      password,
     });
 
     // 响应直接包含 access_token 和 user
@@ -108,7 +104,7 @@ export class AuthService {
 
       return {
         access_token: response.access_token,
-        user: response.user
+        user: response.user,
       };
     }
 
@@ -179,7 +175,7 @@ export class AuthService {
   private prompt(question: string): Promise<string> {
     const rl = readline.createInterface({
       input: process.stdin,
-      output: process.stdout
+      output: process.stdout,
     });
 
     return new Promise((resolve) => {

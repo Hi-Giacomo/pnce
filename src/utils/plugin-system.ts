@@ -1,4 +1,4 @@
-import { readFileSync, writeFileSync, existsSync, mkdirSync, unlinkSync } from 'fs';
+import { readFileSync, writeFileSync, existsSync, mkdirSync } from 'fs';
 import path from 'path';
 import { getLogger } from './logger';
 import { Command } from 'commander';
@@ -60,10 +60,10 @@ export interface Plugin {
      */
     beforeCommand?: (command: string, args: string[]) => void | Promise<void>;
 
-  /**
-   * 命令执行后钩子
-   */
-  afterCommand?: (command: string, args: string[], result: unknown) => void | Promise<void>;
+    /**
+     * 命令执行后钩子
+     */
+    afterCommand?: (command: string, args: string[], result: unknown) => void | Promise<void>;
 
     /**
      * 错误处理钩子
@@ -164,7 +164,7 @@ export class PluginSystem {
         const content = readFileSync(this.manifestFile, 'utf-8');
         const manifests: PluginManifest[] = JSON.parse(content);
 
-        manifests.forEach(manifest => {
+        manifests.forEach((manifest) => {
           this.manifests.set(manifest.name, manifest);
         });
       }
@@ -230,7 +230,10 @@ export class PluginSystem {
 
       logger.info(`插件已注册: ${plugin.name}@${plugin.version}`);
     } catch (error) {
-      logger.error(`注册插件失败: ${plugin.name}`, error);
+      logger.error(
+        `注册插件失败: ${plugin.name}`,
+        error instanceof Error ? { error } : { error: String(error) }
+      );
       throw error;
     }
   }
@@ -258,7 +261,10 @@ export class PluginSystem {
 
       logger.info(`插件已注销: ${name}`);
     } catch (error) {
-      logger.error(`注销插件失败: ${name}`, error);
+      logger.error(
+        `注销插件失败: ${name}`,
+        error instanceof Error ? { error } : { error: String(error) }
+      );
       throw error;
     }
   }
@@ -315,13 +321,16 @@ export class PluginSystem {
    * @param program - Commander 程序实例
    */
   registerAllCommands(program: Command): void {
-    this.plugins.forEach(plugin => {
+    this.plugins.forEach((plugin) => {
       if (plugin.registerCommands) {
         try {
           plugin.registerCommands(program);
           logger.debug(`插件命令已注册: ${plugin.name}`);
         } catch (error) {
-          logger.error(`注册插件命令失败: ${plugin.name}`, error);
+          logger.error(
+            `注册插件命令失败: ${plugin.name}`,
+            error instanceof Error ? { error } : { error: String(error) }
+          );
         }
       }
     });
@@ -335,7 +344,7 @@ export class PluginSystem {
   async triggerBeforeCommand(command: string, args: string[]): Promise<void> {
     const promises: Promise<void>[] = [];
 
-    this.plugins.forEach(plugin => {
+    this.plugins.forEach((plugin) => {
       if (plugin.hooks?.beforeCommand) {
         const promise = plugin.hooks.beforeCommand!(command, args);
         if (promise instanceof Promise) {
@@ -356,7 +365,7 @@ export class PluginSystem {
   async triggerAfterCommand(command: string, args: string[], result: unknown): Promise<void> {
     const promises: Promise<void>[] = [];
 
-    this.plugins.forEach(plugin => {
+    this.plugins.forEach((plugin) => {
       if (plugin.hooks?.afterCommand) {
         const promise = plugin.hooks.afterCommand!(command, args, result);
         if (promise instanceof Promise) {
@@ -375,7 +384,7 @@ export class PluginSystem {
   async triggerOnError(error: Error): Promise<void> {
     const promises: Promise<void>[] = [];
 
-    this.plugins.forEach(plugin => {
+    this.plugins.forEach((plugin) => {
       if (plugin.hooks?.onError) {
         const promise = plugin.hooks.onError!(error);
         if (promise instanceof Promise) {
@@ -420,6 +429,9 @@ export function getPluginSystem(): PluginSystem {
 /**
  * 创建插件系统实例
  */
-export function createPluginSystem(pluginsDir?: string, configManager?: ConfigManager): PluginSystem {
+export function createPluginSystem(
+  pluginsDir?: string,
+  configManager?: ConfigManager
+): PluginSystem {
   return new PluginSystem(pluginsDir, configManager);
 }

@@ -145,7 +145,7 @@ export class OfflineCacheManager {
   clear(): void {
     try {
       const files = require('fs-extra').readdirSync(this.cacheDir);
-      files.forEach(file => {
+      files.forEach((file: string) => {
         if (file.endsWith('.json')) {
           unlinkSync(path.join(this.cacheDir, file));
         }
@@ -166,7 +166,7 @@ export class OfflineCacheManager {
       const now = Date.now();
       let cleanedCount = 0;
 
-      files.forEach(file => {
+      files.forEach((file: string) => {
         if (file.endsWith('.json')) {
           try {
             const filePath = path.join(this.cacheDir, file);
@@ -199,7 +199,7 @@ export class OfflineCacheManager {
       let totalSize = 0;
       const now = Date.now();
 
-      files.forEach(file => {
+      files.forEach((file: string) => {
         if (file.endsWith('.json')) {
           try {
             const filePath = path.join(this.cacheDir, file);

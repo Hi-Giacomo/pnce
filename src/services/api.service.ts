@@ -25,7 +25,7 @@ export class ApiService {
     // 配置重试机制
     retry(this.axiosInstance, {
       retries: HTTP.RETRY_COUNT,
-      retryDelay: retryCount => retryCount * HTTP.RETRY_DELAY_MS,
+      retryDelay: (retryCount) => retryCount * HTTP.RETRY_DELAY_MS,
       retryCondition: (error) => {
         // 只在网络错误或5xx错误时重试
         return !error.response || error.response.status >= 500;
@@ -65,7 +65,7 @@ export class ApiService {
   getAuthHeaders() {
     const config = getConfigManager();
     const token = config.getToken();
-    return token ? { 'Authorization': `Bearer ${token}` } : {};
+    return token ? { Authorization: `Bearer ${token}` } : {};
   }
 
   /**
@@ -87,10 +87,7 @@ export class ApiService {
         case 429:
           throw new CliError('RATE_LIMIT_EXCEEDED', '请求过于频繁，请稍后再试', 429);
         default:
-          throw new CliError(
-            ErrorCode.SERVER_ERROR,
-            data.message || `服务器错误: ${status}`
-          );
+          throw new CliError(ErrorCode.SERVER_ERROR, data.message || `服务器错误: ${status}`);
       }
     } else if (error && typeof error === 'object' && 'request' in error) {
       // 请求已发送但没有收到响应 - 可能是离线状态

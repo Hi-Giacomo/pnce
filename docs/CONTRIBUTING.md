@@ -1,227 +1,227 @@
-# 贡献指南
+# Contributing Guide
 
-感谢你对 PNCE CLI 的关注和贡献！
+Thank you for your interest and contribution to PNCE CLI!
 
-本文档将帮助你了解如何参与 PNCE CLI 的开发。
+This document will help you understand how to participate in PNCE CLI development.
 
-## 行为准则
+## Code of Conduct
 
-- 尊重所有贡献者
-- 使用清晰和包容的语言
-- 接受建设性的批评
-- 关注对社区最有利的事情
-- 对其他社区成员表示同理心
+- Respect all contributors
+- Use clear and inclusive language
+- Accept constructive criticism
+- Focus on what's best for the community
+- Show empathy towards other community members
 
-## 如何贡献
+## How to Contribute
 
-### 报告 Bug
+### Report Bugs
 
-如果你发现 bug，请：
+If you find a bug, please:
 
-1. 先搜索 [Issues](https://github.com/hi-giacomo/pnce/issues) 确认是否已报告
-2. 如果未报告，创建新的 Issue，包括：
-   - 清晰的标题
-   - 详细的问题描述
-   - 重现步骤
-   - 期望行为
-   - 实际行为
-   - 环境信息（Node.js 版本、操作系统、PNCE CLI 版本）
-   - 错误日志（如果有）
+1. First search [Issues](https://github.com/hi-giacomo/pnce/issues) to confirm it hasn't been reported
+2. If not reported, create a new Issue, including:
+   - Clear title
+   - Detailed problem description
+   - Steps to reproduce
+   - Expected behavior
+   - Actual behavior
+   - Environment information (Node.js version, OS, PNCE CLI version)
+   - Error logs (if any)
 
-### 提出新功能
+### Propose New Features
 
-如果你有新功能建议：
+If you have new feature suggestions:
 
-1. 先搜索 [Issues](https://github.com/hi-giacomo/pnce/issues) 确认是否已提出
-2. 如果未提出，创建新的 Feature Request，包括：
-   - 功能描述
-   - 使用场景
-   - 为什么这个功能很重要
-   - 可能的实现方案（可选）
+1. First search [Issues](https://github.com/hi-giacomo/pnce/issues) to confirm it hasn't been proposed
+2. If not proposed, create a new Feature Request, including:
+   - Feature description
+   - Use cases
+   - Why this feature is important
+   - Possible implementation approach (optional)
 
-### 提交代码
+### Submit Code
 
-#### 开发环境设置
+#### Development Environment Setup
 
 ```bash
-# 1. Fork 仓库
-# 在 GitHub 上点击 Fork 按钮
+# 1. Fork the repository
+# Click the Fork button on GitHub
 
-# 2. 克隆你的 fork
-git clone https://github.com/你的用户名/pnce.git
+# 2. Clone your fork
+git clone https://github.com/your-username/pnce.git
 cd pnce
 
-# 3. 安装依赖
+# 3. Install dependencies
 npm install
 
-# 4. 构建项目
+# 4. Build project
 npm run build
 
-# 5. 链接本地版本（可选）
+# 5. Link local version (optional)
 npm link
 
-# 6. 测试
+# 6. Test
 pnce --version
 pnce --help
 ```
 
-#### 创建分支
+#### Create Branch
 
 ```bash
-# 从 main 分支创建新分支
-git checkout -b feature/你的功能名
-# 或
-git checkout -b fix/你修复的问题
+# Create new branch from main branch
+git checkout -b feature/your-feature-name
+# or
+git checkout -b fix/issue-you-fix
 ```
 
-#### 编写代码
+#### Write Code
 
-- 遵循现有的代码风格
-- 添加必要的注释（特别是复杂的逻辑）
-- 为公共 API 添加 JSDoc 注释
-- 确保代码通过 TypeScript 编译（`npm run build`）
+- Follow existing code style
+- Add necessary comments (especially for complex logic)
+- Add JSDoc comments for public APIs
+- Ensure code passes TypeScript compilation (`npm run build`)
 
-#### 测试
+#### Testing
 
 ```bash
-# 运行构建
+# Run build
 npm run build
 
-# 本地测试
+# Local test
 npm link
-pnce 测试命令
+pnce test-command
 
-# 运行测试（如果有）
+# Run tests (if any)
 npm test
 ```
 
-#### 提交代码
+#### Commit Code
 
 ```bash
-# 添加修改的文件
+# Add modified files
 git add .
 
-# 提交（使用清晰的提交信息）
-git commit -m "feat: 添加批量安装功能"
-# 或
-git commit -m "fix: 修复 Token 过期检测问题"
+# Commit (use clear commit messages)
+git commit -m "feat: add batch installation feature"
+# or
+git commit -m "fix: fix token expiration detection issue"
 
-# 提交类型:
-# feat: 新功能
-# fix: 错误修复
-# docs: 文档更新
-# style: 代码格式（不影响功能）
-# refactor: 重构
-# test: 测试相关
-# chore: 构建或工具相关
+# Commit types:
+# feat: new feature
+# fix: bug fix
+# docs: documentation update
+# style: code formatting (doesn't affect functionality)
+# refactor: refactoring
+# test: test related
+# chore: build or tool related
 ```
 
-#### 推送到你的 fork
+#### Push to Your Fork
 
 ```bash
-git push origin feature/你的功能名
+git push origin feature/your-feature-name
 ```
 
-#### 创建 Pull Request
+#### Create Pull Request
 
-1. 在 GitHub 上访问你的 fork
-2. 点击 "New Pull Request"
-3. 选择你的分支
-4. 填写 PR 模板：
-   - 清晰的标题
-   - 描述你的改动
-   - 关联相关的 Issue（如果有）
-   - 添加截图（如果适用）
-   - 确认通过测试
+1. Visit your fork on GitHub
+2. Click "New Pull Request"
+3. Select your branch
+4. Fill in PR template:
+   - Clear title
+   - Describe your changes
+   - Link related issues (if any)
+   - Add screenshots (if applicable)
+   - Confirm tests pass
 
-## 代码规范
+## Code Standards
 
 ### TypeScript
 
-- 使用 TypeScript 编写代码
-- 遵循项目中的 `tsconfig.json` 配置
-- 避免使用 `any` 类型
-- 添加必要的类型定义
+- Write code in TypeScript
+- Follow `tsconfig.json` configuration in the project
+- Avoid using `any` type
+- Add necessary type definitions
 
-### 代码风格
+### Code Style
 
-- 使用 2 空格缩进
-- 使用单引号（字符串）
-- 在语句末尾使用分号
-- 遵循现有的代码风格
+- Use 2-space indentation
+- Use single quotes (strings)
+- Use semicolons at end of statements
+- Follow existing code style
 
-### 命名规范
+### Naming Conventions
 
-- 文件名：kebab-case（如 `auth.service.ts`）
-- 类名：PascalCase（如 `AuthService`）
-- 函数/变量：camelCase（如 `getUserInfo`）
-- 常量：UPPER_SNAKE_CASE（如 `API_SERVER`）
+- File names: kebab-case (e.g., `auth.service.ts`)
+- Class names: PascalCase (e.g., `AuthService`)
+- Functions/variables: camelCase (e.g., `getUserInfo`)
+- Constants: UPPER_SNAKE_CASE (e.g., `API_SERVER`)
 
-### 注释规范
+### Comment Standards
 
-- 为所有公共方法添加 JSDoc 注释
-- 为复杂逻辑添加行内注释
-- 使用中文注释（因为是中文项目）
+- Add JSDoc comments for all public methods
+- Add inline comments for complex logic
+- Use Chinese comments (since this is a Chinese project)
 
 ```typescript
 /**
- * 获取用户信息
- * @param userId - 用户 ID
- * @returns 用户信息对象
+ * Get user information
+ * @param userId - User ID
+ * @returns User info object
  */
 async function getUser(userId: string): Promise<UserInfo> {
-  // 实现代码
+  // Implementation code
 }
 ```
 
-## 文档
+## Documentation
 
-如果你的改动影响了用户可见的功能：
+If your changes affect user-visible features:
 
-- 更新 README.md
-- 更新 CHANGELOG.md（使用正确的格式）
-- 更新相关的命令文档
-- 添加使用示例
+- Update README.md
+- Update CHANGELOG.md (using correct format)
+- Update relevant command documentation
+- Add usage examples
 
-## 发布流程
+## Release Process
 
-PNCE CLI 使用语义化版本（Semantic Versioning）：
+PNCE CLI uses Semantic Versioning:
 
-- **主版本号（MAJOR）**：不兼容的 API 修改
-- **次版本号（MINOR）**：向下兼容的功能性新增
-- **修订号（PATCH）**：向下兼容的问题修正
+- **MAJOR**: Incompatible API changes
+- **MINOR**: Backwards-compatible functionality additions
+- **PATCH**: Backwards-compatible bug fixes
 
-发布步骤（仅维护者）：
+Release steps (for maintainers only):
 
 ```bash
-# 1. 更新版本号
-npm version patch  # 或 minor, major
+# 1. Update version number
+npm version patch  # or minor, major
 
-# 2. 更新 CHANGELOG.md
+# 2. Update CHANGELOG.md
 
-# 3. 构建项目
+# 3. Build project
 npm run build
 
-# 4. 测试
+# 4. Test
 npm pack --dry-run
 
-# 5. 发布
+# 5. Publish
 npm publish
 
-# 6. 推送标签
+# 6. Push tags
 git push --tags
 ```
 
-## 社区
+## Community
 
 - GitHub: https://github.com/hi-giacomo/pnce
 - Issues: https://github.com/hi-giacomo/pnce/issues
 - Discussions: https://github.com/hi-giacomo/pnce/discussions
 
-## 许可证
+## License
 
-通过贡献代码，你同意你的贡献将在 [MulanPSL2](http://license.coscl.org.cn/MulanPSL2) 许可证下发布。
+By contributing code, you agree that your contributions will be released under the [MulanPSL2](http://license.coscl.org.cn/MulanPSL2) license.
 
 ---
 
-**感谢你的贡献！** 🎉
+**Thank you for your contribution!** 🎉

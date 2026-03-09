@@ -30,9 +30,13 @@ async function addToPackageJson(
   let targetVersion = version;
   if (!targetVersion) {
     console.log(`获取 ${moduleName} 的最新版本...`);
-    const response = await apiService.get<ApiResponse<{ module: ModuleInfo }>>(`/api/modules/${moduleName}`);
+    const response = await apiService.get<ApiResponse<{ module: ModuleInfo }>>(
+      `/api/modules/${moduleName}`
+    );
     if (!response.success || !response.module) {
-      throw new CliError('MODULE_NOT_FOUND', `获取模块信息失败: ${moduleName}`, 404, { name: moduleName });
+      throw new CliError('MODULE_NOT_FOUND', `获取模块信息失败: ${moduleName}`, 404, {
+        name: moduleName,
+      });
     }
     targetVersion = `^${response.module.latest}`;
   }
@@ -94,7 +98,9 @@ async function addToModuleConfig(
   // 如果没有指定版本，获取最新版本
   let targetVersion = version;
   if (!targetVersion) {
-    const response = await apiService.get<ApiResponse<{ module: ModuleInfo }>>(`/api/modules/${moduleName}`);
+    const response = await apiService.get<ApiResponse<{ module: ModuleInfo }>>(
+      `/api/modules/${moduleName}`
+    );
     if (response.success && response.module) {
       targetVersion = response.module.latest;
     }
@@ -104,7 +110,9 @@ async function addToModuleConfig(
   if (targetVersion) {
     moduleConfig.installedModules[moduleName] = targetVersion;
     await fs.writeJson(moduleConfigPath, moduleConfig, { spaces: 2 });
-    console.log(`✓ 已添加 ${moduleName}@${targetVersion} 到 module.config.json 的 installedModules`);
+    console.log(
+      `✓ 已添加 ${moduleName}@${targetVersion} 到 module.config.json 的 installedModules`
+    );
   }
 }
 
@@ -130,7 +138,12 @@ export function registerInstallCommands(
     .option('--save', '添加到 package.json 的 localModules（本地集成，存储在 src/local_modules/）')
     .option('--parallel', '启用并行下载（默认开启）')
     .option('--no-parallel', '禁用并行下载')
-    .option('--concurrency <num>', '并发下载数量', (value) => parseInt(value), getConfig().maxConcurrentDownloads)
+    .option(
+      '--concurrency <num>',
+      '并发下载数量',
+      (value) => parseInt(value),
+      getConfig().maxConcurrentDownloads
+    )
     .action(async (module, options) => {
       try {
         const initialCwd = process.env.INIT_CWD || process.cwd();
@@ -140,7 +153,10 @@ export function registerInstallCommands(
 
         // 检查是否同时指定了 --link 和 --save
         if (options.link && options.save) {
-          throw new CliError('INVALID_INPUT', '不能同时使用 --link 和 --save\n   --link: 添加到 modules.json (外部依赖)\n   --save: 添加到 package.json (本地集成)');
+          throw new CliError(
+            'INVALID_INPUT',
+            '不能同时使用 --link 和 --save\n   --link: 添加到 modules.json (外部依赖)\n   --save: 添加到 package.json (本地集成)'
+          );
         }
 
         // 确定安装模式和目录
@@ -177,18 +193,10 @@ export function registerInstallCommands(
             console.log(`🚀 启用并行下载（并发数: ${options.concurrency}）`);
           }
 
-          await moduleDownloadService.install(
-            moduleName,
-            version,
-            installDir
-          );
+          await moduleDownloadService.install(moduleName, version, installDir);
         } else {
           // 临时安装
-          await moduleDownloadService.install(
-            moduleName,
-            version,
-            installDir
-          );
+          await moduleDownloadService.install(moduleName, version, installDir);
         }
 
         // 将安装记录写入 module.config.json
@@ -209,7 +217,9 @@ export function registerInstallCommands(
             await fs.writeJson(moduleConfigPath, config, { spaces: 2 });
             console.log(`✓ 模块 ${moduleName} 端口已配置为 ${options.port}`);
           } else {
-            console.log(`  提示: 模块 ${moduleName} 没有 ${PATHS.MODULE_CONFIG_FILE}，无法配置端口`);
+            console.log(
+              `  提示: 模块 ${moduleName} 没有 ${PATHS.MODULE_CONFIG_FILE}，无法配置端口`
+            );
           }
         }
       } catch (error) {
@@ -221,7 +231,12 @@ export function registerInstallCommands(
   program
     .command('install-batch <modules...>')
     .description('批量安装模块（并行下载）')
-    .option('--concurrency <num>', '并发下载数量', (value) => parseInt(value), getConfig().maxConcurrentDownloads)
+    .option(
+      '--concurrency <num>',
+      '并发下载数量',
+      (value) => parseInt(value),
+      getConfig().maxConcurrentDownloads
+    )
     .option('--link', '添加到 modules.json')
     .option('--save', '添加到 package.json 的 localModules')
     .action(async (modules, options) => {
@@ -243,11 +258,7 @@ export function registerInstallCommands(
         }
 
         // 批量安装
-        await moduleDownloadService.installBatch(
-          moduleList,
-          installDir,
-          options.concurrency
-        );
+        await moduleDownloadService.installBatch(moduleList, installDir, options.concurrency);
 
         console.log(`\n✓ 所有模块安装完成`);
       } catch (error) {

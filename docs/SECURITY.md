@@ -1,164 +1,155 @@
-# 安全政策
+# Security Policy
 
-## 安全漏洞报告
+## Security Vulnerability Reporting
 
-如果你发现 PNCE CLI 的安全漏洞，请不要公开创建 Issue。
+If you discover a security vulnerability in PNCE CLI, please do not create a public Issue.
 
-### 如何报告
+### How to Report
 
-请通过以下方式报告安全问题：
+Please report security issues through the following methods:
 
-1. **发送邮件至**: security@example.com
-   - 请在邮件标题中包含 `[SECURITY]` 前缀
-   - 详细描述漏洞信息
-   - 提供复现步骤
-   - 如果可能，提供修复建议
+1. **Send email to**: security@example.com
+   - Please include `[SECURITY]` prefix in email subject
+   - Describe vulnerability details
+   - Provide reproduction steps
+   - If possible, provide fix suggestions
 
-2. **或者通过私有渠道**:
-   - 创建 GitHub Issue 并选择"Security vulnerability"类型
-   - 或通过 GitHub 的安全功能联系维护者
+2. **Or through private channels**:
+   - Create GitHub Issue and select "Security vulnerability" type
+   - Or contact maintainers through GitHub's security feature
 
-### 报告内容
+### Report Content
 
-请尽量包含以下信息：
+Please try to include the following information:
 
-- 漏洞类型和严重程度
-- 受影响的版本
-- 复现步骤（详细步骤）
-- 潜在的影响范围
-- 如果已知，提供修复建议或补丁
-
-### 响应时间
-
-我们通常会在 **48 小时内**回复安全报告，并在确认问题后尽快修复。
-
-## 安全最佳实践
-
-### Token 管理
-
-- Token 存储在 `~/.pnce/config.json` 中
-- 请确保该文件的权限设置正确（仅当前用户可读写）
-- 不要在版本控制中提交 Token
-- 定期更新 Token
-
-### 网络安全
-
-- 使用 HTTPS 连接到 API 服务器（如果可用）
-- 在公共网络环境中谨慎使用 Token
-- 不要在不信任的网络环境中执行敏感操作
-
-### 文件权限
-
-确保以下文件的权限设置正确：
-
-```bash
-# 配置文件（包含 Token）
-chmod 600 ~/.pnce/config.json
-
-# 日志文件（可能包含敏感信息）
-chmod 640 ~/.pnce/logs/*.log
-```
-
-### 环境变量
-
-- 不要在 `.bashrc`、`.zshrc` 等文件中硬编码 Token
-- 使用环境变量管理敏感信息时，确保文件权限正确
-- 在 CI/CD 中使用 Secrets，不要直接在配置中写入
-
-### 输入验证
-
-PNCE CLI 会验证用户输入：
-
-- 邮箱格式验证
-- 密码长度验证（>= 6 位）
-- 模块名称格式验证
-
-## 已知安全问题
-
-### 中间人攻击
-
-**风险等级**: 中
-
-如果使用 HTTP（而非 HTTPS）连接到 API 服务器，可能存在中间人攻击风险。
-
-**缓解措施**:
-- 生产环境建议使用 HTTPS
-- 使用环境变量指定可信的 API 服务器
-
-### Token 泄露
-
-**风险等级**: 高
-
-如果 Token 泄露，攻击者可以：
-- 上传恶意模块
-- 删除你的模块
-- 修改你的模块
-
-**缓解措施**:
-- 定期更新 Token
-- 使用 `pnce logout` 清除本地 Token
-- 发现泄露后立即撤销 Token（联系管理员）
-
-## 安全更新
-
-当发现安全漏洞时：
-
-1. **评估漏洞**：确定严重程度和影响范围
-2. **开发修复**：优先开发安全补丁
-3. **发布更新**：快速发布修复版本
-4. **通知用户**：通过以下方式通知用户：
-   - GitHub Security Advisory
-   - CHANGELOG.md 记录
-   - 发布公告
-
-## 依赖项安全
-
-PNCE CLI 使用以下主要依赖：
-
-- `axios` - HTTP 客户端
-- `winston` - 日志系统
-- `commander` - 命令行框架
-- `chalk` - 终端颜色
-
-我们定期更新依赖项以修复已知的安全漏洞。
-
-### 检查依赖项安全
-
-用户可以使用以下命令检查依赖项：
-
-```bash
-# 检查已知漏洞
-npm audit
-
-# 修复依赖项（如可能）
-npm audit fix
-```
-
-## 紧急响应
-
-如果发现严重的安全漏洞：
-
-1. 立即联系维护者
-2. 禁用受影响的功能（如果可能）
-3. 卸载或降级到安全版本
-4. 监控异常活动
-
-## 合规性
-
-PNCE CLI 遵循以下安全标准：
-
-- [x] 不收集用户敏感信息
-- [x] Token 安全存储
-- [x] 输入验证和清理
-- [x] 安全的错误处理（不泄露敏感信息）
-- [x] 定期安全审计
-
-## 联系方式
-
-- **安全问题**: security@example.com
-- **GitHub Issues**: https://github.com/hi-giacomo/pnce/issues（非安全问题）
-- **维护者**: Hi-Giacomo
+- Vulnerability type and severity
+- Affected versions
+- Reproduction steps (detailed steps)
+- Potential impact scope
+- If known, provide fix suggestions or patches
 
 ---
 
-**感谢帮助保护 PNCE CLI 和用户的安全！** 🛡️
+## Supported Versions
+
+| Version | Supported |
+|---------|-----------|
+| 0.0.x   | ✅        |
+| < 0.0.1 | ❌        |
+
+---
+
+## Security Best Practices
+
+### For Users
+
+1. **Keep PNCE CLI Updated**
+   - Regularly update to the latest version
+   - Security updates often include important fixes
+
+2. **Token Management**
+   - Do not share tokens with others
+   - Revoke tokens after use
+   - Use environment variables for CI/CD
+
+3. **Configuration Security**
+   - Do not commit configuration files containing sensitive data
+   - Use `.gitignore` to exclude sensitive files
+   - Regularly review configuration files
+
+4. **Network Security**
+   - Use HTTPS when possible
+   - Configure secure proxy
+   - Verify SSL certificates
+
+### For Developers
+
+1. **Code Review**
+   - All code must go through code review
+   - Pay special attention to security-related code
+
+2. **Dependency Management**
+   - Regularly update dependencies
+   - Run `npm audit` to check for vulnerabilities
+   - Review dependency changelogs
+
+3. **Input Validation**
+   - Validate all user inputs
+   - Sanitize file paths
+   - Prevent injection attacks
+
+4. **Error Handling**
+   - Do not expose sensitive information in error messages
+   - Log errors appropriately
+   - Use generic error messages for users
+
+---
+
+## Security Features
+
+### Authentication
+
+- **OAuth2**: Secure OAuth2 authorization flow
+- **Token Encryption**: Tokens encrypted using AES-256-GCM
+- **Token Expiration**: Automatic token expiration and refresh
+
+### Data Protection
+
+- **HTTPS**: All API communications use HTTPS
+- **Proxy Support**: Support for secure proxy configuration
+- **Sensitive Data Filtering**: Sensitive information not logged
+
+### Input Validation
+
+- **Parameter Validation**: All user inputs validated
+- **Path Validation**: Prevent directory traversal attacks
+- **Command Injection**: Prevent command injection attacks
+
+---
+
+## Vulnerability Response Process
+
+1. **Report Received**
+   - Security team receives vulnerability report
+   - Acknowledge receipt within 48 hours
+
+2. **Assessment**
+   - Evaluate vulnerability severity
+   - Determine affected versions
+   - Plan fix strategy
+
+3. **Fix Development**
+   - Develop fix for vulnerability
+   - Test thoroughly
+   - Code review
+
+4. **Release**
+   - Prepare security release
+   - Coordinate disclosure with reporter
+   - Publish security advisory
+
+5. **Follow-up**
+   - Monitor for related issues
+   - Update documentation
+   - Communicate with affected users
+
+---
+
+## Security Disclosures
+
+### Past Security Issues
+
+*(No security issues reported yet)*
+
+---
+
+## Contact
+
+- **Security Email**: security@example.com
+- **GitHub Security**: https://github.com/hi-giacomo/pnce/security
+
+---
+
+## Acknowledgments
+
+We thank all security researchers who help make PNCE CLI safer by reporting vulnerabilities responsibly.
