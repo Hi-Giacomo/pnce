@@ -3,14 +3,14 @@ import * as path from 'path';
 import * as crypto from 'crypto';
 
 /**
- * 模块哈希服务
- * 负责计算和验证模块文件的完整性
+ * module
+ * ValidationmoduleFile
  */
-export class ModuleHashService {
+export class moduleHashService {
   /**
-   * 计算目录的哈希值（递归计算所有文件的哈希）
-   * @param dirPath 目录路径
-   * @returns SHA256哈希值
+   * Directory（AllFile）
+   * @param dirPath Directory
+   * @returns SHA256
    */
   async calculateDirectoryHash(dirPath: string): Promise<string> {
     const hash = crypto.createHash('sha256');
@@ -24,9 +24,9 @@ export class ModuleHashService {
   }
 
   /**
-   * 计算文件的哈希值
-   * @param filePath 文件路径
-   * @returns SHA256哈希值
+   * File
+   * @param filePath File
+   * @returns SHA256
    */
   async calculateFileHash(filePath: string): Promise<string> {
     const content = await fs.readFile(filePath);
@@ -34,10 +34,10 @@ export class ModuleHashService {
   }
 
   /**
-   * 验证文件的哈希值
-   * @param filePath 文件路径
-   * @param expectedHash 期望的哈希值
-   * @returns 是否匹配
+   * ValidationFile
+   * @param filePath File
+   * @param expectedHash 
+   * @returns YesNo
    */
   async verifyFileHash(filePath: string, expectedHash: string): Promise<boolean> {
     const actualHash = await this.calculateFileHash(filePath);
@@ -45,11 +45,11 @@ export class ModuleHashService {
   }
 
   /**
-   * 读取已安装模块的哈希值
-   * @param modulePath 模块路径
-   * @returns 哈希值或null
+   * module
+   * @param modulePath module
+   * @returns null
    */
-  async readInstalledModuleHash(modulePath: string): Promise<string | null> {
+  async readInstalledmoduleHash(modulePath: string): Promise<string | null> {
     const hashFilePath = path.join(modulePath, '.module-hash');
 
     if (!(await fs.pathExists(hashFilePath))) {
@@ -61,22 +61,22 @@ export class ModuleHashService {
   }
 
   /**
-   * 保存模块的哈希值
-   * @param modulePath 模块路径
-   * @param hash 哈希值
+   * module
+   * @param modulePath module
+   * @param hash 
    */
-  async saveModuleHash(modulePath: string, hash: string): Promise<void> {
+  async savemoduleHash(modulePath: string, hash: string): Promise<void> {
     const hashFilePath = path.join(modulePath, '.module-hash');
     await fs.writeFile(hashFilePath, hash);
   }
 
   /**
-   * 检查模块是否被修改
-   * @param modulePath 模块路径
-   * @returns 是否被修改
+   * moduleYesNo
+   * @param modulePath module
+   * @returns YesNo
    */
-  async isModuleModified(modulePath: string): Promise<boolean> {
-    const savedHash = await this.readInstalledModuleHash(modulePath);
+  async ismoduleModified(modulePath: string): Promise<boolean> {
+    const savedHash = await this.readInstalledmoduleHash(modulePath);
     if (!savedHash) {
       return false;
     }
@@ -86,9 +86,9 @@ export class ModuleHashService {
   }
 
   /**
-   * 遍历目录
-   * @param dirPath 目录路径
-   * @param callback 回调函数，对每个文件执行
+   * Directory
+   * @param dirPath Directory
+   * @param callback ，File
    */
   private async walkDirectory(
     dirPath: string,
@@ -101,12 +101,12 @@ export class ModuleHashService {
       const stat = await fs.stat(filePath);
 
       if (stat.isDirectory()) {
-        // 跳过 node_modules 和 .git 目录
+        //  node_modules  .git Directory
         if (file !== 'node_modules' && file !== '.git') {
           await this.walkDirectory(filePath, callback);
         }
       } else if (stat.isFile()) {
-        // 跳过 lock 文件和临时文件
+        //  lock FileFile
         const skipPatterns = ['.lock', '.log', '.DS_Store', 'npm-debug'];
         const shouldSkip = skipPatterns.some((pattern) => file.endsWith(pattern));
 

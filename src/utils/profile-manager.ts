@@ -6,32 +6,32 @@ import { getLogger } from './logger';
 const logger = getLogger();
 
 /**
- * 配置档案
+ * Configuration profile
  */
 export interface ConfigProfile {
   /**
-   * 档案名称
+   * 
    */
   name: string;
 
   /**
-   * 档案配置
+   * 
    */
   config: PnceConfig;
 
   /**
-   * 创建时间
+   * 
    */
   createdAt: number;
 
   /**
-   * 更新时间
+   * 
    */
   updatedAt: number;
 }
 
 /**
- * 配置档案管理器
+ * Configuration profile
  */
 export class ProfileManager {
   private profilesDir: string;
@@ -42,16 +42,16 @@ export class ProfileManager {
     this.profilesDir = path.join(configBaseDir, 'profiles');
     this.currentProfileFile = path.join(configBaseDir, '.current-profile');
 
-    // 确保档案目录存在
+    // Directory
     if (!existsSync(this.profilesDir)) {
       mkdirSync(this.profilesDir, { recursive: true });
     }
   }
 
   /**
-   * 保存当前配置为档案
-   * @param name - 档案名称
-   * @param config - 配置
+   * Save current configuration as profile
+   * @param name - 
+   * @param config - 
    */
   save(name: string, config: PnceConfig): void {
     try {
@@ -65,23 +65,23 @@ export class ProfileManager {
       const profilePath = this.getProfilePath(name);
       writeFileSync(profilePath, JSON.stringify(profile, null, 2), 'utf-8');
 
-      logger.info(`配置档案已保存: ${name}`);
+      logger.info(`Configuration profile已保存: ${name}`);
     } catch (error) {
-      logger.error(`保存配置档案失败: ${error}`);
+      logger.error(`保存Configuration profileFailed: ${error}`);
       throw error;
     }
   }
 
   /**
-   * 加载档案
-   * @param name - 档案名称
+   * 
+   * @param name - 
    */
   load(name: string): PnceConfig | null {
     try {
       const profilePath = this.getProfilePath(name);
 
       if (!existsSync(profilePath)) {
-        logger.warn(`配置档案不存在: ${name}`);
+        logger.warn(`Configuration profiledoes not exist: ${name}`);
         return null;
       }
 
@@ -90,40 +90,40 @@ export class ProfileManager {
 
       return profile.config;
     } catch (error) {
-      logger.error(`加载配置档案失败: ${error}`);
+      logger.error(`加载Configuration profileFailed: ${error}`);
       return null;
     }
   }
 
   /**
-   * 删除档案
-   * @param name - 档案名称
+   * 
+   * @param name - 
    */
   delete(name: string): void {
     try {
       const profilePath = this.getProfilePath(name);
 
       if (!existsSync(profilePath)) {
-        logger.warn(`配置档案不存在: ${name}`);
+        logger.warn(`Configuration profiledoes not exist: ${name}`);
         return;
       }
 
       unlinkSync(profilePath);
 
-      // 如果是当前档案，清除当前档案标记
+      // YesCurrent，Current
       if (this.getCurrent() === name) {
         this.clearCurrent();
       }
 
-      logger.info(`配置档案已删除: ${name}`);
+      logger.info(`Configuration profile已删除: ${name}`);
     } catch (error) {
-      logger.error(`删除配置档案失败: ${error}`);
+      logger.error(`Delete configuration profileFailed: ${error}`);
       throw error;
     }
   }
 
   /**
-   * 列出所有档案
+   * All
    */
   list(): ConfigProfile[] {
     try {
@@ -141,37 +141,37 @@ export class ProfileManager {
             profiles.push(profile);
           } catch (error) {
             logger.debug(
-              `加载档案失败: ${file}`,
+              `加载档案Failed: ${file}`,
               error instanceof Error ? { error } : { error: String(error) }
             );
           }
         }
       });
 
-      // 按更新时间排序
+      // 
       return profiles.sort((a, b) => b.updatedAt - a.updatedAt);
     } catch (error) {
-      logger.error(`列出配置档案失败: ${error}`);
+      logger.error(`列出Configuration profileFailed: ${error}`);
       return [];
     }
   }
 
   /**
-   * 设置当前档案
-   * @param name - 档案名称
+   * Current
+   * @param name - 
    */
   setCurrent(name: string): void {
     try {
       writeFileSync(this.currentProfileFile, name, 'utf-8');
-      logger.info(`当前档案已设置: ${name}`);
+      logger.info(`Current档案已设置: ${name}`);
     } catch (error) {
-      logger.error(`设置当前档案失败: ${error}`);
+      logger.error(`设置Current档案Failed: ${error}`);
       throw error;
     }
   }
 
   /**
-   * 获取当前档案名称
+   * Current
    */
   getCurrent(): string | null {
     try {
@@ -182,7 +182,7 @@ export class ProfileManager {
       const content = readFileSync(this.currentProfileFile, 'utf-8');
       const name = content.trim();
 
-      // 检查档案是否存在
+      // YesNo
       if (!existsSync(this.getProfilePath(name))) {
         this.clearCurrent();
         return null;
@@ -190,29 +190,29 @@ export class ProfileManager {
 
       return name;
     } catch (error) {
-      logger.error(`获取当前档案失败: ${error}`);
+      logger.error(`获取Current档案Failed: ${error}`);
       return null;
     }
   }
 
   /**
-   * 清除当前档案标记
+   * Current
    */
   clearCurrent(): void {
     try {
       if (existsSync(this.currentProfileFile)) {
         unlinkSync(this.currentProfileFile);
-        logger.info('当前档案标记已清除');
+        logger.info('Current档案标记已清除');
       }
     } catch (error) {
-      logger.error(`清除当前档案标记失败: ${error}`);
+      logger.error(`清除Current档案标记Failed: ${error}`);
     }
   }
 
   /**
-   * 重命名档案
-   * @param oldName - 旧名称
-   * @param newName - 新名称
+   * 
+   * @param oldName - 
+   * @param newName - 
    */
   rename(oldName: string, newName: string): void {
     try {
@@ -220,10 +220,10 @@ export class ProfileManager {
       const newPath = this.getProfilePath(newName);
 
       if (!existsSync(oldPath)) {
-        throw new Error(`配置档案不存在: ${oldName}`);
+        throw new Error(`Configuration profiledoes not exist: ${oldName}`);
       }
 
-      // 更新档案名称
+      // 
       const content = readFileSync(oldPath, 'utf-8');
       const profile: ConfigProfile = JSON.parse(content);
       profile.name = newName;
@@ -232,28 +232,28 @@ export class ProfileManager {
       writeFileSync(newPath, JSON.stringify(profile, null, 2), 'utf-8');
       unlinkSync(oldPath);
 
-      // 如果是当前档案，更新当前档案标记
+      // YesCurrent，Current
       if (this.getCurrent() === oldName) {
         this.setCurrent(newName);
       }
 
-      logger.info(`配置档案已重命名: ${oldName} -> ${newName}`);
+      logger.info(`Configuration profile已重命名: ${oldName} -> ${newName}`);
     } catch (error) {
-      logger.error(`重命名配置档案失败: ${error}`);
+      logger.error(`重命名Configuration profileFailed: ${error}`);
       throw error;
     }
   }
 
   /**
-   * 获取档案路径
-   * @param name - 档案名称
+   * 
+   * @param name - 
    */
   private getProfilePath(name: string): string {
     return path.join(this.profilesDir, `${name}.json`);
   }
 
   /**
-   * 获取档案目录路径
+   * Directory
    */
   getProfilesDir(): string {
     return this.profilesDir;
@@ -261,12 +261,12 @@ export class ProfileManager {
 }
 
 /**
- * 全局档案管理器实例
+ * Global
  */
 let profileManagerInstance: ProfileManager | null = null;
 
 /**
- * 获取档案管理器实例
+ * 
  */
 export function getProfileManager(): ProfileManager {
   if (!profileManagerInstance) {
@@ -276,7 +276,7 @@ export function getProfileManager(): ProfileManager {
 }
 
 /**
- * 创建档案管理器实例
+ * 
  */
 export function createProfileManager(configDir?: string): ProfileManager {
   return new ProfileManager(configDir);

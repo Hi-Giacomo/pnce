@@ -1,8 +1,8 @@
 import * as crypto from 'crypto';
 
 /**
- * 加密工具类
- * 用于敏感数据的加密和解密
+ * Utility
+ * Data
  */
 export class CryptoUtil {
   private static ALGORITHM = 'aes-256-gcm';
@@ -11,17 +11,17 @@ export class CryptoUtil {
   private static AUTH_TAG_LENGTH = 16;
 
   /**
-   * 从环境变量获取加密密钥
-   * 如果未设置，则使用机器标识符生成
+   * Environment variables
+   * ，
    */
   private static getEncryptionKey(): Buffer {
-    // 优先使用环境变量中的密钥
+    // Environment variables
     const envKey = process.env.PNCE_ENCRYPTION_KEY;
     if (envKey) {
       return crypto.scryptSync(envKey, 'salt', CryptoUtil.KEY_LENGTH);
     }
 
-    // 否则使用机器标识符生成（确保同一台机器上的密钥一致）
+    // No（）
     const os = require('os');
     const machineId = [
       os.hostname(),
@@ -34,9 +34,9 @@ export class CryptoUtil {
   }
 
   /**
-   * 加密文本
-   * @param text - 要加密的文本
-   * @returns 加密后的文本（Base64编码）
+   * 
+   * @param text - 
+   * @returns （Base64）
    */
   static encrypt(text: string): string {
     const key = this.getEncryptionKey();
@@ -49,23 +49,23 @@ export class CryptoUtil {
 
     const authTag = cipher.getAuthTag();
 
-    // 将 IV、加密数据和认证标签组合
+    //  IV、DataAuthenticationTags
     const combined = Buffer.concat([iv, authTag, Buffer.from(encrypted, 'hex')]);
 
     return combined.toString('base64');
   }
 
   /**
-   * 解密文本
-   * @param encryptedText - 加密后的文本（Base64编码）
-   * @returns 解密后的原始文本
-   * @throws 如果解密失败
+   * 
+   * @param encryptedText - （Base64）
+   * @returns 
+   * @throws Failed
    */
   static decrypt(encryptedText: string): string {
     const key = this.getEncryptionKey();
     const combined = Buffer.from(encryptedText, 'base64');
 
-    // 提取 IV、认证标签和加密数据
+    //  IV、AuthenticationTagsData
     const iv = combined.subarray(0, this.IV_LENGTH);
     const authTag = combined.subarray(this.IV_LENGTH, this.IV_LENGTH + this.AUTH_TAG_LENGTH);
     const encrypted = combined.subarray(this.IV_LENGTH + this.AUTH_TAG_LENGTH);
@@ -80,19 +80,19 @@ export class CryptoUtil {
   }
 
   /**
-   * 生成随机盐值
-   * @param length - 盐值长度（默认16字节）
-   * @returns 随机盐值（Base64编码）
+   * 
+   * @param length - （Default16）
+   * @returns （Base64）
    */
   static generateSalt(length: number = 16): string {
     return crypto.randomBytes(length).toString('base64');
   }
 
   /**
-   * 哈希文本
-   * @param text - 要哈希的文本
-   * @param salt - 盐值（可选）
-   * @returns 哈希值（Hex编码）
+   * 
+   * @param text - 
+   * @param salt - （）
+   * @returns （Hex）
    */
   static hash(text: string, salt?: string): string {
     const hash = crypto.createHash('sha256');
@@ -104,11 +104,11 @@ export class CryptoUtil {
   }
 
   /**
-   * 验证哈希
-   * @param text - 原始文本
-   * @param hash - 要验证的哈希值
-   * @param salt - 盐值（如果生成时使用了盐值）
-   * @returns 是否匹配
+   * Validation
+   * @param text - 
+   * @param hash - Validation
+   * @param salt - （）
+   * @returns YesNo
    */
   static verifyHash(text: string, hash: string, salt?: string): boolean {
     const computedHash = this.hash(text, salt);
@@ -116,9 +116,9 @@ export class CryptoUtil {
   }
 
   /**
-   * 生成随机 Token
-   * @param length - Token 长度（字节）
-   * @returns 随机 Token（Hex编码）
+   *  Token
+   * @param length - Token （）
+   * @returns  Token（Hex）
    */
   static generateToken(length: number = 32): string {
     return crypto.randomBytes(length).toString('hex');

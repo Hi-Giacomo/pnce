@@ -86,7 +86,7 @@ export class ValidatorUtil {
     let score = 0;
 
     if (password.length < 8) {
-      issues.push('密码长度至少8位');
+      issues.push('Password must be at least 8 characters');
     } else {
       score += 1;
     }
@@ -98,25 +98,25 @@ export class ValidatorUtil {
     if (/[a-z]/.test(password)) {
       score += 1;
     } else {
-      issues.push('缺少小写字母');
+      issues.push('Missing lowercase letters');
     }
 
     if (/[A-Z]/.test(password)) {
       score += 1;
     } else {
-      issues.push('缺少大写字母');
+      issues.push('Missing uppercase letters');
     }
 
     if (/[0-9]/.test(password)) {
       score += 1;
     } else {
-      issues.push('缺少数字');
+      issues.push('Missing numbers');
     }
 
     if (/[^a-zA-Z0-9]/.test(password)) {
       score += 1;
     } else {
-      issues.push('缺少特殊字符');
+      issues.push('Missing special characters');
     }
 
     let strength: 'weak' | 'medium' | 'strong';

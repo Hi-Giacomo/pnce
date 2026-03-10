@@ -5,27 +5,27 @@ import { getLogger } from './logger';
 const logger = getLogger();
 
 /**
- * 缓存条目
+ * Cache
  */
 export interface CacheEntry<T> {
   /**
-   * 缓存数据
+   * CacheData
    */
   data: T;
 
   /**
-   * 缓存时间
+   * Cache
    */
   cachedAt: number;
 
   /**
-   * 过期时间
+   * 
    */
   expiresAt: number;
 }
 
 /**
- * 离线缓存管理器
+ * Offline cache
  */
 export class OfflineCacheManager {
   private cacheDir: string;
@@ -35,23 +35,23 @@ export class OfflineCacheManager {
     this.cacheDir = cacheDir;
     this.defaultExpireTime = defaultExpireTime;
 
-    // 确保缓存目录存在
+    // Cache Directory
     if (!existsSync(cacheDir)) {
       mkdirSync(cacheDir, { recursive: true });
     }
   }
 
   /**
-   * 获取缓存文件路径
+   * CacheFile
    */
   private getCacheFilePath(key: string): string {
-    // 对 key 进行简单处理以作为文件名
+    //  key File
     const fileName = key.replace(/[^a-zA-Z0-9_-]/g, '_');
     return path.join(this.cacheDir, `${fileName}.json`);
   }
 
   /**
-   * 设置缓存
+   * Cache
    */
   set<T>(key: string, data: T, expireTime?: number): void {
     const now = Date.now();
@@ -67,14 +67,14 @@ export class OfflineCacheManager {
 
     try {
       writeFileSync(filePath, JSON.stringify(entry), 'utf-8');
-      logger.debug(`缓存已保存: ${key}`);
+      logger.debug(`Cache已保存: ${key}`);
     } catch (error) {
-      logger.error(`保存缓存失败: ${error}`);
+      logger.error(`保存CacheFailed: ${error}`);
     }
   }
 
   /**
-   * 获取缓存
+   * Cache
    */
   get<T>(key: string): T | null {
     const filePath = this.getCacheFilePath(key);
@@ -87,23 +87,23 @@ export class OfflineCacheManager {
       const content = readFileSync(filePath, 'utf-8');
       const entry: CacheEntry<T> = JSON.parse(content);
 
-      // 检查是否过期
+      // YesNo
       if (Date.now() > entry.expiresAt) {
-        logger.debug(`缓存已过期: ${key}`);
+        logger.debug(`Cache已过期: ${key}`);
         this.delete(key);
         return null;
       }
 
-      logger.debug(`缓存命中: ${key}`);
+      logger.debug(`Cache命中: ${key}`);
       return entry.data;
     } catch (error) {
-      logger.error(`读取缓存失败: ${error}`);
+      logger.error(`读取CacheFailed: ${error}`);
       return null;
     }
   }
 
   /**
-   * 检查缓存是否存在
+   * CacheYesNo
    */
   has(key: string): boolean {
     const filePath = this.getCacheFilePath(key);
@@ -116,7 +116,7 @@ export class OfflineCacheManager {
       const content = readFileSync(filePath, 'utf-8');
       const entry = JSON.parse(content);
 
-      // 检查是否过期
+      // YesNo
       return Date.now() <= entry.expiresAt;
     } catch (error) {
       return false;
@@ -124,7 +124,7 @@ export class OfflineCacheManager {
   }
 
   /**
-   * 删除缓存
+   * Cache
    */
   delete(key: string): void {
     const filePath = this.getCacheFilePath(key);
@@ -132,15 +132,15 @@ export class OfflineCacheManager {
     if (existsSync(filePath)) {
       try {
         unlinkSync(filePath);
-        logger.debug(`缓存已删除: ${key}`);
+        logger.debug(`Cache已删除: ${key}`);
       } catch (error) {
-        logger.error(`删除缓存失败: ${error}`);
+        logger.error(`删除CacheFailed: ${error}`);
       }
     }
   }
 
   /**
-   * 清空所有缓存
+   * AllCache
    */
   clear(): void {
     try {
@@ -151,14 +151,14 @@ export class OfflineCacheManager {
         }
       });
 
-      logger.debug('所有缓存已清空');
+      logger.debug('AllCache已清空');
     } catch (error) {
-      logger.error(`清空缓存失败: ${error}`);
+      logger.error(`清空CacheFailed: ${error}`);
     }
   }
 
   /**
-   * 清理过期缓存
+   * Cache
    */
   cleanExpired(): void {
     try {
@@ -178,19 +178,19 @@ export class OfflineCacheManager {
               cleanedCount++;
             }
           } catch (error) {
-            // 忽略错误，继续处理其他文件
+            // Error，OtherFile
           }
         }
       });
 
-      logger.debug(`清理过期缓存: ${cleanedCount} 个`);
+      logger.debug(`清理过期Cache: ${cleanedCount} 个`);
     } catch (error) {
-      logger.error(`清理过期缓存失败: ${error}`);
+      logger.error(`清理过期CacheFailed: ${error}`);
     }
   }
 
   /**
-   * 获取缓存统计信息
+   * CacheInfo
    */
   getStats(): { count: number; size: number; keys: string[] } {
     try {
@@ -207,13 +207,13 @@ export class OfflineCacheManager {
             const entry = JSON.parse(content);
 
             if (now <= entry.expiresAt) {
-              // 恢复原始 key（去掉 .json 后缀）
+              //  key（ .json ）
               const key = file.replace('.json', '').replace(/_/g, '.');
               validKeys.push(key);
               totalSize += content.length;
             }
           } catch (error) {
-            // 忽略错误
+            // Error
           }
         }
       });
@@ -234,7 +234,7 @@ export class OfflineCacheManager {
 }
 
 /**
- * 导出便利函数
+ * 
  */
 export function createOfflineCacheManager(
   cacheDir: string,

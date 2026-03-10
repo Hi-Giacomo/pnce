@@ -1,11 +1,11 @@
-import { Command } from 'commander';
+import { command } from 'commander';
 import chalk from 'chalk';
 import { getPluginSystem } from '../utils/plugin-system';
 
 /**
  * Plugin command
  */
-export const pluginCommand = new Command('plugin')
+export const plugincommand = new command('plugin')
   .description('Manage plugin system')
   .action(() => {
     const pluginSystem = getPluginSystem();
@@ -38,7 +38,7 @@ export const pluginCommand = new Command('plugin')
 /**
  * List plugins subcommand
  */
-export const listPluginCommand = new Command('list')
+export const listPlugincommand = new command('list')
   .description('List all installed plugins')
   .action(() => {
     const pluginSystem = getPluginSystem();
@@ -66,7 +66,7 @@ export const listPluginCommand = new Command('list')
 /**
  * Plugin info subcommand
  */
-export const infoPluginCommand = new Command('info')
+export const infoPlugincommand = new command('info')
   .description('Show plugin system information')
   .action(() => {
     const pluginSystem = getPluginSystem();
@@ -84,7 +84,7 @@ export const infoPluginCommand = new Command('info')
     console.log(chalk.green('  ✓ Plugin system ready'));
 
     console.log(chalk.gray('\nPlugin Features:'));
-    console.log(chalk.gray('  • Command extension'));
+    console.log(chalk.gray('  • command extension'));
     console.log(chalk.gray('  • Hook system'));
     console.log(chalk.gray('  • Config validation'));
     console.log(chalk.gray('  • Event tracking'));
@@ -93,8 +93,8 @@ export const infoPluginCommand = new Command('info')
     console.log(chalk.gray('  Check source code for plugin development API\n'));
   });
 
-export function register(program: Command): void {
-  const pluginCmd = program.addCommand(pluginCommand);
-  pluginCmd.addCommand(listPluginCommand);
-  pluginCmd.addCommand(infoPluginCommand);
+export function register(program: command): void {
+  const pluginCmd = program.addcommand(plugincommand);
+  pluginCmd.addcommand(listPlugincommand);
+  pluginCmd.addcommand(infoPlugincommand);
 }

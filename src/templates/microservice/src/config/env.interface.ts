@@ -1,6 +1,6 @@
 /**
- * 环境变量基础类型
- * 定义所有支持的环境变量及其类型
+ * Environment variablesType
+ * AllEnvironment variablesType
  */
 export type EnvVars = {
   PORT: string;
@@ -8,7 +8,7 @@ export type EnvVars = {
 };
 
 /**
- * 为 process.env 添加类型提示
+ *  process.env TypeHint
  */
 declare global {
   namespace NodeJS {

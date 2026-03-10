@@ -1,4 +1,4 @@
-import { Command } from 'commander';
+import { command } from 'commander';
 import chalk from 'chalk';
 import { getAnalyticsManager } from '../utils/analytics';
 import { getLogger } from '../utils/logger';
@@ -8,7 +8,7 @@ const logger = getLogger();
 /**
  * Analytics command
  */
-export const analyticsCommand = new Command('analytics')
+export const analyticscommand = new command('analytics')
   .description('Manage usage analytics (optional)')
   .action(() => {
     const analytics = getAnalyticsManager();
@@ -37,7 +37,7 @@ export const analyticsCommand = new Command('analytics')
 /**
  * Enable analytics subcommand
  */
-export const enableAnalyticsCommand = new Command('enable')
+export const enableAnalyticscommand = new command('enable')
   .argument('[endpoint]', 'Analytics endpoint (optional)')
   .description('Enable usage analytics')
   .action((endpoint?: string) => {
@@ -60,7 +60,7 @@ export const enableAnalyticsCommand = new Command('enable')
 /**
  * Disable analytics subcommand
  */
-export const disableAnalyticsCommand = new Command('disable')
+export const disableAnalyticscommand = new command('disable')
   .description('Disable usage analytics')
   .action(() => {
     try {
@@ -78,7 +78,7 @@ export const disableAnalyticsCommand = new Command('disable')
 /**
  * Clear analytics subcommand
  */
-export const clearAnalyticsCommand = new Command('clear')
+export const clearAnalyticscommand = new command('clear')
   .description('Clear local analytics events')
   .action(() => {
     try {
@@ -96,7 +96,7 @@ export const clearAnalyticsCommand = new Command('clear')
 /**
  * Analytics status subcommand
  */
-export const statusAnalyticsCommand = new Command('status')
+export const statusAnalyticscommand = new command('status')
   .description('Show analytics status')
   .action(() => {
     try {
@@ -125,10 +125,10 @@ export const statusAnalyticsCommand = new Command('status')
     }
   });
 
-export function register(program: Command): void {
-  const analyticsCmd = program.addCommand(analyticsCommand);
-  analyticsCmd.addCommand(enableAnalyticsCommand);
-  analyticsCmd.addCommand(disableAnalyticsCommand);
-  analyticsCmd.addCommand(clearAnalyticsCommand);
-  analyticsCmd.addCommand(statusAnalyticsCommand);
+export function register(program: command): void {
+  const analyticsCmd = program.addcommand(analyticscommand);
+  analyticsCmd.addcommand(enableAnalyticscommand);
+  analyticsCmd.addcommand(disableAnalyticscommand);
+  analyticsCmd.addcommand(clearAnalyticscommand);
+  analyticsCmd.addcommand(statusAnalyticscommand);
 }

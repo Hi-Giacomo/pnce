@@ -4,57 +4,57 @@ import { getLogger } from './logger';
 const logger = getLogger();
 
 /**
- * 版本信息
+ * VersionInfo
  */
 export interface VersionInfo {
   /**
-   * 版本号
+   * Version
    */
   version: string;
 
   /**
-   * 发布日期
+   * 
    */
   publishedAt?: string;
 
   /**
-   * 变更日志
+   * 
    */
   changelog?: string;
 }
 
 /**
- * 版本检查结果
+ * Version check
  */
 export interface VersionCheckResult {
   /**
-   * 当前版本
+   * CurrentVersion
    */
   current: string;
 
   /**
-   * 最新版本
+   * Version
    */
   latest: string;
 
   /**
-   * 是否有更新
+   * YesNo
    */
   hasUpdate: boolean;
 
   /**
-   * 更新类型
+   * Type
    */
   updateType: 'major' | 'minor' | 'patch' | 'none';
 
   /**
-   * 最新版本信息
+   * VersionInfo
    */
   latestInfo?: VersionInfo;
 }
 
 /**
- * 版本检查器
+ * Version check
  */
 export class VersionChecker {
   private npmRegistry: string;
@@ -64,11 +64,11 @@ export class VersionChecker {
   }
 
   /**
-   * 检查版本更新
+   * Version
    */
   async check(packageName: string, currentVersion: string): Promise<VersionCheckResult> {
     try {
-      logger.debug(`检查版本更新: ${packageName}@${currentVersion}`);
+      logger.debug(`检查Version更新: ${packageName}@${currentVersion}`);
 
       const response = await axios.get(`${this.npmRegistry}/${packageName}/latest`);
       const latestInfo: VersionInfo = response.data;
@@ -85,17 +85,17 @@ export class VersionChecker {
         latestInfo,
       };
 
-      logger.debug(`版本检查完成: ${hasUpdate ? '有更新' : '已是最新'}`);
+      logger.debug(`Version checkComplete: ${hasUpdate ? '有更新' : '已Yes最新'}`);
 
       return result;
     } catch (error) {
-      logger.error(`检查版本失败: ${error}`);
-      throw new Error(`检查版本失败: ${error}`, { cause: error });
+      logger.error(`检查VersionFailed: ${error}`);
+      throw new Error(`检查VersionFailed: ${error}`, { cause: error });
     }
   }
 
   /**
-   * 获取更新类型
+   * Type
    */
   private getUpdateType(current: string, latest: string): 'major' | 'minor' | 'patch' | 'none' {
     const currentParts = current.split('.').map(Number);
@@ -117,7 +117,7 @@ export class VersionChecker {
   }
 
   /**
-   * 获取版本变更历史
+   * Version
    */
   async getChangelog(packageName: string, version?: string): Promise<string[]> {
     try {
@@ -132,31 +132,31 @@ export class VersionChecker {
       const entries: string[] = [];
 
       if (version) {
-        // 获取特定版本的变更
+        // Version
         const versionInfo = versions[version];
         if (versionInfo) {
-          entries.push(`${version}: ${versionInfo.description || '无描述'}`);
+          entries.push(`${version}: ${versionInfo.description || '无Description'}`);
         }
       } else {
-        // 获取所有版本的变更
+        // AllVersion
         const versionNames = Object.keys(versions).sort().reverse().slice(0, 10);
 
         for (const v of versionNames) {
           const info = versions[v];
-          entries.push(`${v}: ${info.description || '无描述'}`);
+          entries.push(`${v}: ${info.description || '无Description'}`);
         }
       }
 
       return entries;
     } catch (error) {
-      logger.error(`获取变更日志失败: ${error}`);
-      throw new Error(`获取变更日志失败: ${error}`);
+      logger.error(`获取变更日志Failed: ${error}`);
+      throw new Error(`获取变更日志Failed: ${error}`);
     }
   }
 }
 
 /**
- * 导出便利函数
+ * 
  */
 export function createVersionChecker(npmRegistry?: string): VersionChecker {
   return new VersionChecker(npmRegistry);

@@ -5,17 +5,17 @@ import { getLogger } from './logger';
 const logger = getLogger();
 
 /**
- * 别名配置文件
+ * AliasFile
  */
 export interface AliasConfig {
   /**
-   * 别名映射
+   * Alias
    */
   aliases: Record<string, string>;
 }
 
 /**
- * 别名管理器
+ * Alias
  */
 export class AliasManager {
   private configPath: string;
@@ -28,7 +28,7 @@ export class AliasManager {
   }
 
   /**
-   * 加载别名配置
+   * Alias
    */
   private loadConfig(): AliasConfig {
     try {
@@ -37,14 +37,14 @@ export class AliasManager {
         return JSON.parse(content);
       }
     } catch (error) {
-      logger.warn(`加载别名配置失败: ${error}`);
+      logger.warn(`加载Alias配置Failed: ${error}`);
     }
 
     return { aliases: {} };
   }
 
   /**
-   * 保存别名配置
+   * Alias
    */
   private saveConfig(): void {
     try {
@@ -54,50 +54,50 @@ export class AliasManager {
       }
 
       writeFileSync(this.configPath, JSON.stringify(this.config, null, 2), 'utf-8');
-      logger.debug('别名配置已保存');
+      logger.debug('Alias配置已保存');
     } catch (error) {
-      logger.error(`保存别名配置失败: ${error}`);
+      logger.error(`保存Alias配置Failed: ${error}`);
       throw error;
     }
   }
 
   /**
-   * 添加别名
-   * @param alias - 别名
-   * @param command - 原始命令
+   * Add alias
+   * @param alias - Alias
+   * @param command - command
    */
   add(alias: string, command: string): void {
     this.config.aliases[alias] = command;
     this.saveConfig();
-    logger.info(`别名已添加: ${alias} -> ${command}`);
+    logger.info(`Alias已添加: ${alias} -> ${command}`);
   }
 
   /**
-   * 移除别名
-   * @param alias - 别名
+   * Alias
+   * @param alias - Alias
    */
   remove(alias: string): void {
     if (this.config.aliases[alias]) {
       delete this.config.aliases[alias];
       this.saveConfig();
-      logger.info(`别名已移除: ${alias}`);
+      logger.info(`Alias已移除: ${alias}`);
     }
   }
 
   /**
-   * 解析别名
-   * @param args - 命令参数
-   * @returns 解析后的命令参数
+   * Alias
+   * @param args - command
+   * @returns command
    */
   resolve(args: string[]): string[] {
     const command = args[0];
     const alias = command !== undefined ? this.config.aliases[command] : undefined;
 
     if (alias) {
-      // 替换别名为原始命令
+      // Aliascommand
       const aliasParts = alias.split(' ');
       const result = [...aliasParts, ...args.slice(1)];
-      logger.debug(`别名已解析: ${command} -> ${result.join(' ')}`);
+      logger.debug(`Alias已解析: ${command} -> ${result.join(' ')}`);
       return result;
     }
 
@@ -105,30 +105,30 @@ export class AliasManager {
   }
 
   /**
-   * 检查命令是否为别名
+   * commandYesNoAlias
    */
   isAlias(command: string): boolean {
     return !!this.config.aliases[command];
   }
 
   /**
-   * 获取所有别名
+   * AllAlias
    */
   list(): Record<string, string> {
     return { ...this.config.aliases };
   }
 
   /**
-   * 清空所有别名
+   * AllAlias
    */
   clear(): void {
     this.config.aliases = {};
     this.saveConfig();
-    logger.info('所有别名已清空');
+    logger.info('AllAlias已清空');
   }
 
   /**
-   * 获取配置文件路径
+   * Get configuration file path
    */
   getConfigPath(): string {
     return this.configPath;
@@ -136,12 +136,12 @@ export class AliasManager {
 }
 
 /**
- * 全局别名管理器实例
+ * GlobalAlias
  */
 let aliasManagerInstance: AliasManager | null = null;
 
 /**
- * 获取别名管理器实例
+ * Alias
  */
 export function getAliasManager(): AliasManager {
   if (!aliasManagerInstance) {
@@ -151,7 +151,7 @@ export function getAliasManager(): AliasManager {
 }
 
 /**
- * 创建别名管理器实例
+ * Alias
  */
 export function createAliasManager(configDir?: string): AliasManager {
   return new AliasManager(configDir);

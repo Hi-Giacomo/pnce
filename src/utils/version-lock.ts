@@ -5,21 +5,21 @@ import { getLogger } from './logger';
 const logger = getLogger();
 
 /**
- * 模块版本锁定文件
+ * module versionFile
  */
 export interface VersionLockFile {
   /**
-   * 锁定时间
+   * 
    */
   lockedAt: number;
   /**
-   * 模块版本映射
+   * module version
    */
   versions: Record<string, string>;
 }
 
 /**
- * 版本锁定管理器
+ * Version lock
  */
 export class VersionLockManager {
   private lockFilePath: string;
@@ -29,14 +29,14 @@ export class VersionLockManager {
   }
 
   /**
-   * 获取锁定文件路径
+   * File
    */
   getLockFilePath(): string {
     return this.lockFilePath;
   }
 
   /**
-   * 加载锁定文件
+   * File
    */
   load(): VersionLockFile | null {
     if (!existsSync(this.lockFilePath)) {
@@ -47,13 +47,13 @@ export class VersionLockManager {
       const content = readFileSync(this.lockFilePath, 'utf-8');
       return JSON.parse(content);
     } catch (error) {
-      logger.error(`加载版本锁定文件失败: ${error}`);
+      logger.error(`加载Version lockFileFailed: ${error}`);
       return null;
     }
   }
 
   /**
-   * 保存锁定文件
+   * File
    */
   save(lockFile: VersionLockFile): void {
     try {
@@ -63,15 +63,15 @@ export class VersionLockManager {
       }
 
       writeFileSync(this.lockFilePath, JSON.stringify(lockFile, null, 2), 'utf-8');
-      logger.debug(`版本锁定文件已保存: ${this.lockFilePath}`);
+      logger.debug(`Version lockFile已保存: ${this.lockFilePath}`);
     } catch (error) {
-      logger.error(`保存版本锁定文件失败: ${error}`);
+      logger.error(`保存Version lockFileFailed: ${error}`);
       throw error;
     }
   }
 
   /**
-   * 锁定模块版本
+   * module version
    */
   lock(moduleName: string, version: string): void {
     let lockFile = this.load();
@@ -86,11 +86,11 @@ export class VersionLockManager {
     lockFile.versions[moduleName] = version;
     this.save(lockFile);
 
-    logger.debug(`锁定模块版本: ${moduleName}@${version}`);
+    logger.debug(`锁定module version: ${moduleName}@${version}`);
   }
 
   /**
-   * 批量锁定模块版本
+   * module version
    */
   lockBatch(versions: Record<string, string>): void {
     let lockFile = this.load();
@@ -105,11 +105,11 @@ export class VersionLockManager {
     Object.assign(lockFile.versions, versions);
     this.save(lockFile);
 
-    logger.debug(`批量锁定模块版本: ${Object.keys(versions).join(', ')}`);
+    logger.debug(`批量锁定module version: ${Object.keys(versions).join(', ')}`);
   }
 
   /**
-   * 解锁模块版本
+   * module version
    */
   unlock(moduleName: string): void {
     const lockFile = this.load();
@@ -121,28 +121,28 @@ export class VersionLockManager {
     delete lockFile.versions[moduleName];
 
     if (Object.keys(lockFile.versions).length === 0) {
-      // 如果没有锁定的版本，删除锁定文件
+      // Version，File
       require('fs-extra').removeSync(this.lockFilePath);
-      logger.debug(`版本锁定文件已删除（无锁定版本）`);
+      logger.debug(`Version lockFile已删除（无锁定Version）`);
     } else {
       this.save(lockFile);
     }
 
-    logger.debug(`解锁模块版本: ${moduleName}`);
+    logger.debug(`解锁module version: ${moduleName}`);
   }
 
   /**
-   * 解锁所有模块
+   * Allmodule
    */
   unlockAll(): void {
     if (existsSync(this.lockFilePath)) {
       require('fs-extra').removeSync(this.lockFilePath);
-      logger.debug(`已解锁所有模块版本`);
+      logger.debug(`已解锁Allmodule version`);
     }
   }
 
   /**
-   * 获取锁定的版本
+   * Version
    */
   getLockedVersion(moduleName: string): string | undefined {
     const lockFile = this.load();
@@ -155,7 +155,7 @@ export class VersionLockManager {
   }
 
   /**
-   * 获取所有锁定的版本
+   * AllVersion
    */
   getAllLockedVersions(): Record<string, string> {
     const lockFile = this.load();
@@ -168,7 +168,7 @@ export class VersionLockManager {
   }
 
   /**
-   * 检查模块是否被锁定
+   * moduleYesNo
    */
   isLocked(moduleName: string): boolean {
     const version = this.getLockedVersion(moduleName);
@@ -176,16 +176,16 @@ export class VersionLockManager {
   }
 
   /**
-   * 获取锁定的模块列表
+   * moduleList
    */
-  getLockedModules(): string[] {
+  getLockedmodules(): string[] {
     const versions = this.getAllLockedVersions();
     return Object.keys(versions);
   }
 }
 
 /**
- * 导出便利函数
+ * 
  */
 export function createVersionLockManager(projectDir?: string): VersionLockManager {
   return new VersionLockManager(projectDir);

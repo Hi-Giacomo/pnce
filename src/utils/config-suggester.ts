@@ -4,41 +4,41 @@ import { getLogger } from './logger';
 const logger = getLogger();
 
 /**
- * 配置问题
+ * 
  */
 export interface ConfigIssue {
   /**
-   * 问题类型
+   * Type
    */
   type: 'error' | 'warning' | 'suggestion';
 
   /**
-   * 字段名称
+   * 
    */
   field: string;
 
   /**
-   * 问题描述
+   * Description
    */
   message: string;
 
   /**
-   * 建议值
+   * 
    */
   suggestion?: string | number | boolean;
 }
 
 /**
- * 配置建议器
+ * Configuration suggestion
  */
 export class ConfigSuggester {
   /**
-   * 验证配置并返回问题列表
+   * ValidationList
    */
   validate(config: PnceConfig): ConfigIssue[] {
     const issues: ConfigIssue[] = [];
 
-    // 检查 API 服务器地址
+    //  API 
     if (!config.apiServer || !this.isValidUrl(config.apiServer)) {
       issues.push({
         type: 'error',
@@ -48,7 +48,7 @@ export class ConfigSuggester {
       });
     }
 
-    // 检查 OAuth 端点
+    //  OAuth 
     if (config.oauthEndpoint && !this.isValidUrl(config.oauthEndpoint)) {
       issues.push({
         type: 'warning',
@@ -57,32 +57,32 @@ export class ConfigSuggester {
       });
     }
 
-    // 检查日志级别
+    // Log Level
     if (config.logLevel && !['debug', 'info', 'warn', 'error'].includes(config.logLevel)) {
       issues.push({
         type: 'warning',
         field: 'logLevel',
-        message: '无效的日志级别',
+        message: '无效的Log Level',
         suggestion: 'info',
       });
     }
 
-    // 检查输出目录
+    // Output directory
     if (config.outputDir && !this.isValidPath(config.outputDir)) {
       issues.push({
         type: 'error',
         field: 'outputDir',
-        message: '输出目录路径无效',
+        message: 'Output directory路径无效',
         suggestion: './modules',
       });
     }
 
-    // 检查代理设置
+    // 
     if (config.useProxy && !config.proxyUrl) {
       issues.push({
         type: 'warning',
         field: 'proxyUrl',
-        message: '已启用代理但未设置代理地址',
+        message: '已启用代理但未设置Proxy URL',
         suggestion: 'http://127.0.0.1:7890',
       });
     }
@@ -91,16 +91,16 @@ export class ConfigSuggester {
       issues.push({
         type: 'warning',
         field: 'proxyUrl',
-        message: '代理地址格式可能无效',
+        message: 'Proxy URL格式可能无效',
       });
     }
 
-    // 检查超时设置
+    // 
     if (config.downloadTimeout && config.downloadTimeout < 5000) {
       issues.push({
         type: 'warning',
         field: 'downloadTimeout',
-        message: '下载超时时间过短，可能导致大文件下载失败',
+        message: '下载超时时间过短，可能导致大File下载Failed',
         suggestion: 60000,
       });
     }
@@ -109,17 +109,17 @@ export class ConfigSuggester {
       issues.push({
         type: 'warning',
         field: 'uploadTimeout',
-        message: '上传超时时间过短，可能导致大文件上传失败',
+        message: '上传超时时间过短，可能导致大File上传Failed',
         suggestion: 120000,
       });
     }
 
-    // 检查并发设置
+    // 
     if (config.maxConcurrentDownloads && config.maxConcurrentDownloads > 10) {
       issues.push({
         type: 'suggestion',
         field: 'maxConcurrentDownloads',
-        message: '并发下载设置过高，可能占用过多资源',
+        message: '并发下载设置过高，可能In use过多资源',
         suggestion: 3,
       });
     }
@@ -128,7 +128,7 @@ export class ConfigSuggester {
   }
 
   /**
-   * 检查是否为有效的 URL
+   * YesNo URL
    */
   private isValidUrl(url: string): boolean {
     try {
@@ -140,27 +140,27 @@ export class ConfigSuggester {
   }
 
   /**
-   * 检查是否为有效的路径
+   * YesNo
    */
   private isValidPath(path: string): boolean {
-    // 简单验证：不包含非法字符
+    // Validation：
     const invalidChars = /[<>:"|?*\x00-\x1F]/;
     return !invalidChars.test(path);
   }
 
   /**
-   * 获取配置建议
+   * Get configuration建议
    */
 
   getSuggestions(_config: PnceConfig, issues: ConfigIssue[]): string[] {
     const suggestions: string[] = [];
 
     if (issues.some((i) => i.type === 'error')) {
-      suggestions.push('⚠️  配置存在错误，请先修复这些问题');
+      suggestions.push('⚠️  配置存在Error，请先修复这些问题');
     }
 
     if (issues.some((i) => i.type === 'warning')) {
-      suggestions.push('⚠️  配置存在警告，建议检查');
+      suggestions.push('⚠️  配置存在Warning，建议检查');
     }
 
     if (issues.some((i) => i.type === 'suggestion')) {
@@ -175,18 +175,18 @@ export class ConfigSuggester {
    */
   formatIssues(issues: ConfigIssue[]): string {
     if (issues.length === 0) {
-      return '✅ 配置验证通过，未发现问题';
+      return '✅ 配置Validation通过，未发现问题';
     }
 
     const lines: string[] = [];
 
-    // 按类型分组
+    // 按Type分组
     const errors = issues.filter((i) => i.type === 'error');
     const warnings = issues.filter((i) => i.type === 'warning');
     const suggestions = issues.filter((i) => i.type === 'suggestion');
 
     if (errors.length > 0) {
-      lines.push('\n❌ 错误:');
+      lines.push('\n❌ Error:');
       errors.forEach((issue) => {
         lines.push(`  • ${issue.field}: ${issue.message}`);
         if (issue.suggestion !== undefined) {
@@ -196,7 +196,7 @@ export class ConfigSuggester {
     }
 
     if (warnings.length > 0) {
-      lines.push('\n⚠️  警告:');
+      lines.push('\n⚠️  Warning:');
       warnings.forEach((issue) => {
         lines.push(`  • ${issue.field}: ${issue.message}`);
         if (issue.suggestion !== undefined) {

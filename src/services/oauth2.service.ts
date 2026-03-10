@@ -22,17 +22,17 @@ export class OAuth2Service {
     return crypto.randomBytes(16).toString('base64url');
   }
 
-  static async webLogin(): Promise<AuthResponse> {
+  static async weblogin(): Promise<AuthResponse> {
     const config = getConfigManager().getConfig();
     // const registryUrl = config.apiServer;
 
-    // 生成 PKCE 参数
+    //  PKCE 
     const codeVerifier = this.generateCodeVerifier();
     const codeChallenge = this.generateCodeChallenge(codeVerifier);
     const state = this.generateState();
     const redirectUri = `http://localhost:${this.REDIRECT_PORT}/callback`;
 
-    // 构建授权 URL - 使用 oauthEndpoint 的授权页面
+    // authorization URL -  oauthEndpoint authorization
     const authUrl = new URL(`${config.oauthEndpoint}`);
     authUrl.searchParams.append('response_type', 'code');
     authUrl.searchParams.append('client_id', this.CLIENT_ID);
@@ -42,42 +42,42 @@ export class OAuth2Service {
     authUrl.searchParams.append('state', state);
     authUrl.searchParams.append('scope', OAUTH2_CONFIG.SCOPE);
 
-    console.log('\n正在打开浏览器进行授权...');
-    console.log(`授权 URL: ${authUrl.toString()}`);
+    console.log('\n正在打开浏览器进行authorization...');
+    console.log(`authorization URL: ${authUrl.toString()}`);
     console.log('如果浏览器未自动打开，请手动访问上述 URL\n');
 
-    // 打开浏览器
+    // 
     await this.openBrowser(authUrl.toString());
 
-    // 创建本地服务器接收回调
+    // Local
     return new Promise((resolve, reject) => {
       const server = http.createServer((req, res) => {
         const parsedUrl = url.parse(req.url!, true);
         const query = parsedUrl.query;
 
-        // 验证 state
+        // Validation state
         if (query.state !== state) {
           this.sendErrorResponse(res, 400, 'Invalid state parameter');
-          reject(new Error('State 验证失败'));
+          reject(new Error('State ValidationFailed'));
           return;
         }
 
-        // 检查是否有错误
+        // YesNoError
         if (query.error) {
-          this.sendErrorResponse(res, 400, `授权失败: ${query.error}`);
+          this.sendErrorResponse(res, 400, `authorizationFailed: ${query.error}`);
           reject(new Error(query.error as string));
           return;
         }
 
-        // 获取 authorization code（实际上在新的流程中，这里已经是编码后的 accessToken 和 user）
+        //  authorization code（，Yes accessToken  user）
         const code = query.code as string;
         if (!code) {
           this.sendErrorResponse(res, 400, 'Missing authorization code');
-          reject(new Error('缺少授权码'));
+          reject(new Error('缺少authorization码'));
           return;
         }
 
-        // 解析回调中的数据（授权页面已经完成了 token 交换）
+        // Data（authorizationComplete token ）
         try {
           const data = JSON.parse(Buffer.from(code, 'base64').toString());
           const accessToken = data.accessToken;
@@ -85,33 +85,33 @@ export class OAuth2Service {
 
           if (!accessToken) {
             this.sendErrorResponse(res, 400, 'Missing access token in response');
-            reject(new Error('回调数据格式错误'));
+            reject(new Error('回调Data格式Error'));
             return;
           }
 
-          // 返回授权成功
-          this.sendSuccessResponse(res, user?.username || user?.email || '用户');
+          // authorizationSuccess
+          this.sendSuccessResponse(res, user?.username || user?.email || 'User');
           resolve({
             access_token: accessToken,
             user: user,
           });
         } catch (error) {
           this.sendErrorResponse(res, 400, 'Invalid authorization code format');
-          reject(new Error('授权码格式错误'));
+          reject(new Error('authorization码格式Error'));
         } finally {
           server.close();
         }
       });
 
       server.listen(this.REDIRECT_PORT, () => {
-        console.log(`本地服务器运行在 http://localhost:${this.REDIRECT_PORT}`);
-        console.log('等待授权完成...\n');
+        console.log(`Local服务器运行在 http://localhost:${this.REDIRECT_PORT}`);
+        console.log('等待authorizationComplete...\n');
       });
 
-      // 超时处理
+      // 
       setTimeout(() => {
         server.close();
-        reject(new Error('授权超时，请重试'));
+        reject(new Error('authorization超时，Please try again'));
       }, this.AUTH_TIMEOUT);
     });
   }
@@ -171,7 +171,7 @@ export class OAuth2Service {
       <!DOCTYPE html>
       <html>
       <head>
-        <title>授权成功</title>
+        <title>authorizationSuccess</title>
         <style>
           body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
@@ -212,8 +212,8 @@ export class OAuth2Service {
       <body>
         <div class="container">
           <div class="success-icon">✓</div>
-          <h1>授权成功</h1>
-          <p>用户 <strong>${username}</strong> 已成功登录</p>
+          <h1>authorizationSuccess</h1>
+          <p>User <strong>${username}</strong> 已Successlogin</p>
           <p class="close-hint">您可以关闭此窗口返回 CLI</p>
         </div>
       </body>
@@ -231,7 +231,7 @@ export class OAuth2Service {
       <!DOCTYPE html>
       <html>
       <head>
-        <title>授权失败</title>
+        <title>authorizationFailed</title>
         <style>
           body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
@@ -267,7 +267,7 @@ export class OAuth2Service {
       <body>
         <div class="container">
           <div class="error-icon">✗</div>
-          <h1>授权失败</h1>
+          <h1>authorizationFailed</h1>
           <p>${message}</p>
         </div>
       </body>

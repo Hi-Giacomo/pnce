@@ -4,7 +4,7 @@ import fs from 'fs-extra';
 import os from 'os';
 
 /**
- * 日志级别
+ * Log Level
  */
 export enum LogLevel {
   ERROR = 'error',
@@ -14,7 +14,7 @@ export enum LogLevel {
 }
 
 /**
- * 日志配置
+ * 
  */
 export interface LoggerConfig {
   level: LogLevel;
@@ -25,12 +25,12 @@ export interface LoggerConfig {
 }
 
 /**
- * 获取默认日志配置
+ * Default
  */
 function getDefaultConfig(): LoggerConfig {
   return {
     level: (process.env.PNCE_LOG_LEVEL || 'info') as LogLevel,
-    // 使用用户主目录，而不是当前工作目录
+    // UserDirectory，YesCurrentDirectory
     dir: path.join(os.homedir(), '.pnce', 'logs'),
     maxFiles: 30,
     maxSize: '10m',
@@ -39,14 +39,14 @@ function getDefaultConfig(): LoggerConfig {
 }
 
 /**
- * 创建日志目录
+ * Directory
  */
 async function ensureLogDir(config: LoggerConfig): Promise<void> {
   await fs.ensureDir(config.dir);
 }
 
 /**
- * 创建日志格式
+ * 
  */
 function createLogFormat(config: LoggerConfig): winston.Logform.Format {
   if (config.format === 'json') {
@@ -71,7 +71,7 @@ function createLogFormat(config: LoggerConfig): winston.Logform.Format {
 }
 
 /**
- * 创建Winston Logger
+ * Winston Logger
  */
 export async function createLogger(config?: Partial<LoggerConfig>): Promise<winston.Logger> {
   const finalConfig = { ...getDefaultConfig(), ...config };
@@ -80,7 +80,7 @@ export async function createLogger(config?: Partial<LoggerConfig>): Promise<wins
   const logFormat = createLogFormat(finalConfig);
 
   const transports: winston.transport[] = [
-    // 控制台输出
+    // 
     new winston.transports.Console({
       format:
         finalConfig.format === 'json'
@@ -95,7 +95,7 @@ export async function createLogger(config?: Partial<LoggerConfig>): Promise<wins
       level: finalConfig.level,
     }),
 
-    // 错误日志文件
+    // ErrorFile
     new winston.transports.File({
       filename: path.join(finalConfig.dir, 'error.log'),
       level: 'error',
@@ -108,7 +108,7 @@ export async function createLogger(config?: Partial<LoggerConfig>): Promise<wins
       ),
     }),
 
-    // 所有日志文件
+    // AllFile
     new winston.transports.File({
       filename: path.join(finalConfig.dir, 'combined.log'),
       maxFiles: finalConfig.maxFiles,
@@ -127,7 +127,7 @@ export async function createLogger(config?: Partial<LoggerConfig>): Promise<wins
 }
 
 /**
- * Logger类 - 提供便捷的日志方法
+ * Logger - 
  */
 export class Logger {
   private logger: winston.Logger;
@@ -137,42 +137,42 @@ export class Logger {
   }
 
   /**
-   * 记录错误
+   * RecordError
    */
   error(message: string, meta?: Record<string, unknown>): void {
     this.logger.error(message, meta);
   }
 
   /**
-   * 记录警告
+   * RecordWarning
    */
   warn(message: string, meta?: Record<string, unknown>): void {
     this.logger.warn(message, meta);
   }
 
   /**
-   * 记录信息
+   * RecordInfo
    */
   info(message: string, meta?: Record<string, unknown>): void {
     this.logger.info(message, meta);
   }
 
   /**
-   * 记录调试信息
+   * RecordInfo
    */
   debug(message: string, meta?: Record<string, unknown>): void {
     this.logger.debug(message, meta);
   }
 
   /**
-   * 创建子日志器
+   * 
    */
   child(defaultMeta: Record<string, unknown>): Logger {
     return new Logger(this.logger.child(defaultMeta));
   }
 
   /**
-   * 获取底层Winston Logger
+   * Winston Logger
    */
   getWinstonLogger(): winston.Logger {
     return this.logger;
@@ -180,12 +180,12 @@ export class Logger {
 }
 
 /**
- * 全局日志器实例
+ * Global
  */
 let globalLogger: Logger | null = null;
 
 /**
- * 初始化全局日志器
+ * Global
  */
 export async function initLogger(config?: Partial<LoggerConfig>): Promise<void> {
   if (globalLogger) {
@@ -197,11 +197,11 @@ export async function initLogger(config?: Partial<LoggerConfig>): Promise<void> 
 }
 
 /**
- * 获取全局日志器
+ * Global
  */
 export function getLogger(): Logger {
   if (!globalLogger) {
-    // 如果未初始化，创建一个临时的控制台日志器
+    // ，
     const tempLogger = winston.createLogger({
       level: 'info',
       transports: [

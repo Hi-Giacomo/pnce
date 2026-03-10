@@ -1,92 +1,92 @@
-import { Command } from 'commander';
+import { command } from 'commander';
 import { AuthService } from '../services/auth.service';
 import { AuthResponse } from '../types';
 import { ErrorHandler } from '../utils/errors';
 import { getConfigManager } from '../config/manager';
 
 /**
- * 注册认证相关命令
- * @param program - Commander程序实例
- * @param authService - 认证服务实例
+ * Register authentication-related commands
+ * @param program - commander program instance
+ * @param authService - Authentication service instance
  */
-export function registerAuthCommands(program: Command, authService: AuthService): void {
-  // 注册命令
+export function registerAuthcommands(program: command, authService: AuthService): void {
+  // Register command
   program
     .command('register')
-    .description('注册新用户')
-    .option('-u, --username <username>', '用户名')
-    .option('-e, --email <email>', '邮箱')
-    .option('-p, --password <password>', '密码')
+    .description('Register new user')
+    .option('-u, --username <username>', 'Username')
+    .option('-e, --email <email>', 'email')
+    .option('-p, --password <password>', 'password')
     .action(async (options) => {
       try {
         const response = await authService.register(options);
-        // Token已由AuthService自动保存到配置
-        console.log(`✓ 注册成功! 用户: ${response.user.username || response.user.email}`);
+        // Token automatically saved to configuration by AuthService
+        console.log(`✓ Registration successful! User: ${response.user.username || response.user.email}`);
       } catch (error) {
         ErrorHandler.handle(error);
       }
     });
 
-  // 登录命令
+  // login command
   program
     .command('login')
-    .description('登录到注册中心（自动打开浏览器进行授权）')
-    .option('-e, --email <email>', '邮箱（可选，用于传统登录方式）')
-    .option('-p, --password <password>', '密码（可选，用于传统登录方式）')
+    .description('login to registry (automatically opens browser for authorization)')
+    .option('-e, --email <email>', 'email (optional, for traditional login method)')
+    .option('-p, --password <password>', 'password (optional, for traditional login method)')
     .action(async (options) => {
       try {
         let response: AuthResponse;
 
-        // 如果提供了邮箱和密码，使用传统登录方式
+        // If email and password are provided, use traditional login method
         if (options.email && options.password) {
           response = await authService.login(options);
         } else {
-          // 默认使用网页授权登录
-          response = await authService.webLogin();
+          // Default use web-based authorization login
+          response = await authService.weblogin();
         }
 
-        // Token已由AuthService自动保存到配置
-        console.log(`✓ 登录成功! 用户: ${response.user.username || response.user.email}`);
+        // Token automatically saved to configuration by AuthService
+        console.log(`✓ login successful! User: ${response.user.username || response.user.email}`);
         console.log('');
-        console.log('💡 提示: 您现在可以上传模块了，使用命令: pnce upload');
+        console.log('💡 Hint: You can now upload modules using command: pnce upload');
       } catch (error) {
         ErrorHandler.handle(error);
       }
     });
 
-  // 查看用户信息命令
+  // View user info command
   program
     .command('me')
-    .description('查看当前用户信息')
+    .description('View current user information')
     .action(async () => {
       try {
         const configManager = getConfigManager();
 
         if (!configManager.getToken()) {
-          console.log('未登录');
-          console.log('请使用以下命令登录:');
+          console.log('Not logged in');
+          console.log('Please use the following command to login:');
           console.log('  pnce login');
           return;
         }
 
         const user = await authService.me();
-        console.log('当前用户信息:');
-        console.log(`  用户名: ${user.username || 'N/A'}`);
-        console.log(`  邮箱: ${user.email || 'N/A'}`);
+        console.log('Current user information:');
+        console.log(`  Username: ${user.username || 'N/A'}`);
+        console.log(`  email: ${user.email || 'N/A'}`);
       } catch (error) {
         ErrorHandler.handle(error);
       }
     });
 
-  // 登出命令
+  // logout command
   program
     .command('logout')
-    .description('登出')
+    .description('logout')
     .action(() => {
       try {
         const configManager = getConfigManager();
         configManager.clearAuth();
-        console.log('✓ 已登出');
+        console.log('✓ Logged out');
       } catch (error) {
         ErrorHandler.handle(error);
       }

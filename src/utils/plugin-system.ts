@@ -1,98 +1,98 @@
 import { readFileSync, writeFileSync, existsSync, mkdirSync } from 'fs';
 import path from 'path';
 import { getLogger } from './logger';
-import { Command } from 'commander';
+import { command } from 'commander';
 import { PnceConfig, ConfigManager } from '../config/manager';
 import { Logger } from 'winston';
 
 const logger = getLogger();
 
 /**
- * 插件接口
+ * Interface
  */
 export interface Plugin {
   /**
-   * 插件名称
+   * Plugin name
    */
   name: string;
 
   /**
-   * 插件版本
+   * Plugin version
    */
   version: string;
 
   /**
-   * 插件描述
+   * Description
    */
   description?: string;
 
   /**
-   * 作者
+   * Author
    */
   author?: string;
 
   /**
-   * 初始化函数
+   * 
    */
   init?(context: PluginContext): void | Promise<void>;
 
   /**
-   * 销毁函数
+   * 
    */
   destroy?(): void | Promise<void>;
 
   /**
-   * 命令注册函数
+   * command
    */
-  registerCommands?: (program: Command) => void;
+  registercommands?: (program: command) => void;
 
   /**
-   * 配置验证函数
+   * Validation
    */
   validateConfig?: (config: PnceConfig) => boolean;
 
   /**
-   * 钩子函数
+   * 
    */
   hooks?: {
     /**
-     * 命令执行前钩子
+     * command
      */
-    beforeCommand?: (command: string, args: string[]) => void | Promise<void>;
+    beforecommand?: (command: string, args: string[]) => void | Promise<void>;
 
     /**
-     * 命令执行后钩子
+     * command
      */
-    afterCommand?: (command: string, args: string[], result: unknown) => void | Promise<void>;
+    aftercommand?: (command: string, args: string[], result: unknown) => void | Promise<void>;
 
     /**
-     * 错误处理钩子
+     * Error
      */
     onError?: (error: Error) => void | Promise<void>;
   };
 }
 
 /**
- * 插件上下文
+ * 
  */
 export interface PluginContext {
   /**
-   * CLI 版本
+   * CLI Version
    */
   version: string;
 
   /**
-   * 配置管理器
+   * 
    */
   config: PnceConfig | null;
 
   /**
-   * 日志记录器
+   * Record
    */
   logger: Logger;
 
   /**
-   * 获取工具函数
+   * Utility
    */
   utils: {
     track: (event: string, data?: Record<string, unknown>) => void;
@@ -100,37 +100,37 @@ export interface PluginContext {
 }
 
 /**
- * 插件清单
+ * 
  */
 export interface PluginManifest {
   /**
-   * 插件名称
+   * Plugin name
    */
   name: string;
 
   /**
-   * 插件版本
+   * Plugin version
    */
   version: string;
 
   /**
-   * 入口文件
+   * File
    */
   entry: string;
 
   /**
-   * 依赖项
+   * Dependencies
    */
   dependencies?: Record<string, string>;
 
   /**
-   * 是否启用
+   * YesNo
    */
   enabled: boolean;
 }
 
 /**
- * 插件系统管理器
+ * 
  */
 export class PluginSystem {
   private pluginsDir: string;
@@ -144,10 +144,10 @@ export class PluginSystem {
     this.pluginsDir = path.join(configBaseDir, 'plugins');
     this.manifestFile = path.join(configBaseDir, 'plugins-manifest.json');
 
-    // 初始化配置管理器
+    // 
     this.configManager = configManager || new ConfigManager();
 
-    // 确保插件目录存在
+    // Directory
     if (!existsSync(this.pluginsDir)) {
       mkdirSync(this.pluginsDir, { recursive: true });
     }
@@ -156,7 +156,7 @@ export class PluginSystem {
   }
 
   /**
-   * 加载插件清单
+   * 
    */
   private loadManifest(): void {
     try {
@@ -169,12 +169,12 @@ export class PluginSystem {
         });
       }
     } catch (error) {
-      logger.warn(`加载插件清单失败: ${error}`);
+      logger.warn(`加载插件清单Failed: ${error}`);
     }
   }
 
   /**
-   * 保存插件清单
+   * 
    */
   private saveManifest(): void {
     try {
@@ -182,25 +182,25 @@ export class PluginSystem {
       writeFileSync(this.manifestFile, JSON.stringify(manifests, null, 2), 'utf-8');
       logger.debug('插件清单已保存');
     } catch (error) {
-      logger.error(`保存插件清单失败: ${error}`);
+      logger.error(`保存插件清单Failed: ${error}`);
     }
   }
 
   /**
-   * 注册插件
-   * @param plugin - 插件实例
+   * 
+   * @param plugin - 
    */
   async register(plugin: Plugin): Promise<void> {
     try {
-      // 检查插件是否已注册
+      // YesNo
       if (this.plugins.has(plugin.name)) {
         throw new Error(`插件已存在: ${plugin.name}`);
       }
 
-      // 获取当前配置
+      // Current
       const config = this.configManager.getConfig();
 
-      // 初始化插件
+      // 
       const context: PluginContext = {
         version: process.env.PNCE_VERSION || '0.0.9',
         config: config,
@@ -218,11 +218,11 @@ export class PluginSystem {
 
       this.plugins.set(plugin.name, plugin);
 
-      // 更新清单
+      // 
       const manifest: PluginManifest = {
         name: plugin.name,
         version: plugin.version,
-        entry: '', // 内联插件无需入口文件
+        entry: '', // File
         enabled: true,
       };
       this.manifests.set(plugin.name, manifest);
@@ -231,7 +231,7 @@ export class PluginSystem {
       logger.info(`插件已注册: ${plugin.name}@${plugin.version}`);
     } catch (error) {
       logger.error(
-        `注册插件失败: ${plugin.name}`,
+        `注册插件Failed: ${plugin.name}`,
         error instanceof Error ? { error } : { error: String(error) }
       );
       throw error;
@@ -239,18 +239,18 @@ export class PluginSystem {
   }
 
   /**
-   * 注销插件
-   * @param name - 插件名称
+   * 
+   * @param name - Plugin name
    */
   async unregister(name: string): Promise<void> {
     try {
       const plugin = this.plugins.get(name);
 
       if (!plugin) {
-        throw new Error(`插件不存在: ${name}`);
+        throw new Error(`插件does not exist: ${name}`);
       }
 
-      // 销毁插件
+      // 
       if (plugin.destroy) {
         await plugin.destroy();
       }
@@ -262,7 +262,7 @@ export class PluginSystem {
       logger.info(`插件已注销: ${name}`);
     } catch (error) {
       logger.error(
-        `注销插件失败: ${name}`,
+        `注销插件Failed: ${name}`,
         error instanceof Error ? { error } : { error: String(error) }
       );
       throw error;
@@ -270,28 +270,28 @@ export class PluginSystem {
   }
 
   /**
-   * 获取插件
-   * @param name - 插件名称
+   * 
+   * @param name - Plugin name
    */
   get(name: string): Plugin | undefined {
     return this.plugins.get(name);
   }
 
   /**
-   * 列出所有插件
+   * All
    */
   list(): Plugin[] {
     return Array.from(this.plugins.values());
   }
 
   /**
-   * 启用插件
-   * @param name - 插件名称
+   * 
+   * @param name - Plugin name
    */
   async enable(name: string): Promise<void> {
     const manifest = this.manifests.get(name);
     if (!manifest) {
-      throw new Error(`插件清单不存在: ${name}`);
+      throw new Error(`插件清单does not exist: ${name}`);
     }
 
     manifest.enabled = true;
@@ -301,13 +301,13 @@ export class PluginSystem {
   }
 
   /**
-   * 禁用插件
-   * @param name - 插件名称
+   * 
+   * @param name - Plugin name
    */
   async disable(name: string): Promise<void> {
     const manifest = this.manifests.get(name);
     if (!manifest) {
-      throw new Error(`插件清单不存在: ${name}`);
+      throw new Error(`插件清单does not exist: ${name}`);
     }
 
     manifest.enabled = false;
@@ -317,18 +317,18 @@ export class PluginSystem {
   }
 
   /**
-   * 注册所有插件的命令
-   * @param program - Commander 程序实例
+   * Allcommand
+   * @param program - commander 
    */
-  registerAllCommands(program: Command): void {
+  registerAllcommands(program: command): void {
     this.plugins.forEach((plugin) => {
-      if (plugin.registerCommands) {
+      if (plugin.registercommands) {
         try {
-          plugin.registerCommands(program);
-          logger.debug(`插件命令已注册: ${plugin.name}`);
+          plugin.registercommands(program);
+          logger.debug(`插件command已注册: ${plugin.name}`);
         } catch (error) {
           logger.error(
-            `注册插件命令失败: ${plugin.name}`,
+            `注册插件commandFailed: ${plugin.name}`,
             error instanceof Error ? { error } : { error: String(error) }
           );
         }
@@ -337,16 +337,16 @@ export class PluginSystem {
   }
 
   /**
-   * 触发命令执行前钩子
-   * @param command - 命令
-   * @param args - 参数
+   * command
+   * @param command - command
+   * @param args - 
    */
-  async triggerBeforeCommand(command: string, args: string[]): Promise<void> {
+  async triggerBeforecommand(command: string, args: string[]): Promise<void> {
     const promises: Promise<void>[] = [];
 
     this.plugins.forEach((plugin) => {
-      if (plugin.hooks?.beforeCommand) {
-        const promise = plugin.hooks.beforeCommand!(command, args);
+      if (plugin.hooks?.beforecommand) {
+        const promise = plugin.hooks.beforecommand!(command, args);
         if (promise instanceof Promise) {
           promises.push(promise);
         }
@@ -357,17 +357,17 @@ export class PluginSystem {
   }
 
   /**
-   * 触发命令执行后钩子
-   * @param command - 命令
-   * @param args - 参数
-   * @param result - 结果
+   * command
+   * @param command - command
+   * @param args - 
+   * @param result - 
    */
-  async triggerAfterCommand(command: string, args: string[], result: unknown): Promise<void> {
+  async triggerAftercommand(command: string, args: string[], result: unknown): Promise<void> {
     const promises: Promise<void>[] = [];
 
     this.plugins.forEach((plugin) => {
-      if (plugin.hooks?.afterCommand) {
-        const promise = plugin.hooks.afterCommand!(command, args, result);
+      if (plugin.hooks?.aftercommand) {
+        const promise = plugin.hooks.aftercommand!(command, args, result);
         if (promise instanceof Promise) {
           promises.push(promise);
         }
@@ -378,8 +378,8 @@ export class PluginSystem {
   }
 
   /**
-   * 触发错误处理钩子
-   * @param error - 错误
+   * Error
+   * @param error - Error
    */
   async triggerOnError(error: Error): Promise<void> {
     const promises: Promise<void>[] = [];
@@ -397,14 +397,14 @@ export class PluginSystem {
   }
 
   /**
-   * 获取插件目录路径
+   * Directory
    */
   getPluginsDir(): string {
     return this.pluginsDir;
   }
 
   /**
-   * 获取配置管理器
+   * Get configuration
    */
   getConfigManager(): ConfigManager {
     return this.configManager;
@@ -412,12 +412,12 @@ export class PluginSystem {
 }
 
 /**
- * 全局插件系统实例
+ * Global
  */
 let pluginSystemInstance: PluginSystem | null = null;
 
 /**
- * 获取插件系统实例
+ * 
  */
 export function getPluginSystem(): PluginSystem {
   if (!pluginSystemInstance) {
@@ -427,7 +427,7 @@ export function getPluginSystem(): PluginSystem {
 }
 
 /**
- * 创建插件系统实例
+ * 
  */
 export function createPluginSystem(
   pluginsDir?: string,

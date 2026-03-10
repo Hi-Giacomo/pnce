@@ -1,5 +1,5 @@
 /**
- * 工具函数导出
+ * Utility
  */
 
 export * from './name-utils';

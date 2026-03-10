@@ -1,4 +1,4 @@
-import { Command } from 'commander';
+import { command } from 'commander';
 import chalk from 'chalk';
 import { getI18n, setLanguage, Language } from '../utils/i18n';
 import { getLogger } from '../utils/logger';
@@ -8,7 +8,7 @@ const logger = getLogger();
 /**
  * Language command
  */
-export const langCommand = new Command('lang').description('Set or view language').action(() => {
+export const langcommand = new command('lang').description('Set or view language').action(() => {
   const currentLang = getI18n().getLanguage();
   const supportedLangs = getI18n().getSupportedLanguages();
 
@@ -26,7 +26,7 @@ export const langCommand = new Command('lang').description('Set or view language
 /**
  * Set language subcommand
  */
-export const setLangCommand = new Command('set')
+export const setLangcommand = new command('set')
   .argument('<lang>', 'Language code (zh/en)')
   .description('Set interface language')
   .action((lang: string) => {
@@ -52,7 +52,7 @@ export const setLangCommand = new Command('set')
 /**
  * List languages subcommand
  */
-export const listLangCommand = new Command('list')
+export const listLangcommand = new command('list')
   .description('List all supported languages')
   .action(() => {
     const supportedLangs = getI18n().getSupportedLanguages();
@@ -71,12 +71,12 @@ export const listLangCommand = new Command('list')
     console.log();
   });
 
-export function register(program: Command): void {
-  const langCmd = program.addCommand(langCommand);
-  langCmd.addCommand(setLangCommand);
-  langCmd.addCommand(listLangCommand);
+export function register(program: command): void {
+  const langCmd = program.addcommand(langcommand);
+  langCmd.addcommand(setLangcommand);
+  langCmd.addcommand(listLangcommand);
 
   // Remove subcommands from program.commands to avoid duplicate display in top-level help
-  // Commander defaults to displaying subcommands as top-level commands, supporting both pnce set and pnce lang set access methods
+  // commander defaults to displaying subcommands as top-level commands, supporting both pnce set and pnce lang set access methods
   // We choose to hide top-level display in help, only access through parent command
 }

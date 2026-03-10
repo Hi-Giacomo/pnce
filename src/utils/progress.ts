@@ -1,43 +1,43 @@
 /**
- * 下载进度条工具
+ * ProgressUtility
  */
 import { default as cliProgress, SingleBar, Presets } from 'cli-progress';
 import { Logger } from './logger';
 
 /**
- * 进度条配置
+ * Progress
  */
 export interface ProgressBarOptions {
   /**
-   * 进度条标题
+   * Progress
    */
   title: string;
 
   /**
-   * 总大小（字节）
+   * （）
    */
   totalSize: number;
 
   /**
-   * 预设样式
+   * 
    * @default 'shades_classic'
    */
   preset?: keyof typeof Presets;
 
   /**
-   * 是否显示速度
+   * YesNo
    * @default true
    */
   showSpeed?: boolean;
 
   /**
-   * 日志器（用于记录下载信息）
+   * （RecordInfo）
    */
   logger?: Logger;
 }
 
 /**
- * 下载进度条类
+ * Progress
  */
 export class ProgressBar {
   private bar: SingleBar;
@@ -54,7 +54,7 @@ export class ProgressBar {
     this.lastLogTime = this.startTime;
     this.logger = options.logger;
 
-    // 创建进度条
+    // Progress
     this.bar = new cliProgress.SingleBar(
       {
         format: `${options.title} |{bar}| {percentage}% | {value}/{total} bytes | Speed: {speed}`,

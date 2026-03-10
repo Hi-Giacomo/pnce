@@ -1,4 +1,4 @@
-import { Command } from 'commander';
+import { command } from 'commander';
 import { ConfigManager } from '../config/manager';
 import { getLogger } from '../utils/logger';
 import readline from 'readline';
@@ -9,7 +9,7 @@ const logger = getLogger();
 /**
  * Interactive Configuration Wizard
  */
-export const initCommand = new Command('init')
+export const initcommand = new command('init')
   .description('Interactive configuration wizard - Setup PNCE CLI')
   .action(async () => {
     logger.info('Starting interactive configuration wizard');
@@ -73,6 +73,6 @@ export const initCommand = new Command('init')
     }
   });
 
-export function register(program: Command): void {
-  program.addCommand(initCommand);
+export function register(program: command): void {
+  program.addcommand(initcommand);
 }

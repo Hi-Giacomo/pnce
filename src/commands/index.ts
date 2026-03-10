@@ -1,61 +1,61 @@
-import { Command } from 'commander';
+import { command } from 'commander';
 import { ApiService } from '../services/api.service';
-import { ModuleService } from '../services/module.service';
-import { ModuleUploadService } from '../services/module-upload.service';
-import { ModuleDownloadService } from '../services/module-download.service';
+import { moduleService } from '../services/module.service';
+import { moduleUploadService } from '../services/module-upload.service';
+import { moduleDownloadService } from '../services/module-download.service';
 import { AuthService } from '../services/auth.service';
-import { ModulesManagerService } from '../services/modules-manager.service';
+import { modulesManagerService } from '../services/modules-manager.service';
 import { getLogger, initLogger } from '../utils/logger';
 import { ErrorHandler } from '../utils/errors';
 
-// 导入命令注册函数
-import { registerAuthCommands } from './auth.commands';
-import { registerModuleCommands } from './module.commands';
-import { registerInstallCommands } from './install.commands';
-import { registerInitCommands } from './init.commands';
-import { registerModulesManagerCommands } from './modules-manager.commands';
-import { registerPortCommands } from './port.commands';
-import { registerRegistryCommands } from './registry.commands';
-import { register as registerLangCommand } from './lang';
-import { register as registerAliasCommand } from './alias';
-import { register as registerConfigValidateCommand } from './config-validate';
-import { register as registerAnalyticsCommand } from './analytics';
-import { register as registerProfileCommand } from './profile';
-import { register as registerPluginCommand } from './plugin';
+// command
+import { registerAuthcommands } from './auth.commands';
+import { registermodulecommands } from './module.commands';
+import { registerInstallcommands } from './install.commands';
+import { registerInitcommands } from './init.commands';
+import { registermodulesManagercommands } from './modules-manager.commands';
+import { registerPortcommands } from './port.commands';
+import { registerRegistrycommands } from './registry.commands';
+import { register as registerLangcommand } from './lang';
+import { register as registerAliascommand } from './alias';
+import { register as registerConfigValidatecommand } from './config-validate';
+import { register as registerAnalyticscommand } from './analytics';
+import { register as registerProfilecommand } from './profile';
+import { register as registerPlugincommand } from './plugin';
 
 /**
- * 注册所有命令
+ * Allcommand
  */
-export async function registerCommands(program: Command): Promise<void> {
+export async function registercommands(program: command): Promise<void> {
   try {
-    // 等待日志系统初始化
+    // 
     await initLogger();
     const logger = getLogger();
 
-    // 初始化服务
+    // 
     const api = new ApiService(logger);
-    const moduleDownloadService = new ModuleDownloadService(api, logger);
-    const moduleUploadService = new ModuleUploadService(api, logger);
-    const moduleService = new ModuleService(api);
+    const moduleDownloadService = new moduleDownloadService(api, logger);
+    const moduleUploadService = new moduleUploadService(api, logger);
+    const moduleService = new moduleService(api);
     const authService = new AuthService(api);
-    const modulesManager = new ModulesManagerService(api, moduleService);
+    const modulesManager = new modulesManagerService(api, moduleService);
 
-    // 注册各模块命令
-    registerAuthCommands(program, authService);
-    registerModuleCommands(program, moduleUploadService, moduleDownloadService);
-    registerInstallCommands(program, moduleDownloadService, modulesManager, api);
-    registerInitCommands(program);
-    registerModulesManagerCommands(program, modulesManager);
-    registerPortCommands(program);
-    registerRegistryCommands(program);
-    registerLangCommand(program);
-    registerAliasCommand(program);
-    registerConfigValidateCommand(program);
-    registerAnalyticsCommand(program);
-    registerProfileCommand(program);
-    registerPluginCommand(program);
+    // modulecommand
+    registerAuthcommands(program, authService);
+    registermodulecommands(program, moduleUploadService, moduleDownloadService);
+    registerInstallcommands(program, moduleDownloadService, modulesManager, api);
+    registerInitcommands(program);
+    registermodulesManagercommands(program, modulesManager);
+    registerPortcommands(program);
+    registerRegistrycommands(program);
+    registerLangcommand(program);
+    registerAliascommand(program);
+    registerConfigValidatecommand(program);
+    registerAnalyticscommand(program);
+    registerProfilecommand(program);
+    registerPlugincommand(program);
 
-    logger.debug('所有命令注册完成');
+    logger.debug('Allcommand注册Complete');
   } catch (error) {
     ErrorHandler.handle(error);
   }

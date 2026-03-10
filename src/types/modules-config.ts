@@ -1,41 +1,41 @@
-// 模块依赖配置类型定义
+// moduleDependenciesType definition
 
-export interface ModulesConfig {
-  // 外部模块依赖
-  externalModules?: Record<string, string>; // { "module-name": "^1.0.0" }
+export interface modulesConfig {
+  // moduleDependencies
+  externalmodules?: Record<string, string>; // { "module-name": "^1.0.0" }
 
-  // 模块安装选项
+  // module
   options?: {
-    // 安装目录
+    // Directory
     installDir?: string;
-    // 是否在 git 中忽略模块目录
+    // YesNo git module directory
     gitIgnore?: boolean;
-    // 是否保存锁定文件
+    // YesNoFile
     lockFile?: boolean;
   };
 }
 
-export interface ModulesLock {
-  // 锁定的模块版本
+export interface modulesLock {
+  // module version
   modules: Record<
     string,
     {
       version: string;
-      resolved: string; // 下载 URL
-      integrity?: string; // 可选的完整性校验
-      dependencies?: Record<string, string>; // 模块的依赖
+      resolved: string; //  URL
+      integrity?: string; // 
+      dependencies?: Record<string, string>; // moduleDependencies
     }
   >;
 
-  // 锁定文件版本
+  // FileVersion
   lockfileVersion: number;
 
-  // 生成时间
+  // 
   generatedAt: string;
 }
 
-export const DEFAULT_MODULES_CONFIG: ModulesConfig = {
-  externalModules: {},
+export const DEFAULT_MODULES_CONFIG: modulesConfig = {
+  externalmodules: {},
   options: {
     installDir: 'src/external_modules',
     gitIgnore: true,

@@ -9,45 +9,45 @@ export class EnvService {
   constructor(private readonly configService: ConfigService) {}
 
   /**
-   * 获取所有环境变量
+   * AllEnvironment variables
    */
   getAllEnv(): Record<string, string> {
     return loadEnvFile();
   }
 
   /**
-   * 获取单个环境变量
+   * Environment variables
    */
   getEnv(key: string): string {
     return process.env[key] || loadEnvFile()[key];
   }
 
   /**
-   * 获取配置对象
+   * Get configuration
    */
   getConfig() {
     return this.configService.get('env');
   }
 
   /**
-   * 设置环境变量(动态更新，不中断服务)
+   * Environment variables(，)
    */
   setEnv(key: string, value: string): { success: boolean; message: string; needRestart?: boolean } {
     try {
       const oldValue = process.env[key];
       updateEnvFile(key, value);
 
-      // 更新 process.env 使其立即生效
+      //  process.env 
       process.env[key] = value;
 
-      // 检查是否需要重启服务
+      // YesNo
       const needRestart = ['PORT', 'NODE_ENV'].includes(key) && oldValue !== value;
 
       if (needRestart) {
-        this.logger.warn(`环境变量 ${key} 从 ${oldValue} 变更为 ${value}`);
+        this.logger.warn(`Environment variables ${key} 从 ${oldValue} 变更为 ${value}`);
         this.logger.log('准备触发服务重启...');
 
-        // 异步重启服务，不阻塞当前请求
+        // ，CurrentRequest
         setImmediate(() => {
           this.logger.log('正在执行服务重启...');
           if (typeof (global as any).restartServer === 'function') {
@@ -60,29 +60,29 @@ export class EnvService {
 
         return {
           success: true,
-          message: `环境变量 ${key} 更新成功，服务正在自动重启中...`,
+          message: `Environment variables ${key} Update successful，服务正在自动重启中...`,
           needRestart: true,
         };
       }
 
-      this.logger.log(`环境变量已更新: ${key}=${value}`);
+      this.logger.log(`Environment variables已更新: ${key}=${value}`);
       return {
         success: true,
-        message: `环境变量 ${key} 更新成功`,
+        message: `Environment variables ${key} Update successful`,
         needRestart: false,
       };
     } catch (error) {
-      this.logger.error(`更新环境变量失败: ${error.message}`);
+      this.logger.error(`更新Environment variablesFailed: ${error.message}`);
       return {
         success: false,
-        message: `环境变量 ${key} 更新失败: ${error.message}`,
+        message: `Environment variables ${key} 更新Failed: ${error.message}`,
         needRestart: false,
       };
     }
   }
 
   /**
-   * 批量设置环境变量
+   * Environment variables
    */
   setBatchEnv(envVars: Record<string, string>): {
     success: boolean;
@@ -98,23 +98,23 @@ export class EnvService {
         try {
           updateEnvFile(key, value);
           updated.push(key);
-          this.logger.log(`环境变量已更新: ${key}=${value}`);
+          this.logger.log(`Environment variables已更新: ${key}=${value}`);
         } catch (error) {
           failed.push({ key, error: error.message });
-          this.logger.error(`更新环境变量失败: ${key} - ${error.message}`);
+          this.logger.error(`更新Environment variablesFailed: ${key} - ${error.message}`);
         }
       });
 
       return {
         success: failed.length === 0,
-        message: `批量更新完成: 成功 ${updated.length} 个, 失败 ${failed.length} 个`,
+        message: `批量更新Complete: Success ${updated.length} 个, Failed ${failed.length} 个`,
         updated,
         failed,
       };
     } catch (error) {
       return {
         success: false,
-        message: `批量更新失败: ${error.message}`,
+        message: `批量更新Failed: ${error.message}`,
         updated,
         failed,
       };
@@ -122,55 +122,55 @@ export class EnvService {
   }
 
   /**
-   * 删除环境变量
+   * Environment variables
    */
   deleteEnv(key: string): { success: boolean; message: string } {
     try {
       deleteEnv(key);
-      this.logger.log(`环境变量已删除: ${key}`);
+      this.logger.log(`Environment variables已删除: ${key}`);
       return {
         success: true,
-        message: `环境变量 ${key} 删除成功`,
+        message: `Environment variables ${key} 删除Success`,
       };
     } catch (error) {
-      this.logger.error(`删除环境变量失败: ${error.message}`);
+      this.logger.error(`删除Environment variablesFailed: ${error.message}`);
       return {
         success: false,
-        message: `环境变量 ${key} 删除失败: ${error.message}`,
+        message: `Environment variables ${key} 删除Failed: ${error.message}`,
       };
     }
   }
 
   /**
-   * 重载所有环境变量(从文件重新读取)
+   * AllEnvironment variables(File)
    */
   reloadEnv(): { success: boolean; message: string; config: Record<string, string> } {
     try {
       const envVars = loadEnvFile();
 
-      // 更新 process.env
+      //  process.env
       Object.entries(envVars).forEach(([key, value]) => {
         process.env[key] = value;
       });
 
-      this.logger.log('环境变量已重载');
+      this.logger.log('Environment variables已重载');
       return {
         success: true,
-        message: '环境变量重载成功',
+        message: 'Environment variables重载Success',
         config: envVars,
       };
     } catch (error) {
-      this.logger.error(`重载环境变量失败: ${error.message}`);
+      this.logger.error(`重载Environment variablesFailed: ${error.message}`);
       return {
         success: false,
-        message: `环境变量重载失败: ${error.message}`,
+        message: `Environment variables重载Failed: ${error.message}`,
         config: {},
       };
     }
   }
 
   /**
-   * 获取特定配置项
+   * Get specific configuration item
    */
   get<T>(key: string, defaultValue?: T): T {
     return this.configService.get<T>(key, defaultValue);

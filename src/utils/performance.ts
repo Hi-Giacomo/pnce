@@ -1,10 +1,10 @@
 /**
- * 性能监控工具
+ * Performance monitoringUtility
  */
 
 export interface PerformanceMetric {
   name: string;
-  duration: number; // 毫秒
+  duration: number; // 
   timestamp: number;
   metadata?: Record<string, unknown>;
 }
@@ -15,7 +15,7 @@ class PerformanceMonitor {
   private enabled: boolean = process.env.PNCE_PROFILE === 'true';
 
   /**
-   * 开始计时
+   * Start
    */
   start(name: string): void {
     if (!this.enabled) return;
@@ -23,7 +23,7 @@ class PerformanceMonitor {
   }
 
   /**
-   * 结束计时并记录指标
+   * Record
    */
   end(name: string, metadata?: Record<string, unknown>): number {
     if (!this.enabled) return 0;
@@ -44,7 +44,7 @@ class PerformanceMonitor {
 
     this.timers.delete(name);
 
-    // 记录慢操作（超过 1 秒）
+    // Record（ 1 ）
     if (duration > 1000) {
       console.warn(`[PERF] Slow operation: ${name} took ${duration}ms`);
     }
@@ -53,21 +53,21 @@ class PerformanceMonitor {
   }
 
   /**
-   * 获取所有指标
+   * All
    */
   getMetrics(): PerformanceMetric[] {
     return [...this.metrics];
   }
 
   /**
-   * 获取指定名称的指标
+   * 
    */
   getMetricsByName(name: string): PerformanceMetric[] {
     return this.metrics.filter((m) => m.name === name);
   }
 
   /**
-   * 清空所有指标
+   * All
    */
   clear(): void {
     this.metrics = [];
@@ -75,7 +75,7 @@ class PerformanceMonitor {
   }
 
   /**
-   * 打印性能报告
+   * 
    */
   printReport(): void {
     if (!this.enabled || this.metrics.length === 0) {
@@ -92,7 +92,7 @@ class PerformanceMonitor {
   }
 
   /**
-   * 生成性能报告
+   * 
    */
   private generateReport(): Array<{
     name: string;
@@ -116,5 +116,5 @@ class PerformanceMonitor {
   }
 }
 
-// 导出单例
+// 
 export const performance = new PerformanceMonitor();

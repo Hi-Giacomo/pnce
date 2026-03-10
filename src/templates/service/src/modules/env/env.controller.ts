@@ -6,7 +6,7 @@ export class EnvController {
   constructor(private readonly envService: EnvService) {}
 
   /**
-   * 获取所有环境变量
+   * AllEnvironment variables
    */
   @Get()
   getAllEnv() {
@@ -17,7 +17,7 @@ export class EnvController {
   }
 
   /**
-   * 获取单个环境变量
+   * Environment variables
    */
   @Get(':key')
   getEnv(@Param('key') key: string) {
@@ -32,7 +32,7 @@ export class EnvController {
   }
 
   /**
-   * 获取配置对象
+   * Get configuration
    */
   @Get('config/all')
   getConfig() {
@@ -43,7 +43,7 @@ export class EnvController {
   }
 
   /**
-   * 设置环境变量
+   * Environment variables
    */
   @Post()
   setEnv(@Body() body: { key: string; value: string }) {
@@ -60,7 +60,7 @@ export class EnvController {
   }
 
   /**
-   * 批量设置环境变量
+   * Environment variables
    */
   @Post('batch')
   setBatchEnv(@Body() body: { envVars: Record<string, string> }) {
@@ -77,7 +77,7 @@ export class EnvController {
   }
 
   /**
-   * 删除环境变量
+   * Environment variables
    */
   @Delete(':key')
   deleteEnv(@Param('key') key: string) {
@@ -85,7 +85,7 @@ export class EnvController {
   }
 
   /**
-   * 重载环境变量
+   * Environment variables
    */
   @Post('reload')
   reloadEnv() {

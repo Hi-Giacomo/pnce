@@ -34,7 +34,7 @@ export class CliError extends Error {
   }
 
   static moduleNotFound(name: string) {
-    return new CliError('MODULE_NOT_FOUND', `Module "${name}" not found`, 3, { name });
+    return new CliError('MODULE_NOT_FOUND', `module "${name}" not found`, 3, { name });
   }
 
   static versionNotFound(name: string, version: string) {
@@ -86,7 +86,7 @@ export enum ErrorCode {
   OAUTH_TOKEN_EXCHANGE_FAILED = 'OAUTH_TOKEN_EXCHANGE_FAILED',
   OAUTH_INVALID_STATE = 'OAUTH_INVALID_STATE',
 
-  // Module errors
+  // module errors
   MODULE_NOT_FOUND = 'MODULE_NOT_FOUND',
   VERSION_NOT_FOUND = 'VERSION_NOT_FOUND',
   UPLOAD_FAILED = 'UPLOAD_FAILED',
@@ -117,7 +117,7 @@ export enum ErrorCode {
 }
 
 /**
- * 错误处理器
+ * Error Handler
  */
 export class ErrorHandler {
   private static logger: { error: (message: string, meta?: unknown) => void } | null = null;
@@ -127,7 +127,7 @@ export class ErrorHandler {
   }
 
   /**
-   * 处理错误并显示友好的错误信息
+   * Handle error and display user-friendly error message
    */
   static handle(error: unknown, exit: boolean = true): never {
     let cliError: CliError;
@@ -135,14 +135,14 @@ export class ErrorHandler {
     if (error instanceof CliError) {
       cliError = error;
     } else if (error instanceof Error) {
-      // 将普通Error转换为CliError
+      // Convert regular Error to CliError
       const code = this.inferErrorCode(error.message);
       cliError = new CliError(code, error.message);
     } else {
       cliError = new CliError(ErrorCode.INTERNAL_ERROR, String(error));
     }
 
-    // 记录错误日志
+    // Log error
     if (this.logger) {
       this.logger.error('CLI Error', {
         code: cliError.code,
@@ -153,7 +153,7 @@ export class ErrorHandler {
       });
     }
 
-    // 显示用户友好的错误信息
+    // Display user-friendly error message
     this.displayError(cliError);
 
     if (exit) {
@@ -164,7 +164,7 @@ export class ErrorHandler {
   }
 
   /**
-   * 非退出式错误处理（用于可能恢复的场景）
+   * Non-exit error handling (for recoverable scenarios)
    */
   static handleNonFatal(error: unknown): void {
     let cliError: CliError;
@@ -190,20 +190,20 @@ export class ErrorHandler {
   }
 
   /**
-   * 显示错误信息
+   * Display error message
    */
   private static displayError(error: CliError) {
     const chalk = require('chalk');
     console.error(chalk.red('✗ Error:'), error.message);
 
     if (error.details && Object.keys(error.details).length > 0) {
-      console.error(chalk.gray('详细信息:'));
+      console.error(chalk.gray('Details:'));
       Object.entries(error.details).forEach(([key, value]) => {
         console.error(chalk.gray(`  ${key}: ${value}`));
       });
     }
 
-    // 显示帮助提示
+    // Display help hint
     const hint = this.getHelpHint(error.code);
     if (hint) {
       console.error(chalk.yellow('\nTip:'), hint);
@@ -211,29 +211,29 @@ export class ErrorHandler {
   }
 
   /**
-   * 根据错误码提供帮助提示
+   * Provide help hints based on error code
    */
   private static getHelpHint(code: string): string | null {
     const hints: Record<string, string> = {
-      AUTH_UNAUTHORIZED: '请使用 `pnce login` 登录',
-      AUTH_TOKEN_EXPIRED: '请使用 `pnce login` 重新登录',
-      MODULE_NOT_FOUND: '请检查模块名称是否正确，或使用 `pnce list` 查看所有可用模块',
-      VERSION_NOT_FOUND: '请使用 `pnce info <name>` 查看可用版本',
-      UPLOAD_FAILED: '请检查网络连接和模块格式，确保项目已正确配置',
-      CONFIG_ERROR: '请检查配置文件或运行 `pnce init` 初始化配置',
-      NETWORK_ERROR: '请检查网络连接或稍后重试',
-      TIMEOUT_ERROR: '请求超时，请检查网络或稍后重试',
-      INVALID_INPUT: '请检查输入参数是否正确',
-      FILE_NOT_FOUND: '请检查文件路径是否正确',
-      FILE_ACCESS_DENIED: '请检查文件权限',
-      INTERNAL_ERROR: '发生未知错误，请重试或联系支持团队',
+      AUTH_UNAUTHORIZED: 'Please login using `pnce login`',
+      AUTH_TOKEN_EXPIRED: 'Please login again using `pnce login`',
+      MODULE_NOT_FOUND: 'Check module name or use `pnce list` to view available modules',
+      VERSION_NOT_FOUND: 'Use `pnce info <name>` to view available versions',
+      UPLOAD_FAILED: 'Check network connection and module format, ensure project is properly configured',
+      CONFIG_ERROR: 'Check configuration file or run `pnce init` to initialize configuration',
+      NETWORK_ERROR: 'Check network connection or try again later',
+      TIMEOUT_ERROR: 'Request timed out, check network or try again later',
+      INVALID_INPUT: 'Check if input parameters are correct',
+      FILE_NOT_FOUND: 'Check if file path is correct',
+      FILE_ACCESS_DENIED: 'Check file permissions',
+      INTERNAL_ERROR: 'Unknown error occurred, please retry or contact support team',
     };
 
     return hints[code] || null;
   }
 
   /**
-   * 根据错误消息推断错误码
+   * Infer error code from error message
    */
   private static inferErrorCode(message: string): ErrorCode {
     const lowerMessage = message.toLowerCase();
@@ -255,7 +255,7 @@ export class ErrorHandler {
   }
 
   /**
-   * 异步错误包装器 - 用于async函数的错误处理
+   * Async error wrapper - for error handling in async functions
    */
   static async wrap<T>(
     fn: () => Promise<T>,

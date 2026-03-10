@@ -4,97 +4,97 @@ import os from 'os';
 import { CliError, ErrorCode, CryptoUtil } from '../utils';
 
 /**
- * 配置接口
+ * Configuration Interface
  */
 export interface PnceConfig {
   /**
-   * API服务器地址
+   * API Server URL
    */
   apiServer: string;
 
   /**
-   * OAuth2授权端点
+   * OAuth2 authorization Endpoint
    */
   oauthEndpoint: string;
 
   /**
-   * OAuth2回调端口
+   * OAuth2 Callback Port
    */
   oauthPort: number;
 
   /**
-   * 用户认证Token
+   * User Authentication Token
    */
   token?: string;
 
   /**
-   * Token过期时间
+   * Token Expiration Time
    */
   tokenExpiresAt?: number;
 
   /**
-   * 刷新Token
+   * Refresh Token
    */
   refreshToken?: string;
 
   /**
-   * 默认输出目录
+   * Default Output Directory
    */
   outputDir: string;
 
   /**
-   * 是否使用代理
+   * Use Proxy
    */
   useProxy: boolean;
 
   /**
-   * 代理地址
+   * Proxy URL
    */
   proxyUrl?: string;
 
   /**
-   * 下载超时时间（毫秒）
+   * Download Timeout (ms)
    */
   downloadTimeout: number;
 
   /**
-   * 上传超时时间（毫秒）
+   * Upload Timeout (ms)
    */
   uploadTimeout: number;
 
   /**
-   * 并发下载数量
+   * Concurrent Downloads
    */
   maxConcurrentDownloads: number;
 
   /**
-   * 是否启用缓存
+   * Enable Cache
    */
   enableCache: boolean;
 
   /**
-   * 缓存目录
+   * Cache Directory
    */
   cacheDir: string;
 
   /**
-   * 缓存过期时间（毫秒）
+   * Cache Expiration Time (ms)
    */
   cacheExpireTime: number;
 
   /**
-   * 日志级别
+   * Log Level
    */
   logLevel: 'error' | 'warn' | 'info' | 'debug';
 
   /**
-   * 是否显示详细日志
+   * Verbose Logging
    */
   verbose: boolean;
 }
 
 /**
- * 默认配置
+ * Default Configuration
  */
 const DEFAULT_CONFIG: PnceConfig = {
   apiServer: process.env.PNCE_API_SERVER || 'http://localhost:3000',
@@ -102,18 +102,18 @@ const DEFAULT_CONFIG: PnceConfig = {
   oauthPort: parseInt(process.env.PNCE_OAUTH_PORT || '3001'),
   outputDir: process.cwd(),
   useProxy: false,
-  downloadTimeout: 300000, // 5分钟
-  uploadTimeout: 600000, // 10分钟
+  downloadTimeout: 300000, // 5
+  uploadTimeout: 600000, // 10
   maxConcurrentDownloads: 3,
   enableCache: true,
   cacheDir: path.join(os.homedir(), '.pnce', 'cache'),
-  cacheExpireTime: 7 * 24 * 60 * 60 * 1000, // 7天
+  cacheExpireTime: 7 * 24 * 60 * 60 * 1000, // 7
   logLevel: 'info',
   verbose: false,
 };
 
 /**
- * 配置优先级: 项目配置 > 用户配置 > 默认配置
+ * Configuration Priority:  > User > Default Configuration
  */
 export class ConfigManager {
   private userConfigPath: string;
@@ -122,19 +122,19 @@ export class ConfigManager {
   private projectConfig: Partial<PnceConfig> = {};
 
   constructor() {
-    // 用户配置目录
+    // User Configuration Directory
     const userConfigDir = path.join(os.homedir(), '.pnce');
     this.userConfigPath = path.join(userConfigDir, 'config.json');
 
-    // 项目配置目录
+    // Project Configuration Directory
     this.projectConfigPath = path.join(process.cwd(), '.pnce', 'config.json');
 
-    // 确保目录存在
+    // Directory
     this.ensureDirectories();
   }
 
   /**
-   * 确保必要的目录存在
+   * Ensure required directories exist
    */
   private ensureDirectories(): void {
     const dirs = [
@@ -151,7 +151,7 @@ export class ConfigManager {
   }
 
   /**
-   * 加载用户配置
+   * Load user configuration
    */
   private loadUserConfig(): Partial<PnceConfig> {
     if (!existsSync(this.userConfigPath)) {
@@ -163,13 +163,13 @@ export class ConfigManager {
       const config = JSON.parse(content);
       return config;
     } catch (error) {
-      console.warn(`加载用户配置失败: ${error}`);
+      console.warn(`Load user configurationFailed: ${error}`);
       return {};
     }
   }
 
   /**
-   * 加载项目配置
+   * Load project configuration
    */
   private loadProjectConfig(): Partial<PnceConfig> {
     if (!existsSync(this.projectConfigPath)) {
@@ -181,13 +181,13 @@ export class ConfigManager {
       const config = JSON.parse(content);
       return config;
     } catch (error) {
-      console.warn(`加载项目配置失败: ${error}`);
+      console.warn(`Load project configurationFailed: ${error}`);
       return {};
     }
   }
 
   /**
-   * 加载环境变量配置
+   * Load environment variable configuration
    */
   private loadEnvConfig(): Partial<PnceConfig> {
     const env: Partial<PnceConfig> = {};
@@ -244,7 +244,7 @@ export class ConfigManager {
   }
 
   /**
-   * 加载所有配置
+   * Load all configurations
    */
   loadAll(): void {
     this.userConfig = this.loadUserConfig();
@@ -252,8 +252,8 @@ export class ConfigManager {
   }
 
   /**
-   * 获取合并后的配置
-   * 优先级: 环境变量 > 项目配置 > 用户配置 > 默认配置
+   * Get merged configuration
+   * : Environment variables >  > User > Default Configuration
    */
   getConfig(): PnceConfig {
     const envConfig = this.loadEnvConfig();
@@ -267,7 +267,7 @@ export class ConfigManager {
   }
 
   /**
-   * 获取特定配置项
+   * Get specific configuration item
    */
   get<K extends keyof PnceConfig>(key: K): PnceConfig[K] {
     const config = this.getConfig();
@@ -275,7 +275,7 @@ export class ConfigManager {
   }
 
   /**
-   * 设置用户配置
+   * Set user configuration
    */
   setUserConfig(config: Partial<PnceConfig>): void {
     this.userConfig = { ...this.userConfig, ...config };
@@ -283,7 +283,7 @@ export class ConfigManager {
   }
 
   /**
-   * 设置项目配置
+   * Set project configuration
    */
   setProjectConfig(config: Partial<PnceConfig>): void {
     this.projectConfig = { ...this.projectConfig, ...config };
@@ -291,18 +291,18 @@ export class ConfigManager {
   }
 
   /**
-   * 保存用户配置
+   * Save user configuration
    */
   private saveUserConfig(): void {
     try {
       writeFileSync(this.userConfigPath, JSON.stringify(this.userConfig, null, 2), 'utf-8');
     } catch (error) {
-      throw new CliError(ErrorCode.CONFIG_ERROR, `保存用户配置失败: ${error}`);
+      throw new CliError(ErrorCode.CONFIG_ERROR, `Save user configurationFailed: ${error}`);
     }
   }
 
   /**
-   * 保存项目配置
+   * Save project configuration
    */
   private saveProjectConfig(): void {
     try {
@@ -312,12 +312,12 @@ export class ConfigManager {
       }
       writeFileSync(this.projectConfigPath, JSON.stringify(this.projectConfig, null, 2), 'utf-8');
     } catch (error) {
-      throw new CliError(ErrorCode.CONFIG_ERROR, `保存项目配置失败: ${error}`);
+      throw new CliError(ErrorCode.CONFIG_ERROR, `Save project configurationFailed: ${error}`);
     }
   }
 
   /**
-   * 清除用户配置
+   * Clear user configuration
    */
   clearUserConfig(): void {
     this.userConfig = {};
@@ -327,7 +327,7 @@ export class ConfigManager {
   }
 
   /**
-   * 清除项目配置
+   * Clear project configuration
    */
   clearProjectConfig(): void {
     this.projectConfig = {};
@@ -338,7 +338,7 @@ export class ConfigManager {
   }
 
   /**
-   * 设置认证Token（加密存储）
+   * Set authentication token (encrypted storage)
    */
   setAuth(token: string, refreshToken?: string, expiresIn?: number): void {
     const tokenData: Partial<PnceConfig> = {
@@ -357,7 +357,7 @@ export class ConfigManager {
   }
 
   /**
-   * 清除认证信息
+   * Clear authentication information
    */
   clearAuth(): void {
     const config = { ...this.userConfig };
@@ -369,18 +369,18 @@ export class ConfigManager {
   }
 
   /**
-   * 检查Token是否过期
+   * Check if token is expired
    */
   isTokenExpired(): boolean {
     const expiresAt = this.userConfig.tokenExpiresAt;
     if (!expiresAt) return false;
 
-    // 提前5分钟认为Token已过期
+    // 5Token expired
     return Date.now() > expiresAt - 5 * 60 * 1000;
   }
 
   /**
-   * 获取当前Token（解密后返回）
+   * Get current token (decrypted)
    */
   getToken(): string | undefined {
     const encryptedToken = this.userConfig.token;
@@ -389,13 +389,13 @@ export class ConfigManager {
     try {
       return CryptoUtil.decrypt(encryptedToken);
     } catch (error) {
-      console.warn('解密 Token 失败:', error);
+      console.warn('Failed to decrypt token:', error);
       return undefined;
     }
   }
 
   /**
-   * 获取刷新Token（解密后返回）
+   * Refresh Token（）
    */
   getRefreshToken(): string | undefined {
     const encryptedToken = this.userConfig.refreshToken;
@@ -404,13 +404,13 @@ export class ConfigManager {
     try {
       return CryptoUtil.decrypt(encryptedToken);
     } catch (error) {
-      console.warn('解密 Refresh Token 失败:', error);
+      console.warn('Failed to decrypt refresh token:', error);
       return undefined;
     }
   }
 
   /**
-   * 获取配置文件路径
+   * Get configuration file path
    */
   getUserConfigPath(): string {
     return this.userConfigPath;
@@ -421,30 +421,30 @@ export class ConfigManager {
   }
 
   /**
-   * 获取配置档案目录
+   * Get configuration profile directory
    */
   private getProfilesDir(): string {
     return path.join(os.homedir(), '.pnce', 'profiles');
   }
 
   /**
-   * 切换到指定配置档案
-   * @param profileName 档案名称
+   * Switch to specified configuration profile
+   * @param profileName 
    */
   switchProfile(profileName: string): void {
     const profilesDir = this.getProfilesDir();
     const profilePath = path.join(profilesDir, `${profileName}.json`);
 
     if (!existsSync(profilePath)) {
-      throw new CliError(ErrorCode.CONFIG_ERROR, `配置档案 "${profileName}" 不存在`);
+      throw new CliError(ErrorCode.CONFIG_ERROR, `Configuration profile "${profileName}" does not exist`);
     }
 
-    // 读取档案内容
+    // 
     try {
       const content = require('fs-extra').readFileSync(profilePath, 'utf-8');
       const profileConfig = JSON.parse(content);
 
-      // 备份当前配置
+      // Current
       const backupPath = path.join(profilesDir, 'backup.json');
       require('fs-extra').writeFileSync(
         backupPath,
@@ -452,24 +452,24 @@ export class ConfigManager {
         'utf-8'
       );
 
-      // 应用档案配置
+      // 
       this.userConfig = profileConfig;
       this.saveUserConfig();
 
-      console.log(`✅ 已切换到配置档案: ${profileName}`);
+      console.log(`✅ 已切换到Configuration profile: ${profileName}`);
     } catch (error) {
-      throw new CliError(ErrorCode.CONFIG_ERROR, `加载配置档案失败: ${error}`);
+      throw new CliError(ErrorCode.CONFIG_ERROR, `加载Configuration profileFailed: ${error}`);
     }
   }
 
   /**
-   * 保存当前配置为档案
-   * @param profileName 档案名称
+   * Save current configuration as profile
+   * @param profileName 
    */
   saveProfile(profileName: string): void {
     const profilesDir = this.getProfilesDir();
 
-    // 确保目录存在
+    // Directory
     if (!existsSync(profilesDir)) {
       require('fs-extra').mkdirSync(profilesDir, { recursive: true });
     }
@@ -482,14 +482,14 @@ export class ConfigManager {
         JSON.stringify(this.userConfig, null, 2),
         'utf-8'
       );
-      console.log(`✅ 已保存配置档案: ${profileName}`);
+      console.log(`✅ 已保存Configuration profile: ${profileName}`);
     } catch (error) {
-      throw new CliError(ErrorCode.CONFIG_ERROR, `保存配置档案失败: ${error}`);
+      throw new CliError(ErrorCode.CONFIG_ERROR, `保存Configuration profileFailed: ${error}`);
     }
   }
 
   /**
-   * 列出所有配置档案
+   * List all configuration profiles
    */
   listProfiles(): string[] {
     const profilesDir = this.getProfilesDir();
@@ -509,33 +509,33 @@ export class ConfigManager {
   }
 
   /**
-   * 删除配置档案
-   * @param profileName 档案名称
+   * Delete configuration profile
+   * @param profileName 
    */
   deleteProfile(profileName: string): void {
     const profilesDir = this.getProfilesDir();
     const profilePath = path.join(profilesDir, `${profileName}.json`);
 
     if (!existsSync(profilePath)) {
-      throw new CliError(ErrorCode.CONFIG_ERROR, `配置档案 "${profileName}" 不存在`);
+      throw new CliError(ErrorCode.CONFIG_ERROR, `Configuration profile "${profileName}" does not exist`);
     }
 
     try {
       require('fs-extra').removeSync(profilePath);
-      console.log(`✅ 已删除配置档案: ${profileName}`);
+      console.log(`✅ 已Delete configuration profile: ${profileName}`);
     } catch (error: unknown) {
-      throw new CliError(ErrorCode.CONFIG_ERROR, `删除配置档案失败: ${error}`);
+      throw new CliError(ErrorCode.CONFIG_ERROR, `Delete configuration profileFailed: ${error}`);
     }
   }
 }
 
 /**
- * 全局配置管理器实例
+ * Global configuration manager instance
  */
 let configManager: ConfigManager | null = null;
 
 /**
- * 获取配置管理器实例
+ * Get configuration manager instance
  */
 export function getConfigManager(): ConfigManager {
   if (!configManager) {
@@ -547,14 +547,14 @@ export function getConfigManager(): ConfigManager {
 }
 
 /**
- * 获取配置
+ * Get configuration
  */
 export function getConfig(): PnceConfig {
   return getConfigManager().getConfig();
 }
 
 /**
- * 重置配置管理器（主要用于测试）
+ * Reset configuration manager (mainly for testing)
  */
 export function resetConfigManager(): void {
   configManager = null;

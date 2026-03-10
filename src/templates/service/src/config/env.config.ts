@@ -5,7 +5,7 @@ import * as path from 'path';
 const ENV_FILE_PATH = path.join(process.cwd(), '.env');
 
 /**
- * 读取 .env 文件内容
+ *  .env File
  */
 export function loadEnvFile(): Record<string, string> {
   if (!fs.existsSync(ENV_FILE_PATH)) {
@@ -16,13 +16,13 @@ export function loadEnvFile(): Record<string, string> {
   const envVars: Record<string, string> = {};
 
   content.split('\n').forEach((line) => {
-    // 跳过注释和空行
+    // 
     const trimmedLine = line.trim();
     if (!trimmedLine || trimmedLine.startsWith('#')) {
       return;
     }
 
-    // 解析 KEY=VALUE 格式
+    //  KEY=VALUE 
     const [key, ...valueParts] = trimmedLine.split('=');
     const value = valueParts.join('=');
 
@@ -35,13 +35,13 @@ export function loadEnvFile(): Record<string, string> {
 }
 
 /**
- * 写入 .env 文件
+ *  .env File
  */
 export function saveEnvFile(envVars: Record<string, string>): void {
   const lines: string[] = [];
 
   Object.entries(envVars).forEach(([key, value]) => {
-    // 如果值中包含空格或特殊字符，需要用引号包裹
+    // ，
     const needsQuotes = value.includes(' ') || value.includes('#') || value.includes('"');
     const formattedValue = needsQuotes ? `"${value}"` : value;
     lines.push(`${key}=${formattedValue}`);
@@ -51,31 +51,31 @@ export function saveEnvFile(envVars: Record<string, string>): void {
 }
 
 /**
- * 更新单个环境变量
+ * Environment variables
  */
 export function updateEnvFile(key: string, value: string): void {
   const currentVars = loadEnvFile();
   currentVars[key] = value;
   saveEnvFile(currentVars);
 
-  // 更新 process.env 使其立即生效
+  //  process.env 
   process.env[key] = value;
 }
 
 /**
- * 删除环境变量
+ * Environment variables
  */
 export function deleteEnvFile(key: string): void {
   const currentVars = loadEnvFile();
   delete currentVars[key];
   saveEnvFile(currentVars);
 
-  // 从 process.env 中删除
+  //  process.env 
   delete process.env[key];
 }
 
 export default registerAs('env', () => {
-  // 从 .env 文件加载配置
+  //  .env File
   const envVars = loadEnvFile();
 
   return {

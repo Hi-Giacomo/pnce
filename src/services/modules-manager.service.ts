@@ -1,26 +1,26 @@
 import * as fs from 'fs-extra';
 import * as path from 'path';
 import { ApiService } from './api.service';
-import { ModuleService } from './module.service';
-import { ModulesConfig, ModulesLock, DEFAULT_MODULES_CONFIG } from '../types/modules-config';
-import { ApiResponse, ModuleInfo } from '../types';
+import { moduleService } from './module.service';
+import { modulesConfig, modulesLock, DEFAULT_MODULES_CONFIG } from '../types/modules-config';
+import { ApiResponse, moduleInfo } from '../types';
 
 /**
- * 模块依赖管理服务
- * 类似 npm 的 package.json + package-lock.json 机制
+ * moduleDependencies
+ *  npm  package.json + package-lock.json 
  */
-export class ModulesManagerService {
+export class modulesManagerService {
   private configFileName = 'modules.json';
   private lockFileName = 'modules-lock.json';
   private gitignoreFileName = '.gitignore';
 
   constructor(
     private api: ApiService,
-    private moduleService: ModuleService
+    private moduleService: moduleService
   ) {}
 
   /**
-   * 初始化 modules.json 配置文件
+   *  modules.json File
    */
   initConfig(projectDir: string): void {
     const configPath = path.join(projectDir, this.configFileName);
@@ -31,18 +31,18 @@ export class ModulesManagerService {
     }
 
     fs.writeJsonSync(configPath, DEFAULT_MODULES_CONFIG, { spaces: 2 });
-    console.log('✓ 创建 modules.json 配置文件');
+    console.log('✓ 创建 modules.json 配置File');
 
-    // 更新 .gitignore
+    //  .gitignore
     this.updateGitignore(projectDir);
   }
 
   /**
-   * 读取 modules.json 配置
-   * @param projectDir - 项目根目录路径
-   * @returns 模块配置对象
+   *  modules.json 
+   * @param projectDir - Directory
+   * @returns module
    */
-  readConfig(projectDir: string): ModulesConfig {
+  readConfig(projectDir: string): modulesConfig {
     const configPath = path.join(projectDir, this.configFileName);
 
     if (!fs.existsSync(configPath)) {
@@ -53,17 +53,17 @@ export class ModulesManagerService {
   }
 
   /**
-   * 保存配置到 modules.json
+   *  modules.json
    */
-  saveConfig(projectDir: string, config: ModulesConfig): void {
+  saveConfig(projectDir: string, config: modulesConfig): void {
     const configPath = path.join(projectDir, this.configFileName);
     fs.writeJsonSync(configPath, config, { spaces: 2 });
   }
 
   /**
-   * 读取 modules-lock.json
+   *  modules-lock.json
    */
-  readLock(projectDir: string): ModulesLock | null {
+  readLock(projectDir: string): modulesLock | null {
     const lockPath = path.join(projectDir, this.lockFileName);
 
     if (!fs.existsSync(lockPath)) {
@@ -74,17 +74,17 @@ export class ModulesManagerService {
   }
 
   /**
-   * 保存锁定文件
+   * File
    */
-  saveLock(projectDir: string, lock: ModulesLock): void {
+  saveLock(projectDir: string, lock: modulesLock): void {
     const lockPath = path.join(projectDir, this.lockFileName);
     fs.writeJsonSync(lockPath, lock, { spaces: 2 });
   }
 
   /**
-   * 添加模块依赖到 modules.json
+   * moduleDependencies modules.json
    */
-  async addModule(
+  async addmodule(
     projectDir: string,
     moduleName: string,
     versionRange?: string,
@@ -92,26 +92,26 @@ export class ModulesManagerService {
   ): Promise<void> {
     const config = this.readConfig(projectDir);
 
-    // 如果没有指定版本，获取最新版本
+    // Version，Version
     let version = versionRange;
     if (!version) {
-      console.log(`获取 ${moduleName} 的最新版本...`);
-      const response = await this.api.get<ApiResponse<{ module: ModuleInfo }>>(
+      console.log(`获取 ${moduleName} 的最新Version...`);
+      const response = await this.api.get<ApiResponse<{ module: moduleInfo }>>(
         `/api/modules/${moduleName}`
       );
       if (!response.success || !response.module) {
-        throw new Error('获取模块信息失败');
+        throw new Error('获取moduleInfoFailed');
       }
       version = `^${response.module.latest}`;
     }
 
-    // 添加到配置
-    if (!config.externalModules) {
-      config.externalModules = {};
+    // 
+    if (!config.externalmodules) {
+      config.externalmodules = {};
     }
-    config.externalModules[moduleName] = version;
+    config.externalmodules[moduleName] = version;
 
-    // 保存配置
+    // 
     if (options?.save !== false) {
       this.saveConfig(projectDir, config);
       console.log(`✓ 已添加 ${moduleName}@${version} 到 modules.json`);
@@ -119,39 +119,39 @@ export class ModulesManagerService {
   }
 
   /**
-   * 从 modules.json 移除模块
+   *  modules.json module
    */
-  removeModule(projectDir: string, moduleName: string): void {
+  removemodule(projectDir: string, moduleName: string): void {
     const config = this.readConfig(projectDir);
 
-    if (config.externalModules && config.externalModules[moduleName]) {
-      delete config.externalModules[moduleName];
+    if (config.externalmodules && config.externalmodules[moduleName]) {
+      delete config.externalmodules[moduleName];
       this.saveConfig(projectDir, config);
       console.log(`✓ 已从 modules.json 移除 ${moduleName}`);
     } else {
-      console.log(`⚠️  ${moduleName} 不在依赖列表中`);
+      console.log(`⚠️  ${moduleName} 不在DependenciesList中`);
     }
   }
 
   /**
-   * 安装所有模块依赖
+   * AllmoduleDependencies
    */
   async installAll(projectDir: string, options?: { forceFresh?: boolean }): Promise<void> {
     const config = this.readConfig(projectDir);
     const lock = this.readLock(projectDir);
 
-    if (!config.externalModules || Object.keys(config.externalModules).length === 0) {
-      console.log('📦 没有需要安装的外部模块');
+    if (!config.externalmodules || Object.keys(config.externalmodules).length === 0) {
+      console.log('📦 没有需要安装的外部module');
       return;
     }
 
     const installDir = config.options?.installDir || DEFAULT_MODULES_CONFIG.options!.installDir!;
     // const absoluteInstallDir = path.resolve(projectDir, installDir);
 
-    console.log(`\n📦 开始安装外部模块...`);
-    console.log(`📁 安装目录: ${installDir}\n`);
+    console.log(`\n📦 Start安装外部module...`);
+    console.log(`📁 安装Directory: ${installDir}\n`);
 
-    const newLock: ModulesLock = {
+    const newLock: modulesLock = {
       modules: {},
       lockfileVersion: 1,
       generatedAt: new Date().toISOString(),
@@ -160,9 +160,9 @@ export class ModulesManagerService {
     let installed = 0;
     let skipped = 0;
 
-    for (const [moduleName, versionRange] of Object.entries(config.externalModules)) {
+    for (const [moduleName, versionRange] of Object.entries(config.externalmodules)) {
       try {
-        // 解析版本范围，获取具体版本
+        // Version，Version
         const targetVersion = await this.resolveVersion(
           moduleName,
           versionRange,
@@ -170,8 +170,8 @@ export class ModulesManagerService {
           options?.forceFresh
         );
 
-        // 检查模块状态（包括哈希验证）
-        const moduleStatus = await this.moduleService.checkModuleStatus(
+        // moduleStatus（Validation）
+        const moduleStatus = await this.moduleService.checkmoduleStatus(
           moduleName,
           targetVersion,
           installDir
@@ -181,7 +181,7 @@ export class ModulesManagerService {
           console.log(`⏭️  ${moduleName}@${targetVersion} 已安装且未修改（跳过）`);
           skipped++;
 
-          // 使用现有的锁定信息
+          // Info
           if (lock && lock.modules[moduleName]) {
             newLock.modules[moduleName] = lock.modules[moduleName];
           } else {
@@ -192,14 +192,14 @@ export class ModulesManagerService {
           }
         } else {
           if (moduleStatus.isInstalled && moduleStatus.needsUpdate) {
-            console.log(`🔄 ${moduleName} 需要重新安装（版本变更或代码有修改）...`);
+            console.log(`🔄 ${moduleName} 需要重新安装（Version变更或代码有修改）...`);
           } else {
             console.log(`⬇️  安装 ${moduleName}@${targetVersion}...`);
           }
           await this.moduleService.install(moduleName, targetVersion, installDir);
           installed++;
 
-          // 记录到锁定文件
+          // RecordFile
           newLock.modules[moduleName] = {
             version: targetVersion,
             resolved: `${this.api['axiosInstance'].defaults.baseURL}/api/modules/${moduleName}/${targetVersion}/download`,
@@ -207,67 +207,67 @@ export class ModulesManagerService {
         }
       } catch (error: unknown) {
         console.error(
-          `❌ 安装 ${moduleName} 失败:`,
+          `❌ 安装 ${moduleName} Failed:`,
           error instanceof Error ? error.message : String(error)
         );
       }
     }
 
-    // 保存锁定文件
+    // File
     if (config.options?.lockFile !== false) {
       this.saveLock(projectDir, newLock);
       console.log(`\n✓ 已更新 ${this.lockFileName}`);
     }
 
-    console.log(`\n✅ 安装完成！`);
+    console.log(`\n✅ 安装Complete！`);
     console.log(`   新安装: ${installed} 个`);
     console.log(`   已跳过: ${skipped} 个`);
   }
 
   /**
-   * 解析版本范围，返回具体版本
+   * Version，Version
    */
   private async resolveVersion(
     moduleName: string,
     versionRange: string,
-    lock: ModulesLock | null,
+    lock: modulesLock | null,
     forceFresh?: boolean
   ): Promise<string> {
-    // 如果有锁定文件且不是强制刷新，优先使用锁定版本
+    // FileYes，Version
     if (lock && lock.modules[moduleName] && !forceFresh) {
       return lock.modules[moduleName].version;
     }
 
-    // 获取模块信息
-    const response = await this.api.get<ApiResponse<{ module: ModuleInfo }>>(
+    // moduleInfo
+    const response = await this.api.get<ApiResponse<{ module: moduleInfo }>>(
       `/api/modules/${moduleName}`
     );
     if (!response.success || !response.module) {
-      throw new Error('获取模块信息失败');
+      throw new Error('获取moduleInfoFailed');
     }
 
     const module = response.module;
     const availableVersions = Object.keys(module.versions);
 
-    // 简单的版本范围解析
+    // Version
     if (versionRange === 'latest' || versionRange === '*') {
       return module.latest;
     }
 
-    // 移除 ^ 或 ~ 前缀
+    //  ^  ~ 
     const cleanVersion = versionRange.replace(/^[\^~]/, '');
 
-    // 如果是精确版本
+    // YesVersion
     if (availableVersions.includes(cleanVersion)) {
       return cleanVersion;
     }
 
-    // 否则返回最新版本
+    // NoVersion
     return module.latest;
   }
 
   /**
-   * 更新 .gitignore，添加模块目录
+   *  .gitignore，module directory
    */
   updateGitignore(projectDir: string): void {
     const gitignorePath = path.join(projectDir, this.gitignoreFileName);
@@ -280,7 +280,7 @@ export class ModulesManagerService {
 
     let modified = false;
 
-    // 添加需要忽略的目录
+    // Directory
     for (const entry of ignoreEntries) {
       if (!content.includes(entry)) {
         if (!modified) {
@@ -301,7 +301,7 @@ export class ModulesManagerService {
   }
 
   /**
-   * 清理未使用的模块
+   * module
    */
   async prune(projectDir: string): Promise<void> {
     const config = this.readConfig(projectDir);
@@ -309,21 +309,21 @@ export class ModulesManagerService {
     const absoluteInstallDir = path.resolve(projectDir, installDir);
 
     if (!fs.existsSync(absoluteInstallDir)) {
-      console.log('📦 模块目录不存在');
+      console.log('📦 module directorydoes not exist');
       return;
     }
 
-    const installedModules = fs.readdirSync(absoluteInstallDir);
-    const configuredModules = Object.keys(config.externalModules || {});
+    const installedmodules = fs.readdirSync(absoluteInstallDir);
+    const configuredmodules = Object.keys(config.externalmodules || {});
 
-    const toRemove = installedModules.filter((m) => !configuredModules.includes(m));
+    const toRemove = installedmodules.filter((m) => !configuredmodules.includes(m));
 
     if (toRemove.length === 0) {
-      console.log('✓ 没有需要清理的模块');
+      console.log('✓ 没有需要清理的module');
       return;
     }
 
-    console.log(`\n🗑️  清理 ${toRemove.length} 个未使用的模块:\n`);
+    console.log(`\n🗑️  清理 ${toRemove.length} 个未使用的module:\n`);
 
     for (const moduleName of toRemove) {
       const modulePath = path.join(absoluteInstallDir, moduleName);
@@ -331,11 +331,11 @@ export class ModulesManagerService {
       console.log(`   ✓ 删除 ${moduleName}`);
     }
 
-    console.log('\n✅ 清理完成！');
+    console.log('\n✅ 清理Complete！');
   }
 
   /**
-   * 列出所有模块依赖
+   * AllmoduleDependencies
    */
   list(projectDir: string): void {
     const config = this.readConfig(projectDir);
@@ -343,14 +343,14 @@ export class ModulesManagerService {
     const installDir = config.options?.installDir || DEFAULT_MODULES_CONFIG.options!.installDir!;
     const absoluteInstallDir = path.resolve(projectDir, installDir);
 
-    console.log('\n📦 外部模块依赖:\n');
+    console.log('\n📦 外部moduleDependencies:\n');
 
-    if (!config.externalModules || Object.keys(config.externalModules).length === 0) {
+    if (!config.externalmodules || Object.keys(config.externalmodules).length === 0) {
       console.log('   (无)');
       return;
     }
 
-    for (const [moduleName, versionRange] of Object.entries(config.externalModules)) {
+    for (const [moduleName, versionRange] of Object.entries(config.externalmodules)) {
       const lockedVersion = lock?.modules[moduleName]?.version;
       const isInstalled = fs.existsSync(path.join(absoluteInstallDir, moduleName));
 

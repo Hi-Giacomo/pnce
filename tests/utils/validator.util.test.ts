@@ -116,7 +116,7 @@ describe('ValidatorUtil', () => {
       const result = ValidatorUtil.validatePasswordStrength('123456');
       expect(result.valid).toBe(false);
       expect(result.strength).toBe('weak');
-      expect(result.issues).toContain('密码长度至少8位');
+      expect(result.issues).toContain('Password must be at least 8 characters');
     });
   });
 

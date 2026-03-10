@@ -1,4 +1,4 @@
-import { Command } from 'commander';
+import { command } from 'commander';
 import chalk from 'chalk';
 import { ConfigManager } from '../config/manager';
 import { getProfileManager } from '../utils/profile-manager';
@@ -9,7 +9,7 @@ const logger = getLogger();
 /**
  * Configuration profile command
  */
-export const profileCommand = new Command('profile')
+export const profilecommand = new command('profile')
   .description('Manage configuration profiles (multi-config switching)')
   .action(() => {
     const profileManager = getProfileManager();
@@ -45,7 +45,7 @@ export const profileCommand = new Command('profile')
 /**
  * Save profile subcommand
  */
-export const saveProfileCommand = new Command('save')
+export const saveProfilecommand = new command('save')
   .argument('<name>', 'Profile name')
   .description('Save current config as profile')
   .action(async (name: string) => {
@@ -67,7 +67,7 @@ export const saveProfileCommand = new Command('save')
 /**
  * Load profile subcommand
  */
-export const loadProfileCommand = new Command('load')
+export const loadProfilecommand = new command('load')
   .argument('<name>', 'Profile name')
   .description('Load configuration profile (without switching current profile)')
   .action(async (name: string) => {
@@ -94,7 +94,7 @@ export const loadProfileCommand = new Command('load')
 /**
  * Use profile subcommand
  */
-export const useProfileCommand = new Command('use')
+export const useProfilecommand = new command('use')
   .argument('<name>', 'Profile name')
   .description('Switch to specified configuration profile')
   .action(async (name: string) => {
@@ -126,7 +126,7 @@ export const useProfileCommand = new Command('use')
 /**
  * List profiles subcommand
  */
-export const listProfileCommand = new Command('list')
+export const listProfilecommand = new command('list')
   .description('List all configuration profiles')
   .action(() => {
     const profileManager = getProfileManager();
@@ -154,7 +154,7 @@ export const listProfileCommand = new Command('list')
 /**
  * Delete profile subcommand
  */
-export const deleteProfileCommand = new Command('delete')
+export const deleteProfilecommand = new command('delete')
   .argument('<name>', 'Profile name')
   .description('Delete configuration profile')
   .action((name: string) => {
@@ -176,7 +176,7 @@ export const deleteProfileCommand = new Command('delete')
 /**
  * Rename profile subcommand
  */
-export const renameProfileCommand = new Command('rename')
+export const renameProfilecommand = new command('rename')
   .argument('<oldName>', 'Old profile name')
   .argument('<newName>', 'New profile name')
   .description('Rename configuration profile')
@@ -196,12 +196,12 @@ export const renameProfileCommand = new Command('rename')
     }
   });
 
-export function register(program: Command): void {
-  const profileCmd = program.addCommand(profileCommand);
-  profileCmd.addCommand(saveProfileCommand);
-  profileCmd.addCommand(loadProfileCommand);
-  profileCmd.addCommand(useProfileCommand);
-  profileCmd.addCommand(listProfileCommand);
-  profileCmd.addCommand(deleteProfileCommand);
-  profileCmd.addCommand(renameProfileCommand);
+export function register(program: command): void {
+  const profileCmd = program.addcommand(profilecommand);
+  profileCmd.addcommand(saveProfilecommand);
+  profileCmd.addcommand(loadProfilecommand);
+  profileCmd.addcommand(useProfilecommand);
+  profileCmd.addcommand(listProfilecommand);
+  profileCmd.addcommand(deleteProfilecommand);
+  profileCmd.addcommand(renameProfilecommand);
 }

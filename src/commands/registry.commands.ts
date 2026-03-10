@@ -3,81 +3,81 @@ import { getConfigManager } from '../config/manager';
 import { ErrorHandler } from '../utils/errors';
 
 /**
- * 注册镜像源配置相关命令
- * @param program - Commander程序实例
+ * Register registry management commands
+ * @param program - Commander program instance
  */
 export function registerRegistryCommands(program: Command): void {
-  const registryCmd = program.command('registry').description('管理注册中心镜像源');
+  const registryCmd = program.command('registry').description('Manage registry mirrors');
 
-  // 设置注册中心地址
+  // Set registry URL
   registryCmd
     .command('set <url>')
-    .description('设置模块服务下载地址')
+    .description('Set module service download URL')
     .action((url) => {
       try {
         const configManager = getConfigManager();
         configManager.setUserConfig({ apiServer: url });
         const config = configManager.getConfig();
-        console.log('✓ 模块服务下载地址已更新');
-        console.log(`  地址: ${config.apiServer}`);
+        console.log('✓ Module service download URL updated');
+        console.log(`  URL: ${config.apiServer}`);
       } catch (error: unknown) {
-        console.error('设置失败:', error instanceof Error ? error.message : String(error));
+        console.error('Set failed:', error instanceof Error ? error.message : String(error));
         process.exit(1);
       }
     });
 
-  // 查看当前配置
+  // Get current registry URL
   registryCmd
     .command('get')
-    .description('查看当前模块服务下载地址')
+    .description('View current module service download URL')
     .action(() => {
       try {
         const config = getConfigManager().getConfig();
-        console.log('当前模块服务下载地址:');
-        console.log(`  地址: ${config.apiServer}`);
-        console.log(`  认证令牌: ${config.token ? '已设置' : '未设置'}`);
+        console.log('Current module service download URL:');
+        console.log(`  URL: ${config.apiServer}`);
+        console.log(`  Authentication token: ${config.token ? 'Set' : 'Not set'}`);
       } catch (error) {
         ErrorHandler.handle(error);
       }
     });
 
-  // 验证连接
+  // Validate registry connection
   registryCmd
     .command('ping')
-    .description('验证模块服务连接')
+    .description('Validate module service connection')
     .action(async () => {
       try {
         const config = getConfigManager().getConfig();
-        console.log(`正在连接 ${config.apiServer}...`);
+        console.log(`Connecting to ${config.apiServer}...`);
 
         const axios = require('axios');
         await axios.get(`${config.apiServer}/health`, { timeout: 5000 }).catch(() => {
-          // health 端点不存在，尝试根路径
+          // health endpoint does not exist
           return axios.get(config.apiServer, { timeout: 5000 });
         });
 
-        console.log('✓ 连接成功');
-        console.log(`  地址: ${config.apiServer}`);
+        console.log('✓ Connection successful');
+        console.log(`  URL: ${config.apiServer}`);
       } catch (error: unknown) {
-        console.error('✗ 连接失败:', error instanceof Error ? error.message : String(error));
+        console.error('✗ Connection failed:', error instanceof Error ? error.message : String(error));
         if (error instanceof Error && 'code' in error && error.code === 'ECONNREFUSED') {
-          console.error('  请确认模块服务是否已启动');
+          console.error('  Please confirm if module service is running');
         }
         process.exit(1);
       }
     });
 
-  // 重置为默认值
+  // Reset to default
   registryCmd
     .command('reset')
-    .description('重置为默认模块服务地址')
+    .description('Reset to default module service URL')
     .action(() => {
       try {
         const configManager = getConfigManager();
         configManager.setUserConfig({ apiServer: 'http://62.234.36.178:3000' });
         const config = configManager.getConfig();
-        console.log('✓ 已重置为默认配置');
-        console.log(`  地址: ${config.apiServer}`);
+        console.log('✓ Reset to default configuration');
+        console.log(`  URL: ${config.apiServer}`);
       } catch (error) {
         ErrorHandler.handle(error);
       }

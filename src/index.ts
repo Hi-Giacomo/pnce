@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
-import { Command } from 'commander';
-import { registerCommands } from './commands';
+import { command } from 'commander';
+import { registercommands } from './commands';
 import { CLI_VERSION } from './config/default.config';
 import { initLogger, getLogger } from './utils/logger';
 import { ErrorHandler } from './utils/errors';
@@ -29,7 +29,7 @@ process.on('unhandledRejection', (reason) => {
   ErrorHandler.handle(reason);
 });
 
-const program = new Command();
+const program = new command();
 
 program
   .name('pnce')
@@ -41,7 +41,7 @@ program
   )
   .addHelpText(
     'after',
-    '\n\nCommand Group Help:\n  - lang: Language settings (set, list)\n  - alias: Command aliases (add, remove, list, clear)\n  - analytics: Usage analytics (enable, disable, clear, status)\n  - profile: Configuration profiles (save, load, use, list, delete, rename)\n  - plugin: Plugin management (list, info)\n'
+    '\n\ncommand Group Help:\n  - lang: Language settings (set, list)\n  - alias: command aliases (add, remove, list, clear)\n  - analytics: Usage analytics (enable, disable, clear, status)\n  - profile: Configuration profiles (save, load, use, list, delete, rename)\n  - plugin: Plugin management (list, info)\n'
   );
 
 // Set initial working directory environment variable
@@ -81,7 +81,7 @@ if (argv.length > 2) {
 }
 
 // Register all commands asynchronously
-registerCommands(program)
+registercommands(program)
   .then(() => {
     program.parse(argv);
 

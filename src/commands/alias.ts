@@ -1,4 +1,4 @@
-import { Command } from 'commander';
+import { command } from 'commander';
 import chalk from 'chalk';
 import { getAliasManager } from '../utils/alias-manager';
 import { getLogger } from '../utils/logger';
@@ -8,18 +8,18 @@ const logger = getLogger();
 /**
  * Alias command
  */
-export const aliasCommand = new Command('alias')
+export const aliascommand = new command('alias')
   .description('Manage command aliases')
   .action(() => {
     const aliasManager = getAliasManager();
     const aliases = aliasManager.list();
 
-    console.log(chalk.cyan('\nCommand Aliases\n'));
+    console.log(chalk.cyan('\ncommand Aliases\n'));
 
     if (Object.keys(aliases).length === 0) {
       console.log(chalk.gray('No aliases configured\n'));
     } else {
-      console.log(chalk.white('Alias -> Command\n'));
+      console.log(chalk.white('Alias -> command\n'));
       Object.entries(aliases).forEach(([alias, command]) => {
         console.log(chalk.green(`  ${alias}`) + chalk.gray(' -> ') + chalk.white(command));
       });
@@ -36,7 +36,7 @@ export const aliasCommand = new Command('alias')
 /**
  * Add alias subcommand
  */
-export const addAliasCommand = new Command('add')
+export const addAliascommand = new command('add')
   .argument('<alias>', 'Alias name')
   .argument('<command>', 'Original command (arguments can be separated by spaces)')
   .description('Add command alias')
@@ -58,7 +58,7 @@ export const addAliasCommand = new Command('add')
 /**
  * Remove alias subcommand
  */
-export const removeAliasCommand = new Command('remove')
+export const removeAliascommand = new command('remove')
   .argument('<alias>', 'Alias name')
   .description('Remove command alias')
   .action((alias: string) => {
@@ -76,7 +76,7 @@ export const removeAliasCommand = new Command('remove')
 /**
  * List aliases subcommand
  */
-export const listAliasCommand = new Command('list').description('List all aliases').action(() => {
+export const listAliascommand = new command('list').description('List all aliases').action(() => {
   const aliasManager = getAliasManager();
   const aliases = aliasManager.list();
 
@@ -95,7 +95,7 @@ export const listAliasCommand = new Command('list').description('List all aliase
 /**
  * Clear aliases subcommand
  */
-export const clearAliasCommand = new Command('clear')
+export const clearAliascommand = new command('clear')
   .description('Clear all aliases')
   .action(() => {
     try {
@@ -109,10 +109,10 @@ export const clearAliasCommand = new Command('clear')
     }
   });
 
-export function register(program: Command): void {
-  const aliasCmd = program.addCommand(aliasCommand);
-  aliasCmd.addCommand(addAliasCommand);
-  aliasCmd.addCommand(removeAliasCommand);
-  aliasCmd.addCommand(listAliasCommand);
-  aliasCmd.addCommand(clearAliasCommand);
+export function register(program: command): void {
+  const aliasCmd = program.addcommand(aliascommand);
+  aliasCmd.addcommand(addAliascommand);
+  aliasCmd.addcommand(removeAliascommand);
+  aliasCmd.addcommand(listAliascommand);
+  aliasCmd.addcommand(clearAliascommand);
 }

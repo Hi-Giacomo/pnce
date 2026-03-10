@@ -9,13 +9,13 @@ import axios from 'axios';
 import retry from 'axios-retry';
 import winston from 'winston';
 import { DOWNLOAD, HTTP } from '../constants';
-import { ApiResponse, ModuleInfo } from '../types';
+import { ApiResponse, moduleInfo } from '../types';
 
 /**
- * 模块下载服务
- * 负责模块的下载、解压和安装
+ * module
+ * module、
  */
-export class ModuleDownloadService {
+export class moduleDownloadService {
   private logger: Logger;
 
   constructor(
@@ -25,7 +25,7 @@ export class ModuleDownloadService {
     if (logger) {
       this.logger = logger;
     } else {
-      // 创建临时的logger对象
+      // logger
       const tempWinstonLogger = winston.createLogger({
         level: 'info',
         transports: [
@@ -39,10 +39,10 @@ export class ModuleDownloadService {
   }
 
   /**
-   * 下载并安装单个模块
-   * @param moduleName - 模块名称
-   * @param version - 版本号(可选,默认最新)
-   * @param installDir - 安装目录
+   * module
+   * @param moduleName - module name
+   * @param version - Version(,Default)
+   * @param installDir - Directory
    */
   async install(
     moduleName: string,
@@ -53,7 +53,7 @@ export class ModuleDownloadService {
     let targetVersion = version;
     const installPath = path.resolve(initialCwd, installDir, moduleName);
 
-    // 如果没有指定版本，获取最新版本
+    // Version，Version
     if (!targetVersion) {
       targetVersion = await this.getLatestVersion(moduleName);
     }
@@ -61,14 +61,14 @@ export class ModuleDownloadService {
     if (!targetVersion) {
       throw new CliError(
         ErrorCode.VERSION_NOT_FOUND,
-        `模块 "${moduleName}" 的版本 "latest" 不存在`,
+        `module "${moduleName}" 的Version "latest" does not exist`,
         404,
         { name: moduleName, version: 'latest' }
       );
     }
 
-    // 检查是否已安装且版本匹配
-    const moduleStatus = await this.checkModuleStatus(
+    // YesNoVersion
+    const moduleStatus = await this.checkmoduleStatus(
       moduleName,
       targetVersion,
       installDir,
@@ -82,23 +82,23 @@ export class ModuleDownloadService {
 
     if (moduleStatus.isInstalled && moduleStatus.needsUpdate) {
       console.log(
-        `🔄 ${moduleName} 需要重新安装${moduleStatus.installedVersion ? ` (当前: ${moduleStatus.installedVersion})` : ''}...`
+        `🔄 ${moduleName} 需要重新安装${moduleStatus.installedVersion ? ` (Current: ${moduleStatus.installedVersion})` : ''}...`
       );
     }
 
     console.log(`下载 ${moduleName}@${targetVersion}...`);
 
-    // 下载并安装
+    // 
     await this.downloadAndExtract(moduleName, targetVersion, installPath, initialCwd);
 
-    console.log(`✓ ${moduleName}@${targetVersion} 安装成功`);
+    console.log(`✓ ${moduleName}@${targetVersion} Installation successful`);
   }
 
   /**
-   * 批量安装模块（并行）
-   * @param modules 模块列表 [{ name, version }]
-   * @param installDir 安装目录
-   * @param concurrency 并发数
+   * module（）
+   * @param modules moduleList [{ name, version }]
+   * @param installDir Directory
+   * @param concurrency 
    */
   async installBatch(
     modules: Array<{ name: string; version?: string }>,
@@ -108,37 +108,37 @@ export class ModuleDownloadService {
     const initialCwd = process.env.INIT_CWD || process.cwd();
     const progressManager = new MultiProgressManager(this.logger);
 
-    // 创建安装任务
+    // 
     const tasks = modules.map((module) => ({
       ...module,
       installPath: path.resolve(initialCwd, installDir, module.name),
     }));
 
-    // 并发执行
+    // 
     await this.concurrentExecute(tasks, concurrency, progressManager, installDir, initialCwd);
 
     progressManager.stopAll();
   }
 
   /**
-   * 获取模块的最新版本
+   * moduleVersion
    */
   private async getLatestVersion(moduleName: string): Promise<string> {
-    const response = await this.api.get<ApiResponse<{ module: ModuleInfo }>>(
+    const response = await this.api.get<ApiResponse<{ module: moduleInfo }>>(
       `/api/modules/${moduleName}`
     );
 
     if (!response.success || !response.module?.latest) {
-      throw new CliError(ErrorCode.MODULE_NOT_FOUND, `模块 "${moduleName}" 不存在`);
+      throw new CliError(ErrorCode.MODULE_NOT_FOUND, `module "${moduleName}" does not exist`);
     }
 
     return response.module.latest;
   }
 
   /**
-   * 检查模块状态
+   * moduleStatus
    */
-  private async checkModuleStatus(
+  private async checkmoduleStatus(
     moduleName: string,
     targetVersion: string,
     installDir: string,
@@ -188,7 +188,7 @@ export class ModuleDownloadService {
   }
 
   /**
-   * 下载并解压模块
+   * module
    */
 
   private async downloadAndExtract(
@@ -200,7 +200,7 @@ export class ModuleDownloadService {
   ): Promise<void> {
     const downloadUrl = `${this.api['axiosInstance'].defaults.baseURL}/api/modules/${moduleName}/${version}/download`;
 
-    // 配置重试
+    // 
     const axiosInstance = axios.create();
     retry(axiosInstance, {
       retries: HTTP.RETRY_COUNT,
@@ -221,7 +221,7 @@ export class ModuleDownloadService {
     const tempTgzPath = path.join(tempDir, `${moduleName}-${version}${DOWNLOAD.TEMP_FILE_EXT}`);
     const writer = fs.createWriteStream(tempTgzPath);
 
-    // 创建进度条
+    // Progress
     let progressBar: ProgressBar | null = null;
     if (progressManager && contentLength) {
       progressBar = progressManager.create(moduleName, {
@@ -251,15 +251,15 @@ export class ModuleDownloadService {
       }
     }
 
-    // 解压到目标目录
+    // Directory
     await this.extractPackage(tempTgzPath, installPath);
 
-    // 清理临时文件
+    // File
     await fs.remove(tempTgzPath);
   }
 
   /**
-   * 并发执行安装任务
+   * 
    */
   private async concurrentExecute(
     tasks: Array<{
@@ -275,7 +275,7 @@ export class ModuleDownloadService {
     const executing: Set<Promise<void>> = new Set();
 
     for (const task of tasks) {
-      // 如果并发数已满，等待一个任务完成
+      // ，Complete
       if (executing.size >= concurrency) {
         await Promise.race(executing);
       }
@@ -287,12 +287,12 @@ export class ModuleDownloadService {
       executing.add(promise);
     }
 
-    // 等待所有任务完成
+    // AllComplete
     await Promise.all(executing);
   }
 
   /**
-   * 执行单个安装任务
+   * 
    */
   private async installTask(
     task: { name: string; version?: string; installPath: string },
@@ -301,21 +301,21 @@ export class ModuleDownloadService {
     initialCwd: string
   ): Promise<void> {
     try {
-      // 获取版本
+      // Version
       let targetVersion = task.version;
       if (!targetVersion) {
         targetVersion = await this.getLatestVersion(task.name);
       }
 
-      // 检查状态
-      const status = await this.checkModuleStatus(task.name, targetVersion, installDir, initialCwd);
+      // Status
+      const status = await this.checkmoduleStatus(task.name, targetVersion, installDir, initialCwd);
 
       if (status.isInstalled && !status.needsUpdate) {
         console.log(`✓ ${task.name}@${targetVersion} 已安装`);
         return;
       }
 
-      // 下载并安装
+      // 
       await this.downloadAndExtract(
         task.name,
         targetVersion,
@@ -324,9 +324,9 @@ export class ModuleDownloadService {
         progressManager
       );
 
-      console.log(`✓ ${task.name}@${targetVersion} 安装成功`);
+      console.log(`✓ ${task.name}@${targetVersion} Installation successful`);
     } catch (error) {
-      this.logger?.error('安装模块失败', {
+      this.logger?.error('安装moduleFailed', {
         name: task.name,
         version: task.version,
         error,
@@ -336,10 +336,10 @@ export class ModuleDownloadService {
   }
 
   /**
-   * 解压包
+   * 
    */
   private async extractPackage(tgzPath: string, targetPath: string): Promise<void> {
-    // 删除旧目录（如果存在）
+    // Directory（）
     if (await fs.pathExists(targetPath)) {
       await fs.remove(targetPath);
     }
@@ -349,9 +349,9 @@ export class ModuleDownloadService {
     await tar.extract({
       file: tgzPath,
       cwd: path.dirname(targetPath),
-      strip: 1, // 移除顶层目录
+      strip: 1, // Directory
     });
 
-    this.logger?.debug('解压包成功', { tgzPath, targetPath });
+    this.logger?.debug('解压包Success', { tgzPath, targetPath });
   }
 }

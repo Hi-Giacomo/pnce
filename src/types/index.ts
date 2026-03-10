@@ -1,4 +1,4 @@
-export interface ModuleInfo {
+export interface moduleInfo {
   name: string;
   description: string;
   author: string;
@@ -19,12 +19,12 @@ export interface VersionInfo {
 }
 
 export interface Stats {
-  totalModules: number;
+  totalmodules: number;
   totalVersions: number;
   totalSize: number;
   totalDownloads: number;
   topAuthors: Array<{ author: string; count: number }>;
-  topModules: Array<{ name: string; downloads: number }>;
+  topmodules: Array<{ name: string; downloads: number }>;
 }
 
 export interface PackageJson {
@@ -33,11 +33,11 @@ export interface PackageJson {
   description?: string;
   author?: string;
   dependencies?: Record<string, string>;
-  localModules?: Record<string, string>;
-  mainModule?: string;
+  localmodules?: Record<string, string>;
+  mainmodule?: string;
 }
 
-export interface ModuleConfig {
+export interface moduleConfig {
   name: string;
   description: string;
   author: string;
@@ -45,10 +45,10 @@ export interface ModuleConfig {
   type: 'library' | 'microservice' | 'service';
   appId?: string;
   teamId?: string;
-  mainModule?: string;
+  mainmodule?: string;
   exports?: Record<string, string>;
   port?: number;
-  installedModules?: Record<string, string>; // 记录安装的模块及其版本
+  installedmodules?: Record<string, string>; // RecordmoduleVersion
 }
 
 export interface UploadOptions {
@@ -68,7 +68,7 @@ export interface SearchOptions {
   query: string;
 }
 
-export interface LoginOptions {
+export interface loginOptions {
   email?: string;
   password?: string;
 }
@@ -83,16 +83,16 @@ export interface ApiResponse<T = unknown> {
   success: boolean;
   message?: string;
   data?: T;
-  modules?: ModuleInfo[];
-  module?: ModuleInfo;
+  modules?: moduleInfo[];
+  module?: moduleInfo;
   stats?: Stats;
-  user?: UserInfo;
+  user?: user info;
   access_token?: string;
   refresh_token?: string;
   [key: string]: unknown;
 }
 
-export interface UserInfo {
+export interface user info {
   id?: string;
   username?: string;
   email: string;
@@ -103,7 +103,7 @@ export interface UserInfo {
 export interface AuthResponse {
   access_token: string;
   refresh_token?: string;
-  user: UserInfo;
+  user: user info;
 }
 
 export interface OAuth2AuthorizeOptions {

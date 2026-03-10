@@ -1,4 +1,4 @@
-import { Command } from 'commander';
+import { command } from 'commander';
 import chalk from 'chalk';
 import { ConfigManager } from '../config/manager';
 import { createConfigSuggester, ConfigIssue } from '../utils/config-suggester';
@@ -7,10 +7,10 @@ import { getLogger } from '../utils/logger';
 const logger = getLogger();
 
 /**
- * 配置验证命令
+ * Validationcommand
  */
-export const configValidateCommand = new Command('validate')
-  .description('验证配置文件并提供智能建议')
+export const configValidatecommand = new command('validate')
+  .description('Validation配置File并提供智能建议')
   .option('--fix', '自动修复可修复的问题')
   .action(async (options) => {
     try {
@@ -18,15 +18,15 @@ export const configValidateCommand = new Command('validate')
       const config = configManager.getConfig();
       const suggester = createConfigSuggester();
 
-      console.log(chalk.cyan('\n🔍 配置验证 / Configuration Validation\n'));
+      console.log(chalk.cyan('\n🔍 配置Validation / Configuration Validation\n'));
 
-      // 验证配置
+      // Validation
       const issues: ConfigIssue[] = suggester.validate(config);
 
-      // 输出问题
+      // 
       console.log(suggester.formatIssues(issues));
 
-      // 自动修复
+      // 
       if (options.fix && issues.length > 0) {
         const fixableIssues = issues.filter((i) => i.suggestion !== undefined);
         if (fixableIssues.length > 0) {
@@ -44,25 +44,25 @@ export const configValidateCommand = new Command('validate')
         }
       }
 
-      // 显示配置文件路径
-      console.log(chalk.gray('配置文件位置:'));
+      // File
+      console.log(chalk.gray('配置File位置:'));
       console.log(chalk.gray(`  ${configManager.getUserConfigPath()}\n`));
 
       if (issues.some((i) => i.type === 'error')) {
         process.exit(1);
       }
     } catch (error: unknown) {
-      console.log(chalk.red(`\n❌ 配置验证失败: ${error}\n`));
-      logger.error('配置验证失败', { error });
+      console.log(chalk.red(`\n❌ 配置ValidationFailed: ${error}\n`));
+      logger.error('配置ValidationFailed', { error });
       process.exit(1);
     }
   });
 
 /**
- * 配置检查命令（简化版）
+ * command（）
  */
-export const configCheckCommand = new Command('check')
-  .description('快速检查配置是否有效')
+export const configCheckcommand = new command('check')
+  .description('快速检查配置YesNo有效')
   .action(async () => {
     try {
       const configManager = new ConfigManager();
@@ -76,23 +76,23 @@ export const configCheckCommand = new Command('check')
         console.log(chalk.green('✓ 配置有效\n'));
         process.exit(0);
       } else {
-        console.log(chalk.red(`✗ 配置无效: ${errors.length} 个错误\n`));
+        console.log(chalk.red(`✗ 配置无效: ${errors.length} 个Error\n`));
         process.exit(1);
       }
     } catch (error) {
-      console.log(chalk.red(`✗ 检查失败: ${error}\n`));
+      console.log(chalk.red(`✗ 检查Failed: ${error}\n`));
       process.exit(1);
     }
   });
 
-export function register(program: Command): void {
+export function register(program: command): void {
   const configCmd = program.commands.find((cmd) => cmd.name() === 'config');
   if (configCmd) {
-    configCmd.addCommand(configValidateCommand);
-    configCmd.addCommand(configCheckCommand);
+    configCmd.addcommand(configValidatecommand);
+    configCmd.addcommand(configCheckcommand);
   } else {
-    // 如果 config 命令不存在，注册这两个命令到 program
-    program.addCommand(configValidateCommand);
-    program.addCommand(configCheckCommand);
+    //  config commanddoes not exist，command program
+    program.addcommand(configValidatecommand);
+    program.addcommand(configCheckcommand);
   }
 }

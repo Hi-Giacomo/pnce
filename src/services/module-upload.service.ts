@@ -2,45 +2,45 @@ import * as fs from 'fs-extra';
 import * as path from 'path';
 import FormData from 'form-data';
 import { ApiService } from './api.service';
-import { PackageJson, ApiResponse, ModuleInfo } from '../types';
+import { PackageJson, ApiResponse, moduleInfo } from '../types';
 import { CliError, ErrorCode } from '../utils/errors';
 import { Logger } from '../utils/logger';
 import { DOWNLOAD, EXCLUDE_PATTERNS, DEFAULT_NPMIGNORE, PATHS } from '../constants';
 
 /**
- * 模块上传服务
- * 负责模块的打包和上传
+ * module
+ * module
  */
-export class ModuleUploadService {
+export class moduleUploadService {
   constructor(
     private api: ApiService,
     private logger?: Logger
   ) {}
 
   /**
-   * 上传模块到服务器
-   * @param moduleDir - 模块目录
+   * module
+   * @param moduleDir - module directory
    */
   async upload(moduleDir: string): Promise<void> {
     try {
       const initialCwd = process.env.INIT_CWD || process.cwd();
-      const absoluteModuleDir = path.resolve(initialCwd, moduleDir);
+      const absolutemoduleDir = path.resolve(initialCwd, moduleDir);
 
-      // 验证目录存在
-      if (!(await fs.pathExists(absoluteModuleDir))) {
-        throw CliError.fileNotFound(absoluteModuleDir);
+      // ValidationDirectory
+      if (!(await fs.pathExists(absolutemoduleDir))) {
+        throw CliError.fileNotFound(absolutemoduleDir);
       }
 
-      // 读取 package.json
-      const packageJson = await this.readPackageJson(absoluteModuleDir);
+      //  package.json
+      const packageJson = await this.readPackageJson(absolutemoduleDir);
 
-      // 读取 module.config.json
-      const moduleConfig = await this.readModuleConfig(absoluteModuleDir);
+      //  module.config.json
+      const moduleConfig = await this.readmoduleConfig(absolutemoduleDir);
 
-      // 显示模块信息
-      this.displayModuleInfo(packageJson, moduleConfig);
+      // moduleInfo
+      this.displaymoduleInfo(packageJson, moduleConfig);
 
-      // 创建临时文件
+      // File
       const tempDir = DOWNLOAD.TEMP_DIR_PATH;
       await fs.ensureDir(tempDir);
       const tgzPath = path.join(
@@ -48,22 +48,22 @@ export class ModuleUploadService {
         `${packageJson.name}-${packageJson.version}${DOWNLOAD.TEMP_FILE_EXT}`
       );
 
-      // 打包模块
-      await this.createPackage(absoluteModuleDir, tgzPath);
+      // module
+      await this.createPackage(absolutemoduleDir, tgzPath);
 
-      // 上传到服务器
+      // 
       await this.uploadToServer(packageJson, moduleConfig, tgzPath);
 
-      // 清理临时文件
+      // File
       await fs.remove(tempDir);
     } catch (error) {
-      this.logger?.error('上传模块失败', { error, moduleDir });
+      this.logger?.error('上传moduleFailed', { error, moduleDir });
       throw error;
     }
   }
 
   /**
-   * 读取 package.json
+   *  package.json
    */
   private async readPackageJson(moduleDir: string): Promise<PackageJson> {
     const packageJsonPath = path.join(moduleDir, PATHS.PACKAGE_FILE);
@@ -82,9 +82,9 @@ export class ModuleUploadService {
   }
 
   /**
-   * 读取 module.config.json
+   *  module.config.json
    */
-  private async readModuleConfig(moduleDir: string): Promise<{
+  private async readmoduleConfig(moduleDir: string): Promise<{
     appId?: string;
     teamId?: string;
     type?: string;
@@ -99,19 +99,19 @@ export class ModuleUploadService {
   }
 
   /**
-   * 显示模块信息
+   * moduleInfo
    */
-  private displayModuleInfo(
+  private displaymoduleInfo(
     packageJson: PackageJson,
     moduleConfig: { appId?: string; teamId?: string; type?: string }
   ): void {
-    console.log(`正在打包模块 ${packageJson.name}@${packageJson.version}...`);
+    console.log(`正在打包module ${packageJson.name}@${packageJson.version}...`);
     console.log(`名称: ${packageJson.name}`);
-    console.log(`版本: ${packageJson.version}`);
-    console.log(`描述: ${packageJson.description || ''}`);
+    console.log(`Version: ${packageJson.version}`);
+    console.log(`Description: ${packageJson.description || ''}`);
 
     if (moduleConfig.type) {
-      console.log(`类型: ${moduleConfig.type}`);
+      console.log(`Type: ${moduleConfig.type}`);
     }
     if (moduleConfig.appId) {
       console.log(`应用ID: ${moduleConfig.appId}`);
@@ -119,14 +119,14 @@ export class ModuleUploadService {
     if (moduleConfig.teamId) {
       console.log(`团队ID: ${moduleConfig.teamId}`);
     }
-    console.log('注意: 作者信息将从您的登录账号自动获取');
+    console.log('注意: AuthorInfo将从您的login账号自动获取');
   }
 
   /**
-   * 创建打包文件
+   * File
    */
   private async createPackage(sourceDir: string, outputPath: string): Promise<void> {
-    // 确保 .npmignore 存在，排除 external_modules/ 目录
+    //  .npmignore ， external_modules/ Directory
     await this.ensureNpmignore(sourceDir);
 
     const tar = require('tar');
@@ -135,20 +135,20 @@ export class ModuleUploadService {
         gzip: true,
         file: outputPath,
         cwd: sourceDir,
-        // 排除不需要的文件和目录
+        // FileDirectory
         filter: (filePath: string) => {
           const relativePath = path.relative(sourceDir, filePath);
           return !EXCLUDE_PATTERNS.some((pattern) => relativePath.startsWith(pattern));
         },
       },
-      ['.'] // 打包整个目录
+      ['.'] // Directory
     );
 
-    this.logger?.debug('创建打包文件', { sourceDir, outputPath });
+    this.logger?.debug('创建打包File', { sourceDir, outputPath });
   }
 
   /**
-   * 确保 .npmignore 存在
+   *  .npmignore 
    */
   private async ensureNpmignore(moduleDir: string): Promise<void> {
     const npmignorePath = path.join(moduleDir, PATHS.NPMIGNORE_FILE);
@@ -159,7 +159,7 @@ export class ModuleUploadService {
   }
 
   /**
-   * 上传到服务器
+   * 
    */
   private async uploadToServer(
     packageJson: PackageJson,
@@ -184,22 +184,22 @@ export class ModuleUploadService {
 
     console.log('上传中...');
 
-    const response = await this.api.post<ApiResponse<{ module: ModuleInfo }>>(
+    const response = await this.api.post<ApiResponse<{ module: moduleInfo }>>(
       '/api/modules/upload',
       formData,
       true
     );
 
     if (!response.success) {
-      throw new CliError(ErrorCode.UPLOAD_FAILED, response.message || '上传失败');
+      throw new CliError(ErrorCode.UPLOAD_FAILED, response.message || '上传Failed');
     }
 
-    console.log(`✓ 模块 ${packageJson.name}@${packageJson.version} 上传成功!`);
+    console.log(`✓ module ${packageJson.name}@${packageJson.version} 上传Success!`);
     if (response.module?.author) {
-      console.log(`  作者: ${response.module.author}`);
+      console.log(`  Author: ${response.module.author}`);
     }
 
-    this.logger?.info('模块上传成功', {
+    this.logger?.info('module上传Success', {
       name: packageJson.name,
       version: packageJson.version,
       author: response.module?.author,

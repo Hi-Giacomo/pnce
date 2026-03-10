@@ -4,16 +4,16 @@ import * as fs from 'fs-extra';
 import { ErrorHandler } from '../utils/errors';
 
 /**
- * 注册端口管理相关命令
- * @param program - Commander程序实例
+ * Register port management commands
+ * @param program - Commander program instance
  */
 export function registerPortCommands(program: Command): void {
-  // 端口管理命令
+  // Port managementcommand
   program
     .command('ports')
-    .description('端口管理（查看、清除端口缓存）')
-    .option('-c, --clear', '清除端口缓存')
-    .option('-s, --show', '显示端口分配信息')
+    .description('Port management (view or clear port cache)')
+    .option('-c, --clear', 'Clear port cache')
+    .option('-s, --show', 'Show port allocation info')
     .action(async (options) => {
       try {
         const portCachePath = path.join(
@@ -21,21 +21,21 @@ export function registerPortCommands(program: Command): void {
           '.module-port-cache.json'
         );
 
-        // 清除端口缓存
+        // Clear port cache
         if (options.clear) {
           if (fs.existsSync(portCachePath)) {
             fs.removeSync(portCachePath);
-            console.log('✓ 端口缓存已清除');
+            console.log('✓ Port cache cleared');
           } else {
-            console.log('端口缓存文件不存在');
+            console.log('Port cache file does not exist');
           }
           return;
         }
 
-        // 显示端口分配信息（默认行为）
+        // Show port allocation info (default)
         if (fs.existsSync(portCachePath)) {
           const portCache = fs.readJsonSync(portCachePath);
-          console.log('\n📊 端口分配信息：');
+          console.log('\n📊 Port allocation info:');
           console.log('─'.repeat(40));
 
           Object.entries(portCache).forEach(([name, port]: [string, any]) => {
@@ -43,10 +43,10 @@ export function registerPortCommands(program: Command): void {
           });
 
           console.log('─'.repeat(40));
-          console.log(`  缓存文件: ${portCachePath}\n`);
+          console.log(`  Cache file: ${portCachePath}\n`);
         } else {
-          console.log('端口缓存文件不存在');
-          console.log('提示: 运行 npm run dev 后会自动创建缓存文件');
+          console.log('Port cache file does not exist');
+          console.log('Hint: Run `npm run dev` to automatically create the cache file');
         }
       } catch (error) {
         ErrorHandler.handle(error);
