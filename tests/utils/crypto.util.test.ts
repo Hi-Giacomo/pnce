@@ -3,7 +3,7 @@ import { CryptoUtil } from '../../src/utils/crypto.util';
 
 describe('CryptoUtil', () => {
   describe('encrypt and decrypt', () => {
-    it('应该能够加密和解密文本', () => {
+    it('EncryptDecrypt', () => {
       const plaintext = 'Hello, World!';
       const encrypted = CryptoUtil.encrypt(plaintext);
       const decrypted = CryptoUtil.decrypt(encrypted);
@@ -12,7 +12,7 @@ describe('CryptoUtil', () => {
       expect(decrypted).toBe(plaintext);
     });
 
-    it('应该能够加密和解密Token', () => {
+    it('EncryptDecryptToken', () => {
       const token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.test';
       const encrypted = CryptoUtil.encrypt(token);
       const decrypted = CryptoUtil.decrypt(encrypted);
@@ -20,7 +20,7 @@ describe('CryptoUtil', () => {
       expect(decrypted).toBe(token);
     });
 
-    it('应该能够加密和解密包含特殊字符的文本', () => {
+    it('EncryptDecryptPackage', () => {
       const plaintext = '!@#$%^&*()_+-={}[]|\\:";\'<>?,./';
       const encrypted = CryptoUtil.encrypt(plaintext);
       const decrypted = CryptoUtil.decrypt(encrypted);
@@ -28,7 +28,7 @@ describe('CryptoUtil', () => {
       expect(decrypted).toBe(plaintext);
     });
 
-    it('同一文本多次加密应该产生不同的密文', () => {
+    it('Encrypt', () => {
       const plaintext = 'Hello';
       const encrypted1 = CryptoUtil.encrypt(plaintext);
       const encrypted2 = CryptoUtil.encrypt(plaintext);
@@ -38,13 +38,13 @@ describe('CryptoUtil', () => {
   });
 
   describe('generateSalt', () => {
-    it('应该生成指定长度的盐值', () => {
+    it('Value', () => {
       const salt = CryptoUtil.generateSalt(16);
       expect(salt).toBeTruthy();
       expect(salt.length).toBeGreaterThan(0);
     });
 
-    it('多次生成的盐值应该不同', () => {
+    it('Value', () => {
       const salt1 = CryptoUtil.generateSalt();
       const salt2 = CryptoUtil.generateSalt();
       expect(salt1).not.toBe(salt2);
@@ -52,15 +52,15 @@ describe('CryptoUtil', () => {
   });
 
   describe('hash and verifyHash', () => {
-    it('应该能够哈希文本', () => {
+    it('', () => {
       const text = 'Hello';
       const hash = CryptoUtil.hash(text);
 
       expect(hash).toBeTruthy();
-      expect(hash.length).toBe(64); // SHA256 hex 长度
+      expect(hash.length).toBe(64); // SHA256 hex 
     });
 
-    it('同一文本多次哈希应该产生相同结果', () => {
+    it('Result', () => {
       const text = 'Hello';
       const hash1 = CryptoUtil.hash(text);
       const hash2 = CryptoUtil.hash(text);
@@ -68,14 +68,14 @@ describe('CryptoUtil', () => {
       expect(hash1).toBe(hash2);
     });
 
-    it('不同文本应该产生不同的哈希值', () => {
+    it('Value', () => {
       const hash1 = CryptoUtil.hash('Hello');
       const hash2 = CryptoUtil.hash('World');
 
       expect(hash1).not.toBe(hash2);
     });
 
-    it('应该能够验证哈希', () => {
+    it('Validate', () => {
       const text = 'Hello';
       const hash = CryptoUtil.hash(text);
 
@@ -83,7 +83,7 @@ describe('CryptoUtil', () => {
       expect(CryptoUtil.verifyHash('Different', hash)).toBe(false);
     });
 
-    it('使用盐值应该产生不同的哈希', () => {
+    it('UseValue', () => {
       const text = 'Hello';
       const salt = 'random-salt';
       const hash1 = CryptoUtil.hash(text);
@@ -94,17 +94,17 @@ describe('CryptoUtil', () => {
   });
 
   describe('generateToken', () => {
-    it('应该生成指定长度的Token', () => {
+    it('Token', () => {
       const token = CryptoUtil.generateToken(16);
-      expect(token).toHaveLength(32); // hex编码，16字节=32字符
+      expect(token).toHaveLength(32); // hexEncoding，16Section=32
     });
 
-    it('默认应该生成32字节的Token', () => {
+    it('Default32SectionToken', () => {
       const token = CryptoUtil.generateToken();
-      expect(token).toHaveLength(64); // hex编码
+      expect(token).toHaveLength(64); // hexEncoding
     });
 
-    it('多次生成的Token应该不同', () => {
+    it('Token', () => {
       const token1 = CryptoUtil.generateToken();
       const token2 = CryptoUtil.generateToken();
       expect(token1).not.toBe(token2);

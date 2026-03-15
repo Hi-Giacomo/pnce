@@ -1,11 +1,11 @@
-import { command } from 'commander';
+import { Command } from 'commander';
 import chalk from 'chalk';
 import { getPluginSystem } from '../utils/plugin-system';
 
 /**
  * Plugin command
  */
-export const plugincommand = new command('plugin')
+export const plugincommand = new Command('plugin')
   .description('Manage plugin system')
   .action(() => {
     const pluginSystem = getPluginSystem();
@@ -18,7 +18,7 @@ export const plugincommand = new command('plugin')
     } else {
       plugins.forEach((plugin) => {
         console.log(chalk.green(`  ${plugin.name}`));
-        console.log(chalk.gray(`    Version: ${plugin.version}`));
+        console.log(chalk.gray(`    version: ${plugin.version}`));
         if (plugin.description) {
           console.log(chalk.gray(`    Description: ${plugin.description}`));
         }
@@ -38,7 +38,7 @@ export const plugincommand = new command('plugin')
 /**
  * List plugins subcommand
  */
-export const listPlugincommand = new command('list')
+export const listPlugincommand = new Command('list')
   .description('List all installed plugins')
   .action(() => {
     const pluginSystem = getPluginSystem();
@@ -51,7 +51,7 @@ export const listPlugincommand = new command('list')
     } else {
       plugins.forEach((plugin) => {
         console.log(chalk.green(`  ${plugin.name}`));
-        console.log(chalk.gray(`    Version: ${plugin.version}`));
+        console.log(chalk.gray(`    version: ${plugin.version}`));
         if (plugin.description) {
           console.log(chalk.gray(`    Description: ${plugin.description}`));
         }
@@ -66,7 +66,7 @@ export const listPlugincommand = new command('list')
 /**
  * Plugin info subcommand
  */
-export const infoPlugincommand = new command('info')
+export const infoPlugincommand = new Command('info')
   .description('Show plugin system information')
   .action(() => {
     const pluginSystem = getPluginSystem();
@@ -90,11 +90,11 @@ export const infoPlugincommand = new command('info')
     console.log(chalk.gray('  • Event tracking'));
 
     console.log(chalk.gray('\nDevelopment Docs:'));
-    console.log(chalk.gray('  Check source code for plugin development API\n'));
+    console.log(chalk.gray('  check source code for plugin development API\n'));
   });
 
-export function register(program: command): void {
-  const pluginCmd = program.addcommand(plugincommand);
-  pluginCmd.addcommand(listPlugincommand);
-  pluginCmd.addcommand(infoPlugincommand);
+export function register(program: Command): void {
+  const pluginCmd = program.addCommand(plugincommand);
+  pluginCmd.addCommand(listPlugincommand);
+  pluginCmd.addCommand(infoPlugincommand);
 }

@@ -128,9 +128,9 @@ This document records the task list for optimizing PNCE CLI into a production-re
 
 ---
 
-## Release Checklist
+## Release checklist
 
-### Version 0.0.9 (Current)
+### version 0.0.9 (Current)
 - [x] Correct License declaration to MulanPSL2
 - [x] Remove internal network server addresses
 - [x] Create CHANGELOG.md
@@ -141,7 +141,7 @@ This document records the task list for optimizing PNCE CLI into a production-re
 - [x] Optimize log directory location
 - [x] Update .npmignore
 
-### Version 0.0.10 (Production Ready)
+### version 0.0.10 (Production Ready)
 - [x] Complete all 🔴 high priority tasks
 - [x] Complete at least 3 🟡 medium priority tasks
 - [x] Test coverage > 50%
@@ -149,7 +149,7 @@ This document records the task list for optimizing PNCE CLI into a production-re
 - [x] No TODO comments remaining
 - [x] Complete all 🟢 low priority tasks
 
-### Version 0.1.0 (Stable Release)
+### version 0.1.0 (Stable Release)
 - [x] Complete all 🔴 high priority tasks
 - [x] Complete all 🟡 medium priority tasks
 - [ ] Test coverage > 80%
@@ -186,7 +186,7 @@ This document records the task list for optimizing PNCE CLI into a production-re
 
 ---
 
-## Version Planning
+## version Planning
 
 ### 0.0.9 (Current)
 - Status: ✅ Released (or pending release)
@@ -217,7 +217,7 @@ This document records the task list for optimizing PNCE CLI into a production-re
 
 **Last Updated**: 2026-03-06
 
-## 🎉 Version 0.0.9 Completion Status
+## 🎉 version 0.0.9 Completion Status
 
 All optimization tasks are 100% complete! This version includes the following new features:
 
@@ -225,9 +225,9 @@ All optimization tasks are 100% complete! This version includes the following ne
 
 1. **Offline Mode Prompt** - Intelligently prompts offline mode when API errors occur
 2. **Command Aliases** - Support creating aliases for common commands
-3. **Smart Configuration Validation** - Validate configuration and provide optimization suggestions
+3. **Smart Config Validation** - Validate configuration and provide optimization suggestions
 4. **Usage Statistics (Optional)** - Support collecting usage statistics to improve product
-5. **Multi-Configuration Profiles** - Support saving and switching different environment configurations
+5. **Multi-Config Profiles** - Support saving and switching different environment configurations
 6. **Plugin System** - Basic plugin framework supporting CLI feature extensions
 7. **PKG Packaging Support** - Support packaging as single executable
 
@@ -248,8 +248,8 @@ All optimization tasks are 100% complete! This version includes the following ne
 
 - `src/utils/alias-manager.ts` - Alias manager
 - `src/utils/analytics.ts` - Usage statistics manager
-- `src/utils/config-suggester.ts` - Configuration suggester
-- `src/utils/profile-manager.ts` - Configuration profile manager
+- `src/utils/config-suggester.ts` - Config suggester
+- `src/utils/profile-manager.ts` - Config profile manager
 - `src/utils/plugin-system.ts` - Plugin system
 
 ### 📝 Updated Documentation
@@ -257,9 +257,9 @@ All optimization tasks are 100% complete! This version includes the following ne
 - All documentation updated to reflect new features
 - OPTIMIZATION_PLAN.md - All tasks completed
 
-## Subsequent Version Planning
+## Subsequent version Planning
 
-### Version 0.0.10 (Immediate Fix)
+### version 0.0.10 (Immediate Fix)
 
 #### ✅ Completed
 
@@ -279,7 +279,7 @@ All optimization tasks are 100% complete! This version includes the following ne
   - [x] Fix `config.get('apiServer')` to `config.apiServer`
   - [x] Correctly use ConfigManager's getConfig() method
 
-### Version 0.1.0 Suggestions
+### version 0.1.0 suggestions
 
 The following improvements can be considered in subsequent versions:
 
@@ -294,7 +294,7 @@ The following improvements can be considered in subsequent versions:
 #### Test Fix Tasks
 
 - [x] Investigate and fix error code assertion issues
-  - [x] Check exitCode returned by `CliError.unauthorized()`
+  - [x] check exitCode returned by `CliError.unauthorized()`
   - [x] Confirm expected value should be 1 (standard CLI exit code) not 401
   - [x] Update test assertions
 
@@ -340,8 +340,8 @@ The following improvements can be considered in subsequent versions:
   - [ ] Add more usage examples
 
 - [ ] Verify internationalization translations
-  - [ ] Check all user prompt Chinese translations
-  - [ ] Check all user prompt English translations
+  - [ ] check all user prompt Chinese translations
+  - [ ] check all user prompt English translations
   - [ ] Ensure translation accuracy and consistency
 
 #### Security Enhancement Tasks
@@ -367,7 +367,7 @@ The following improvements can be considered in subsequent versions:
   - [ ] Establish performance baseline
   - [ ] Run performance tests regularly
 
-### 🎯 Pre-Release Checklist
+### 🎯 Pre-Release checklist
 
 #### Must complete before 0.0.10 release
 

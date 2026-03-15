@@ -1,9 +1,9 @@
-export interface moduleInfo {
+export interface ModuleInformation {
   name: string;
   description: string;
   author: string;
   latest: string;
-  versions: Record<string, VersionInfo> | string[];
+  versions: Record<string, versionInfo> | string[];
   createdAt: string;
   uploadedBy?: string;
   type?: string;
@@ -12,7 +12,7 @@ export interface moduleInfo {
   downloads?: number;
 }
 
-export interface VersionInfo {
+export interface versionInfo {
   version: string;
   uploadedAt: string;
   size: number;
@@ -20,7 +20,7 @@ export interface VersionInfo {
 
 export interface Stats {
   totalmodules: number;
-  totalVersions: number;
+  totalversions: number;
   totalSize: number;
   totalDownloads: number;
   topAuthors: Array<{ author: string; count: number }>;
@@ -33,7 +33,7 @@ export interface PackageJson {
   description?: string;
   author?: string;
   dependencies?: Record<string, string>;
-  localmodules?: Record<string, string>;
+  localModules?: Record<string, string>;
   mainmodule?: string;
 }
 
@@ -48,7 +48,7 @@ export interface moduleConfig {
   mainmodule?: string;
   exports?: Record<string, string>;
   port?: number;
-  installedmodules?: Record<string, string>; // RecordmoduleVersion
+  installedModules?: Record<string, string>; // Recordmoduleversion
 }
 
 export interface UploadOptions {
@@ -68,7 +68,7 @@ export interface SearchOptions {
   query: string;
 }
 
-export interface loginOptions {
+export interface LoginOptions {
   email?: string;
   password?: string;
 }
@@ -83,16 +83,16 @@ export interface ApiResponse<T = unknown> {
   success: boolean;
   message?: string;
   data?: T;
-  modules?: moduleInfo[];
-  module?: moduleInfo;
+  modules?: ModuleInformation[];
+  module?: ModuleInformation;
   stats?: Stats;
-  user?: user info;
+  user?: UserInfo;
   access_token?: string;
   refresh_token?: string;
   [key: string]: unknown;
 }
 
-export interface user info {
+export interface UserInfo {
   id?: string;
   username?: string;
   email: string;
@@ -103,7 +103,7 @@ export interface user info {
 export interface AuthResponse {
   access_token: string;
   refresh_token?: string;
-  user: user info;
+  user: UserInfo;
 }
 
 export interface OAuth2AuthorizeOptions {

@@ -1,14 +1,14 @@
 /**
- * Default Configuration
- * AllDefault Configuration
+ * Default Config
+ * AllDefault Config
  */
 
-// 
+//
 export const DEFAULT_REGISTRY_URL = 'http://localhost:3000';
 export const DEFAULT_WEBSITE_URL = 'http://localhost:5173';
 export const CLI_VERSION = '0.0.9';
 
-// OAuth2 Authentication
+// OAuth2 Auth
 export const OAUTH2_CONFIG = {
   CLIENT_ID: 'module-registry-cli',
   REDIRECT_PORT: 8765,
@@ -23,5 +23,5 @@ export const ENV_KEYS = {
   MODULE_AUTH_TOKEN: 'MODULE_AUTH_TOKEN',
 } as const;
 
-// File
+// file
 export const CONFIG_FILE_NAME = '.modulerc';

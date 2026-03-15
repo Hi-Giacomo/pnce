@@ -35,7 +35,7 @@ Format based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ### Added
 - `install-batch` command supports batch installation
-- `pnce me` command to view current user information
+- `pnce me` command to view current UserInformation
 - Multi-level configuration support (environment variables, project config, user config)
 - Automatic token expiration detection
 - HTTP request retry mechanism
@@ -103,7 +103,7 @@ Format based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ### Added
 - Module installation feature
 - Dependency management feature
-- Configuration management feature
+- Config management feature
 
 ### Fixes
 - Fix configuration file reading issue
@@ -112,7 +112,7 @@ Format based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ### Added
 - Basic command line framework
-- Authentication service
+- Auth service
 - API service
 
 ### Improvements

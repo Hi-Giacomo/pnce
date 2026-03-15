@@ -1,26 +1,26 @@
 import { ApiService } from './api.service';
 import { OAuth2Service } from './oauth2.service';
-import { loginOptions, RegisterOptions, AuthResponse, ApiResponse, user info } from '../types';
+import { LoginOptions, RegisterOptions, AuthResponse, ApiResponse, UserInfo } from '../types';
 import { CliError, ErrorCode } from '../utils';
 import { getConfigManager } from '../config/manager';
 import * as readline from 'readline';
 import { TOKEN, VALIDATION } from '../constants';
 
 /**
- * Authentication
- * User、loginAuthentication
+ * AuthService
+ * User registration and login authentication
  */
 export class AuthService {
   constructor(private api: ApiService) {}
 
   /**
-   * web login(OAuth2)
-   * @returns AuthenticationResponse,access_tokenuser info
+   * Web login (OAuth2)
+   * @returns Auth Response with access token and UserInfo
    */
-  async weblogin(): Promise<AuthResponse> {
-    const authResponse = await OAuth2Service.weblogin();
+  async webLogin(): Promise<AuthResponse> {
+    const authResponse = await OAuth2Service.webLogin();
 
-    // Token
+    // Save token
     const configManager = getConfigManager();
     configManager.setAuth(authResponse.access_token, undefined, TOKEN.DEFAULT_EXPIRE_SECONDS);
 
@@ -28,26 +28,26 @@ export class AuthService {
   }
 
   /**
-   * User
-   * @param options - ,Username、email、password
-   * @returns AuthenticationResponse,access_tokenuser info
+   * Register new user
+   * @param options - Registration options including username, email, password
+   * @returns Auth Response with access token and UserInfo
    */
   async register(options: RegisterOptions): Promise<AuthResponse> {
-    const username = options.username || (await this.prompt('请输入Username: '));
-    const email = options.email || (await this.prompt('请输入email: '));
-    const password = options.password || (await this.promptpassword('请输入password: '));
+    const username = options.username || (await this.prompt('Please enter username: '));
+    const email = options.email || (await this.prompt('Please enter email: '));
+    const password = options.password || (await this.promptPassword('Please enter password: '));
 
-    // Validation
+    // Validate input
     if (!username || !email || !password) {
-      throw new CliError(ErrorCode.INVALID_INPUT, 'Username、email andpassword不能为空');
+      throw new CliError(ErrorCode.INVALID_INPUT, 'Username, email and password cannot be empty');
     }
 
-    if (!this.isValidemail(email)) {
-      throw new CliError(ErrorCode.INVALID_INPUT, 'email格式不正确');
+    if (!this.isValidEmail(email)) {
+      throw new CliError(ErrorCode.INVALID_INPUT, 'Email format is incorrect');
     }
 
     if (password.length < 6) {
-      throw new CliError(ErrorCode.INVALID_INPUT, 'password长度至少为6位');
+      throw new CliError(ErrorCode.INVALID_INPUT, 'Password must be at least 6 characters');
     }
 
     const response = await this.api.post<AuthResponse>('/api/auth/register', {
@@ -68,7 +68,7 @@ export class AuthService {
 
       return {
         access_token: response.access_token,
-        user: response.user
+        user: response.user,
       };
     }
 
@@ -78,13 +78,13 @@ export class AuthService {
   /**
    * emailpasswordlogin
    */
-  async login(options: loginOptions): Promise<AuthResponse> {
-    const email = options.email || (await this.prompt('请输入email: '));
-    const password = options.password || (await this.promptpassword('请输入password: '));
+  async login(options: LoginOptions): Promise<AuthResponse> {
+    const email = options.email || (await this.prompt('Please enter email: '));
+    const password = options.password || (await this.promptPassword('Please enter password: '));
 
     // Validation
     if (!email || !password) {
-      throw new CliError(ErrorCode.INVALID_INPUT, 'email andpassword不能为空');
+      throw new CliError(ErrorCode.INVALID_INPUT, 'Email and passwordEmpty');
     }
 
     const response = await this.api.post<AuthResponse>('/api/auth/login', {
@@ -108,7 +108,7 @@ export class AuthService {
       };
     }
 
-    throw new CliError(ErrorCode.AUTH_LOGIN_FAILED, 'loginFailed');
+    throw new CliError(ErrorCode.AUTH_LOGIN_FAILED, 'Login failed');
   }
 
   /**
@@ -119,7 +119,7 @@ export class AuthService {
     const refreshToken = configManager.getRefreshToken();
 
     if (!refreshToken) {
-      throw new CliError(ErrorCode.AUTH_TOKEN_EXPIRED, '没有有效的Refresh Token');
+      throw new CliError(ErrorCode.AUTH_TOKEN_EXPIRED, 'validRefresh Token');
     }
 
     const response = await this.api.post<{ access_token: string; refresh_token: string }>(
@@ -137,17 +137,17 @@ export class AuthService {
       return response.access_token;
     }
 
-    throw new CliError(ErrorCode.AUTH_TOKEN_EXPIRED, 'Refresh TokenFailed');
+    throw new CliError(ErrorCode.AUTH_TOKEN_EXPIRED, 'Refresh token failed');
   }
 
   /**
-   * Current user information
+   * Current UserInformation
    */
-  async me(): Promise<user info> {
-    const response = await this.api.get<ApiResponse<{ user: user info }>>('/api/auth/me');
+  async me(): Promise<UserInfo> {
+    const response = await this.api.get<ApiResponse<{ user: UserInfo }>>('/api/auth/me');
 
     if (!response.success || !response.user) {
-      throw new CliError(ErrorCode.AUTH_UNAUTHORIZED, '获取user infoFailed');
+      throw new CliError(ErrorCode.AUTH_UNAUTHORIZED, 'GetUserInfofailed');
     }
 
     return response.user;
@@ -165,7 +165,7 @@ export class AuthService {
   /**
    * Validationemail
    */
-  private isValidemail(email: string): boolean {
+  private isValidEmail(email: string): boolean {
     return VALIDATION.EMAIL_REGEX.test(email);
   }
 
@@ -189,7 +189,7 @@ export class AuthService {
   /**
    * HintUserpassword（）
    */
-  private promptpassword(_question: string): Promise<string> {
+  private promptPassword(_question: string): Promise<string> {
     const rl = readline.createInterface({
       input: process.stdin,
       output: process.stdout,

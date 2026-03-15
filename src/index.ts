@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-import { command } from 'commander';
+import { Command } from 'commander';
 import { registercommands } from './commands';
 import { CLI_VERSION } from './config/default.config';
 import { initLogger, getLogger } from './utils/logger';
@@ -17,7 +17,7 @@ initLogger()
     });
   })
   .catch((error) => {
-    console.warn('Failed to initialize logging system:', error.message);
+    console.warn('failed to initialize logging system:', error.message);
   });
 
 // Global error handling
@@ -29,7 +29,7 @@ process.on('unhandledRejection', (reason) => {
   ErrorHandler.handle(reason);
 });
 
-const program = new command();
+const program = new Command();
 
 program
   .name('pnce')
@@ -41,7 +41,7 @@ program
   )
   .addHelpText(
     'after',
-    '\n\ncommand Group Help:\n  - lang: Language settings (set, list)\n  - alias: command aliases (add, remove, list, clear)\n  - analytics: Usage analytics (enable, disable, clear, status)\n  - profile: Configuration profiles (save, load, use, list, delete, rename)\n  - plugin: Plugin management (list, info)\n'
+    '\n\ncommand Group Help:\n  - lang: Language settings (set, list)\n  - alias: command aliases (add, remove, list, clear)\n  - analytics: Usage analytics (enable, disable, clear, status)\n  - profile: Config profiles (save, load, use, list, delete, rename)\n  - plugin: Plugin management (list, info)\n'
   );
 
 // Set initial working directory environment variable

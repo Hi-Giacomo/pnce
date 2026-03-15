@@ -4,41 +4,41 @@ import { getLogger } from './logger';
 const logger = getLogger();
 
 /**
- * VersionInfo
+ * versionInfo
  */
-export interface VersionInfo {
+export interface versionInfo {
   /**
-   * Version
+   * version
    */
   version: string;
 
   /**
-   * 
+   *
    */
   publishedAt?: string;
 
   /**
-   * 
+   *
    */
   changelog?: string;
 }
 
 /**
- * Version check
+ * version check
  */
-export interface VersionCheckResult {
+export interface versioncheckResult {
   /**
-   * CurrentVersion
+   * Currentversion
    */
   current: string;
 
   /**
-   * Version
+   * version
    */
   latest: string;
 
   /**
-   * YesNo
+   * Yes/No
    */
   hasUpdate: boolean;
 
@@ -48,15 +48,15 @@ export interface VersionCheckResult {
   updateType: 'major' | 'minor' | 'patch' | 'none';
 
   /**
-   * VersionInfo
+   * versionInfo
    */
-  latestInfo?: VersionInfo;
+  latestInfo?: versionInfo;
 }
 
 /**
- * Version check
+ * version check
  */
-export class VersionChecker {
+export class versionchecker {
   private npmRegistry: string;
 
   constructor(npmRegistry: string = 'https://registry.npmjs.org') {
@@ -64,33 +64,33 @@ export class VersionChecker {
   }
 
   /**
-   * Version
+   * version
    */
-  async check(packageName: string, currentVersion: string): Promise<VersionCheckResult> {
+  async check(packageName: string, currentversion: string): Promise<versioncheckResult> {
     try {
-      logger.debug(`检查Version更新: ${packageName}@${currentVersion}`);
+      logger.debug(`checkversionUpdate: ${packageName}@${currentversion}`);
 
       const response = await axios.get(`${this.npmRegistry}/${packageName}/latest`);
-      const latestInfo: VersionInfo = response.data;
+      const latestInfo: versionInfo = response.data;
 
-      const latestVersion = latestInfo.version;
-      const updateType = this.getUpdateType(currentVersion, latestVersion);
+      const latestversion = latestInfo.version;
+      const updateType = this.getUpdateType(currentversion, latestversion);
       const hasUpdate = updateType !== 'none';
 
-      const result: VersionCheckResult = {
-        current: currentVersion,
-        latest: latestVersion,
+      const result: versioncheckResult = {
+        current: currentversion,
+        latest: latestversion,
         hasUpdate,
         updateType,
         latestInfo,
       };
 
-      logger.debug(`Version checkComplete: ${hasUpdate ? '有更新' : '已Yes最新'}`);
+      logger.debug(`version checkComplete: ${hasUpdate ? 'Update' : 'YesLatest'}`);
 
       return result;
     } catch (error) {
-      logger.error(`检查VersionFailed: ${error}`);
-      throw new Error(`检查VersionFailed: ${error}`, { cause: error });
+      logger.error(`checkversionfailed: ${error}`);
+      throw new Error(`checkversionfailed: ${error}`, { cause: error });
     }
   }
 
@@ -117,7 +117,7 @@ export class VersionChecker {
   }
 
   /**
-   * Version
+   * version
    */
   async getChangelog(packageName: string, version?: string): Promise<string[]> {
     try {
@@ -132,32 +132,32 @@ export class VersionChecker {
       const entries: string[] = [];
 
       if (version) {
-        // Version
+        // version
         const versionInfo = versions[version];
         if (versionInfo) {
-          entries.push(`${version}: ${versionInfo.description || '无Description'}`);
+          entries.push(`${version}: ${versionInfo.description || 'Description'}`);
         }
       } else {
-        // AllVersion
+        // Allversion
         const versionNames = Object.keys(versions).sort().reverse().slice(0, 10);
 
         for (const v of versionNames) {
           const info = versions[v];
-          entries.push(`${v}: ${info.description || '无Description'}`);
+          entries.push(`${v}: ${info.description || 'Description'}`);
         }
       }
 
       return entries;
     } catch (error) {
-      logger.error(`获取变更日志Failed: ${error}`);
-      throw new Error(`获取变更日志Failed: ${error}`);
+      logger.error(`GetLogfailed: ${error}`);
+      throw new Error(`GetLogfailed: ${error}`);
     }
   }
 }
 
 /**
- * 
+ *
  */
-export function createVersionChecker(npmRegistry?: string): VersionChecker {
-  return new VersionChecker(npmRegistry);
+export function createversionchecker(npmRegistry?: string): versionchecker {
+  return new versionchecker(npmRegistry);
 }

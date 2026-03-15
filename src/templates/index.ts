@@ -26,12 +26,12 @@ const TEMPLATE_DIRS: TemplateType[] = ['service', 'microservice'];
  */
 const TEMPLATE_INFO: Record<TemplateType, { name: string; description: string }> = {
   service: {
-    name: '主服务',
-    description: 'NestJS主服务项目Template',
+    name: 'service',
+    description: 'NestJSserviceProjectTemplate',
   },
   microservice: {
-    name: '微服务',
-    description: 'NestJS微服务moduleTemplate',
+    name: 'service',
+    description: 'NestJSservicemoduleTemplate',
   },
 };
 
@@ -58,9 +58,9 @@ export function getTemplatePath(type: TemplateType): string {
 }
 
 /**
- * TemplateYesNo
+ * TemplateYes/No
  * @param type TemplateType
- * @returns YesNo
+ * @returns Yes/No
  */
 export function hasTemplate(type: TemplateType): boolean {
   const templatePath = getTemplatePath(type);
@@ -91,8 +91,8 @@ export function getAvailableTemplates(): Template[] {
 /**
  * TemplateDirectory
  * @param type TemplateType
- * @param targetPath 
- * @param options 
+ * @param targetPath
+ * @param options
  */
 export async function copyTemplate(
   type: TemplateType,
@@ -102,7 +102,7 @@ export async function copyTemplate(
     moduleName?: string;
     normalizedClassName?: string;
     normalizedCamelCase?: string;
-    normalizedFileName?: string;
+    normalizedfileName?: string;
   } = {}
 ): Promise<void> {
   if (!hasTemplate(type)) {
@@ -116,7 +116,7 @@ export async function copyTemplate(
     overwrite: false,
     errorOnExist: true,
     filter: (src: string) => {
-      // 
+      //
       if (src.endsWith('.js')) return false;
       if (src.endsWith('.d.ts')) return false;
       if (src.endsWith('.js.map')) return false;
@@ -161,8 +161,8 @@ async function processServiceTemplate(
       await fs.writeJson(moduleConfigPath, moduleConfig, { spaces: 2 });
     }
 
-    // FileProject name
-    await updateFileContent(path.join(targetPath, 'src', 'main.ts'), options.projectName);
+    // fileProject name
+    await updatefileContent(path.join(targetPath, 'src', 'main.ts'), options.projectName);
   }
 }
 
@@ -175,14 +175,14 @@ async function processMicroserviceTemplate(
     moduleName?: string;
     normalizedClassName?: string;
     normalizedCamelCase?: string;
-    normalizedFileName?: string;
+    normalizedfileName?: string;
   }
 ): Promise<void> {
   if (!options.moduleName) {
     return;
   }
 
-  const { moduleName, normalizedClassName, normalizedFileName } = options;
+  const { moduleName, normalizedClassName, normalizedfileName } = options;
   const normalizedCamelCase = options.normalizedCamelCase;
   if (normalizedCamelCase) {
     // Variable is reserved for future use in template files
@@ -204,58 +204,58 @@ async function processMicroserviceTemplate(
     await fs.writeJson(moduleConfigPath, moduleConfig, { spaces: 2 });
   }
 
-  // File
-  if (normalizedFileName && normalizedClassName) {
+  // file
+  if (normalizedfileName && normalizedClassName) {
     const srcDir = path.join(targetPath, 'src');
 
-    // moduleFile
+    // modulefile
     const oldmodulePath = path.join(srcDir, 'module.ts');
-    const newmodulePath = path.join(srcDir, `${normalizedFileName}.module.ts`);
+    const newmodulePath = path.join(srcDir, `${normalizedfileName}.module.ts`);
     if (fs.existsSync(oldmodulePath)) {
       await fs.rename(oldmodulePath, newmodulePath);
     }
 
-    // ControllerFile
+    // Controllerfile
     const oldControllerPath = path.join(srcDir, 'controller.ts');
-    const newControllerPath = path.join(srcDir, `${normalizedFileName}.controller.ts`);
+    const newControllerPath = path.join(srcDir, `${normalizedfileName}.controller.ts`);
     if (fs.existsSync(oldControllerPath)) {
       await fs.rename(oldControllerPath, newControllerPath);
     }
 
-    // File
+    // file
     const oldServicePath = path.join(srcDir, 'service.ts');
-    const newServicePath = path.join(srcDir, `${normalizedFileName}.service.ts`);
+    const newServicePath = path.join(srcDir, `${normalizedfileName}.service.ts`);
     if (fs.existsSync(oldServicePath)) {
       await fs.rename(oldServicePath, newServicePath);
     }
 
     //  main.ts（）
-    // main.ts 
+    // main.ts
 
-    // File
+    // file
     if (fs.existsSync(newmodulePath)) {
-      await updateFileContent(newmodulePath, normalizedClassName);
+      await updatefileContent(newmodulePath, normalizedClassName);
     }
     if (fs.existsSync(newControllerPath)) {
-      await updateFileContent(newControllerPath, normalizedClassName);
+      await updatefileContent(newControllerPath, normalizedClassName);
     }
     if (fs.existsSync(newServicePath)) {
-      await updateFileContent(newServicePath, normalizedClassName);
+      await updatefileContent(newServicePath, normalizedClassName);
     }
 
     //  main.ts
     const mainPath = path.join(srcDir, 'main.ts');
     if (fs.existsSync(mainPath)) {
-      await updateMicroserviceMain(mainPath, moduleName, normalizedClassName, normalizedFileName);
+      await updateMicroserviceMain(mainPath, moduleName, normalizedClassName, normalizedfileName);
     }
   }
 }
 
 /**
- * File
+ * file
  */
 
-async function updateFileContent(filePath: string, _projectName: string): Promise<void> {
+async function updatefileContent(filePath: string, _projectName: string): Promise<void> {
   if (!fs.existsSync(filePath)) {
     return;
   }
@@ -263,7 +263,7 @@ async function updateFileContent(filePath: string, _projectName: string): Promis
   const content = await fs.readFile(filePath, 'utf-8');
 
   // Project name（Template）
-  // 
+  //
 
   await fs.writeFile(filePath, content, 'utf-8');
 }
@@ -275,7 +275,7 @@ async function updateMicroserviceMain(
   filePath: string,
   moduleName: string,
   normalizedClassName: string,
-  normalizedFileName: string
+  normalizedfileName: string
 ): Promise<void> {
   if (!fs.existsSync(filePath)) {
     return;
@@ -283,17 +283,17 @@ async function updateMicroserviceMain(
 
   let content = await fs.readFile(filePath, 'utf-8');
 
-  // 
+  //
   content = content.replace(
     /from '\.\/\.?\/module\.module'/g,
-    `from './${normalizedFileName}.module'`
+    `from './${normalizedfileName}.module'`
   );
 
   // module
   content = content.replace(/Appmodule/g, `${normalizedClassName}module`);
 
   // Project name
-  content = content.replace(//g, `${moduleName} 服务已启动`);
+  content = content.replace(/{{moduleName}}/g, `${moduleName} serviceStart`);
 
   await fs.writeFile(filePath, content, 'utf-8');
 }
@@ -309,19 +309,19 @@ export async function createProjectStructure(
 }
 
 /**
- * moduleFile（Interface）
+ * modulefile（Interface）
  */
-export async function generateMicroserviceFiles(
+export async function generateMicroservicefiles(
   targetDir: string,
   moduleName: string,
   normalizedClassName: string,
   normalizedCamelCase: string,
-  normalizedFileName: string
+  normalizedfileName: string
 ): Promise<void> {
   await copyTemplate('microservice', targetDir, {
     moduleName,
     normalizedClassName,
     normalizedCamelCase,
-    normalizedFileName,
+    normalizedfileName,
   });
 }

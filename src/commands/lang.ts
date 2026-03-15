@@ -1,4 +1,4 @@
-import { command } from 'commander';
+import { Command } from 'commander';
 import chalk from 'chalk';
 import { getI18n, setLanguage, Language } from '../utils/i18n';
 import { getLogger } from '../utils/logger';
@@ -8,7 +8,7 @@ const logger = getLogger();
 /**
  * Language command
  */
-export const langcommand = new command('lang').description('Set or view language').action(() => {
+export const langcommand = new Command('lang').description('Set or view language').action(() => {
   const currentLang = getI18n().getLanguage();
   const supportedLangs = getI18n().getSupportedLanguages();
 
@@ -26,7 +26,7 @@ export const langcommand = new command('lang').description('Set or view language
 /**
  * Set language subcommand
  */
-export const setLangcommand = new command('set')
+export const setLangcommand = new Command('set')
   .argument('<lang>', 'Language code (zh/en)')
   .description('Set interface language')
   .action((lang: string) => {
@@ -44,15 +44,15 @@ export const setLangcommand = new command('set')
       console.log(chalk.green(`Language set to: ${lang}`));
       logger.info(`Language set to: ${lang}`);
     } catch (error) {
-      console.log(chalk.red(`Failed to set language: ${error}`));
-      logger.error('Failed to set language', { error });
+      console.log(chalk.red(`failed to set language: ${error}`));
+      logger.error('failed to set language', { error });
     }
   });
 
 /**
  * List languages subcommand
  */
-export const listLangcommand = new command('list')
+export const listLangcommand = new Command('list')
   .description('List all supported languages')
   .action(() => {
     const supportedLangs = getI18n().getSupportedLanguages();
@@ -71,10 +71,10 @@ export const listLangcommand = new command('list')
     console.log();
   });
 
-export function register(program: command): void {
-  const langCmd = program.addcommand(langcommand);
-  langCmd.addcommand(setLangcommand);
-  langCmd.addcommand(listLangcommand);
+export function register(program: Command): void {
+  const langCmd = program.addCommand(langcommand);
+  langCmd.addCommand(setLangcommand);
+  langCmd.addCommand(listLangcommand);
 
   // Remove subcommands from program.commands to avoid duplicate display in top-level help
   // commander defaults to displaying subcommands as top-level commands, supporting both pnce set and pnce lang set access methods

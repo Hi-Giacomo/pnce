@@ -22,11 +22,11 @@ export class OAuth2Service {
     return crypto.randomBytes(16).toString('base64url');
   }
 
-  static async weblogin(): Promise<AuthResponse> {
+  static async webLogin(): Promise<AuthResponse> {
     const config = getConfigManager().getConfig();
     // const registryUrl = config.apiServer;
 
-    //  PKCE 
+    //  PKCE
     const codeVerifier = this.generateCodeVerifier();
     const codeChallenge = this.generateCodeChallenge(codeVerifier);
     const state = this.generateState();
@@ -42,11 +42,11 @@ export class OAuth2Service {
     authUrl.searchParams.append('state', state);
     authUrl.searchParams.append('scope', OAUTH2_CONFIG.SCOPE);
 
-    console.log('\n正在打开浏览器进行authorization...');
+    console.log('\nProcessingOpenauthorization...');
     console.log(`authorization URL: ${authUrl.toString()}`);
-    console.log('如果浏览器未自动打开，请手动访问上述 URL\n');
+    console.log('Open，Please URL\n');
 
-    // 
+    //
     await this.openBrowser(authUrl.toString());
 
     // Local
@@ -58,13 +58,13 @@ export class OAuth2Service {
         // Validation state
         if (query.state !== state) {
           this.sendErrorResponse(res, 400, 'Invalid state parameter');
-          reject(new Error('State ValidationFailed'));
+          reject(new Error('State Validationfailed'));
           return;
         }
 
-        // YesNoError
+        // Yes/NoError
         if (query.error) {
-          this.sendErrorResponse(res, 400, `authorizationFailed: ${query.error}`);
+          this.sendErrorResponse(res, 400, `authorizationfailed: ${query.error}`);
           reject(new Error(query.error as string));
           return;
         }
@@ -73,7 +73,7 @@ export class OAuth2Service {
         const code = query.code as string;
         if (!code) {
           this.sendErrorResponse(res, 400, 'Missing authorization code');
-          reject(new Error('缺少authorization码'));
+          reject(new Error('authorization'));
           return;
         }
 
@@ -85,7 +85,7 @@ export class OAuth2Service {
 
           if (!accessToken) {
             this.sendErrorResponse(res, 400, 'Missing access token in response');
-            reject(new Error('回调Data格式Error'));
+            reject(new Error('CallbackDataFormatError'));
             return;
           }
 
@@ -97,21 +97,21 @@ export class OAuth2Service {
           });
         } catch (error) {
           this.sendErrorResponse(res, 400, 'Invalid authorization code format');
-          reject(new Error('authorization码格式Error'));
+          reject(new Error('authorizationFormatError'));
         } finally {
           server.close();
         }
       });
 
       server.listen(this.REDIRECT_PORT, () => {
-        console.log(`Local服务器运行在 http://localhost:${this.REDIRECT_PORT}`);
-        console.log('等待authorizationComplete...\n');
+        console.log(`LocalserviceRun http://localhost:${this.REDIRECT_PORT}`);
+        console.log('AwaitauthorizationComplete...\n');
       });
 
-      // 
+      //
       setTimeout(() => {
         server.close();
-        reject(new Error('authorization超时，Please try again'));
+        reject(new Error('authorizationTimeout，Please try again'));
       }, this.AUTH_TIMEOUT);
     });
   }
@@ -158,7 +158,7 @@ export class OAuth2Service {
     return new Promise<void>((resolve) => {
       exec(command, (error) => {
         if (error) {
-          console.warn('无法自动打开浏览器，请手动访问上述 URL');
+          console.warn('Open，Please URL');
         }
         resolve();
       });
@@ -213,8 +213,8 @@ export class OAuth2Service {
         <div class="container">
           <div class="success-icon">✓</div>
           <h1>authorizationSuccess</h1>
-          <p>User <strong>${username}</strong> 已Successlogin</p>
-          <p class="close-hint">您可以关闭此窗口返回 CLI</p>
+          <p>User <strong>${username}</strong> Successlogin</p>
+          <p class="close-hint">CloseWindowReturn CLI</p>
         </div>
       </body>
       </html>
@@ -231,7 +231,7 @@ export class OAuth2Service {
       <!DOCTYPE html>
       <html>
       <head>
-        <title>authorizationFailed</title>
+        <title>authorizationfailed</title>
         <style>
           body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
@@ -267,7 +267,7 @@ export class OAuth2Service {
       <body>
         <div class="container">
           <div class="error-icon">✗</div>
-          <h1>authorizationFailed</h1>
+          <h1>authorizationfailed</h1>
           <p>${message}</p>
         </div>
       </body>

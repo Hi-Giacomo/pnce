@@ -9,7 +9,7 @@ This document describes the overall architecture, design principles, and core co
 3. [Project Structure](#project-structure)
 4. [Core Modules](#core-modules)
 5. [Data Flow](#data-flow)
-6. [Configuration Management](#configuration-management)
+6. [Config Management](#configuration-management)
 7. [Security Mechanisms](#security-mechanisms)
 8. [Extension Mechanisms](#extension-mechanisms)
 
@@ -80,7 +80,7 @@ pnce-cli/
 │   │   ├── module.service.ts
 │   │   ├── module-upload.service.ts
 │   │   └── module-download.service.ts
-│   ├── config/             # Configuration management
+│   ├── config/             # Config management
 │   │   ├── manager.ts
 │   │   └── default.config.ts
 │   ├── utils/              # Utility functions
@@ -176,7 +176,7 @@ class ApiService {
 
 **Responsibility**: Manage configuration loading, saving, merging.
 
-**Configuration Priority**:
+**Config Priority**:
 ```
 Environment Variables > Project Config > User Config > Default Config
 ```
@@ -184,8 +184,8 @@ Environment Variables > Project Config > User Config > Default Config
 **Features**:
 - Multi-layer configuration merging
 - Environment variable support
-- Configuration profile switching
-- Configuration validation
+- Config profile switching
+- Config validation
 
 ### 4. Utils Module
 
@@ -200,7 +200,7 @@ Environment Variables > Project Config > User Config > Default Config
 - ERROR: Error information
 
 **Features**:
-- File logging
+- file logging
 - Console output
 - Log level separation
 - Log rotation
@@ -224,22 +224,22 @@ Environment Variables > Project Config > User Config > Default Config
 - Slow operation detection
 - Performance reports
 
-#### VersionLockManager
+#### versionLockManager
 
 **Responsibility**: Module version locking.
 
 **Features**:
 - Single version locking
 - Batch version locking
-- Version dependency management
+- version dependency management
 
-#### VersionChecker
+#### versionchecker
 
-**Responsibility**: Version checking and update notifications.
+**Responsibility**: version checking and update notifications.
 
 **Features**:
-- Check latest version
-- Version comparison
+- check latest version
+- version comparison
 - Changelog
 
 #### OfflineCacheManager
@@ -263,7 +263,7 @@ User command
   → Commands parse arguments
   → ModuleDownloadService.download()
   → ApiService.getModuleInfo()
-  → Check cache
+  → check cache
   → Download module files
   → Extract to target directory
   → Update version lock
@@ -301,9 +301,9 @@ User command
 
 ---
 
-## Configuration Management
+## Config Management
 
-### Configuration Structure
+### Config Structure
 
 ```typescript
 interface PnceConfig {
@@ -312,7 +312,7 @@ interface PnceConfig {
   oauthEndpoint: string;
   oauthPort: number;
 
-  // Authentication
+  // Auth
   token?: string;
   refreshToken?: string;
   tokenExpiresAt?: number;
@@ -338,11 +338,11 @@ interface PnceConfig {
 }
 ```
 
-### Configuration File Locations
+### Config file Locations
 
 - **User config**: `~/.pnce/config.json`
 - **Project config**: `./.pnce/config.json`
-- **Configuration profiles**: `~/.pnce/profiles/*.json`
+- **Config profiles**: `~/.pnce/profiles/*.json`
 
 ### Environment Variables
 
@@ -350,7 +350,7 @@ interface PnceConfig {
 PNCE_API_SERVER         # API server address
 PNCE_OAUTH_ENDPOINT     # OAuth authorization endpoint
 PNCE_OAUTH_PORT         # OAuth callback port
-PNCE_TOKEN              # Authentication token
+PNCE_TOKEN              # Auth token
 PNCE_OUTPUT_DIR         # Output directory
 PNCE_PROXY_URL          # Proxy address
 PNCE_LOG_LEVEL          # Log level
@@ -362,7 +362,7 @@ PNCE_NO_CACHE           # Disable cache
 
 ## Security Mechanisms
 
-### 1. Authentication
+### 1. Auth
 
 - **OAuth2**: Use standard OAuth2 authorization flow
 - **Token Management**: Tokens are encrypted and stored in local configuration file
@@ -406,8 +406,8 @@ class PluginManager {
 
 ```typescript
 interface Hooks {
-  beforeUpload?: (moduleInfo: ModuleInfo) => Promise<void>;
-  afterUpload?: (moduleInfo: ModuleInfo) => Promise<void>;
+  beforeUpload?: (module information: ModuleInfo) => Promise<void>;
+  afterUpload?: (module information: ModuleInfo) => Promise<void>;
   beforeDownload?: (moduleName: string) => Promise<void>;
   afterDownload?: (moduleName: string, path: string) => Promise<void>;
 }
@@ -491,7 +491,7 @@ Exception occurs
 ### 3. CI/CD
 
 - **Auto Testing**: Automatically run tests on every commit
-- **Code Checking**: ESLint + Prettier
+- **Code checking**: ESLint + Prettier
 - **Security Scanning**: npm audit
 
 ---

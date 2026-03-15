@@ -4,17 +4,17 @@ This document provides troubleshooting steps and solutions for common problems.
 
 ## Table of Contents
 
-1. [Installation Issues](#installation-issues)
-2. [Authentication Issues](#authentication-issues)
+1. [installation Issues](#installation-issues)
+2. [Auth Issues](#authentication-issues)
 3. [Network Connection Issues](#network-connection-issues)
 4. [Module Management Issues](#module-management-issues)
-5. [Configuration Issues](#configuration-issues)
+5. [Config Issues](#configuration-issues)
 6. [Performance Issues](#performance-issues)
 7. [Other Issues](#other-issues)
 
 ---
 
-## Installation Issues
+## installation Issues
 
 ### Issue: Command not found after installation
 
@@ -26,7 +26,7 @@ zsh: command not found: pnce
 
 **Troubleshooting Steps:**
 
-1. Check if global installation succeeded:
+1. check if global installation succeeded:
 
 ```bash
 npm list -g pnce
@@ -34,7 +34,7 @@ npm list -g pnce
 yarn global list | grep pnce
 ```
 
-2. Check npm global path:
+2. check npm global path:
 
 ```bash
 npm config get prefix
@@ -66,7 +66,7 @@ Reload configuration after executing:
 source ~/.bashrc  # or source ~/.zshrc
 ```
 
-### Issue: Installation failed, permission denied
+### Issue: installation failed, permission denied
 
 **Symptoms:**
 ```bash
@@ -101,13 +101,13 @@ npm install -g pnce
 
 ---
 
-## Authentication Issues
+## Auth Issues
 
 ### Issue: Browser doesn't open when logging in
 
 **Troubleshooting Steps:**
 
-1. Check if default browser is installed:
+1. check if default browser is installed:
 
 ```bash
 # macOS
@@ -118,7 +118,7 @@ which xdg-open
 where start
 ```
 
-2. Check if port is occupied:
+2. check if port is occupied:
 
 ```bash
 # macOS/Linux
@@ -146,13 +146,13 @@ pnce login --print-url
 
 **Troubleshooting Steps:**
 
-1. Check if configuration file exists:
+1. check if configuration file exists:
 
 ```bash
 cat ~/.pnce/config.json
 ```
 
-2. Check token field:
+2. check token field:
 
 ```bash
 cat ~/.pnce/config.json | grep token
@@ -180,13 +180,13 @@ pnce login
 
 **Troubleshooting Steps:**
 
-1. Check if system time is correct:
+1. check if system time is correct:
 
 ```bash
 date
 ```
 
-2. Check token expiration time:
+2. check token expiration time:
 
 ```bash
 cat ~/.pnce/config.json | grep tokenExpiresAt
@@ -211,13 +211,13 @@ Error: timeout of 30000ms exceeded
 
 **Troubleshooting Steps:**
 
-1. Check network connection:
+1. check network connection:
 
 ```bash
 ping pnce.example.com
 ```
 
-2. Check server address configuration:
+2. check server address configuration:
 
 ```bash
 pnce config
@@ -234,7 +234,7 @@ telnet pnce.example.com 3000
 
 **Solutions:**
 
-1. Check and modify server address:
+1. check and modify server address:
 
 ```bash
 pnce init
@@ -290,13 +290,13 @@ export NODE_EXTRA_CA_CERTS=/path/to/ca.pem
 
 **Troubleshooting Steps:**
 
-1. Check if module name is correct:
+1. check if module name is correct:
 
 ```bash
 pnce search module-name
 ```
 
-2. Check login status:
+2. check login status:
 
 ```bash
 pnce whoami
@@ -309,13 +309,13 @@ export PNCE_LOG_LEVEL=debug
 pnce install module-name
 ```
 
-4. Check disk space:
+4. check disk space:
 
 ```bash
 df -h
 ```
 
-5. Check target directory permissions:
+5. check target directory permissions:
 
 ```bash
 ls -la ./modules
@@ -324,9 +324,9 @@ ls -la ./modules
 **Solutions:**
 
 1. Re-login
-2. Check and correct module name
-3. Check disk space
-4. Check target directory permissions
+2. check and correct module name
+3. check disk space
+4. check target directory permissions
 5. Use `--verbose` for detailed errors
 
 ### Issue: Slow module download speed
@@ -339,7 +339,7 @@ ls -la ./modules
 curl -o /dev/null http://pnce.example.com/test
 ```
 
-2. Check concurrency settings:
+2. check concurrency settings:
 
 ```bash
 cat ~/.pnce/config.json | grep maxConcurrentDownloads
@@ -362,19 +362,19 @@ cat ~/.pnce/config.json | grep maxConcurrentDownloads
 
 **Troubleshooting Steps:**
 
-1. Check if `module.config.json` exists and is valid:
+1. check if `module.config.json` exists and is valid:
 
 ```bash
 cat module.config.json
 ```
 
-2. Check module directory structure:
+2. check module directory structure:
 
 ```bash
 ls -la
 ```
 
-3. Check module size:
+3. check module size:
 
 ```bash
 du -sh .
@@ -383,25 +383,25 @@ du -sh .
 **Solutions:**
 
 1. Ensure `module.config.json` exists and format is correct
-2. Check if module size exceeds limit
-3. Check upload timeout setting
+2. check if module size exceeds limit
+3. check upload timeout setting
 
 ---
 
-## Configuration Issues
+## Config Issues
 
-### Issue: Configuration file not taking effect
+### Issue: Config file not taking effect
 
 **Troubleshooting Steps:**
 
-1. Check configuration file path:
+1. check configuration file path:
 
 ```bash
 echo ~/.pnce/config.json
 cat ~/.pnce/config.json
 ```
 
-2. Check if JSON format is correct:
+2. check if JSON format is correct:
 
 ```bash
 python3 -m json.tool ~/.pnce/config.json
@@ -409,7 +409,7 @@ python3 -m json.tool ~/.pnce/config.json
 jq . ~/.pnce/config.json
 ```
 
-3. Check environment variables:
+3. check environment variables:
 
 ```bash
 env | grep PNCE
@@ -418,10 +418,10 @@ env | grep PNCE
 **Solutions:**
 
 1. Validate JSON format
-2. Check if environment variables override configuration
+2. check if environment variables override configuration
 3. Use `pnce config` to view actual configuration used
 
-### Issue: Configuration file corrupted
+### Issue: Config file corrupted
 
 **Symptoms:**
 ```bash
@@ -451,7 +451,7 @@ pnce init
 
 **Troubleshooting Steps:**
 
-1. Check system resource usage:
+1. check system resource usage:
 
 ```bash
 top  # or htop
@@ -488,7 +488,7 @@ pnce cache clean
 
 **Troubleshooting Steps:**
 
-1. Check log directory:
+1. check log directory:
 
 ```bash
 du -sh ~/.pnce/logs/
@@ -508,7 +508,7 @@ find ~/.pnce/logs/ -name "*.log" -mtime +7 -delete
 
 **Troubleshooting Steps:**
 
-1. Check global installation path:
+1. check global installation path:
 
 ```bash
 npm config get prefix

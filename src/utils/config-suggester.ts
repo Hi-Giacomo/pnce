@@ -4,7 +4,7 @@ import { getLogger } from './logger';
 const logger = getLogger();
 
 /**
- * 
+ *
  */
 export interface ConfigIssue {
   /**
@@ -13,7 +13,7 @@ export interface ConfigIssue {
   type: 'error' | 'warning' | 'suggestion';
 
   /**
-   * 
+   *
    */
   field: string;
 
@@ -23,13 +23,13 @@ export interface ConfigIssue {
   message: string;
 
   /**
-   * 
+   *
    */
   suggestion?: string | number | boolean;
 }
 
 /**
- * Configuration suggestion
+ * Config suggestion
  */
 export class ConfigSuggester {
   /**
@@ -38,22 +38,22 @@ export class ConfigSuggester {
   validate(config: PnceConfig): ConfigIssue[] {
     const issues: ConfigIssue[] = [];
 
-    //  API 
+    //  API
     if (!config.apiServer || !this.isValidUrl(config.apiServer)) {
       issues.push({
         type: 'error',
         field: 'apiServer',
-        message: 'API 服务器地址无效',
+        message: 'API serviceURLinvalid',
         suggestion: 'https://pnce.example.com',
       });
     }
 
-    //  OAuth 
+    //  OAuth
     if (config.oauthEndpoint && !this.isValidUrl(config.oauthEndpoint)) {
       issues.push({
         type: 'warning',
         field: 'oauthEndpoint',
-        message: 'OAuth 端点地址可能无效',
+        message: 'OAuth URLinvalid',
       });
     }
 
@@ -62,7 +62,7 @@ export class ConfigSuggester {
       issues.push({
         type: 'warning',
         field: 'logLevel',
-        message: '无效的Log Level',
+        message: 'invalidLog Level',
         suggestion: 'info',
       });
     }
@@ -72,17 +72,17 @@ export class ConfigSuggester {
       issues.push({
         type: 'error',
         field: 'outputDir',
-        message: 'Output directory路径无效',
+        message: 'Output directoryPathinvalid',
         suggestion: './modules',
       });
     }
 
-    // 
+    //
     if (config.useProxy && !config.proxyUrl) {
       issues.push({
         type: 'warning',
         field: 'proxyUrl',
-        message: '已启用代理但未设置Proxy URL',
+        message: 'EnableSettingProxy URL',
         suggestion: 'http://127.0.0.1:7890',
       });
     }
@@ -91,16 +91,16 @@ export class ConfigSuggester {
       issues.push({
         type: 'warning',
         field: 'proxyUrl',
-        message: 'Proxy URL格式可能无效',
+        message: 'Proxy URLFormatinvalid',
       });
     }
 
-    // 
+    //
     if (config.downloadTimeout && config.downloadTimeout < 5000) {
       issues.push({
         type: 'warning',
         field: 'downloadTimeout',
-        message: '下载超时时间过短，可能导致大File下载Failed',
+        message: 'DownloadTimeout，fileDownloadfailed',
         suggestion: 60000,
       });
     }
@@ -109,17 +109,17 @@ export class ConfigSuggester {
       issues.push({
         type: 'warning',
         field: 'uploadTimeout',
-        message: '上传超时时间过短，可能导致大File上传Failed',
+        message: 'UploadTimeout，fileUploadfailed',
         suggestion: 120000,
       });
     }
 
-    // 
+    //
     if (config.maxConcurrentDownloads && config.maxConcurrentDownloads > 10) {
       issues.push({
         type: 'suggestion',
         field: 'maxConcurrentDownloads',
-        message: '并发下载设置过高，可能In use过多资源',
+        message: 'ConcurrentDownloadSettingHigh，In use',
         suggestion: 3,
       });
     }
@@ -128,7 +128,7 @@ export class ConfigSuggester {
   }
 
   /**
-   * YesNo URL
+   * Yes/No URL
    */
   private isValidUrl(url: string): boolean {
     try {
@@ -140,7 +140,7 @@ export class ConfigSuggester {
   }
 
   /**
-   * YesNo
+   * Yes/No
    */
   private isValidPath(path: string): boolean {
     // Validation：
@@ -149,38 +149,38 @@ export class ConfigSuggester {
   }
 
   /**
-   * Get configuration建议
+   * Get configurationsuggestion
    */
 
-  getSuggestions(_config: PnceConfig, issues: ConfigIssue[]): string[] {
+  getsuggestions(_config: PnceConfig, issues: ConfigIssue[]): string[] {
     const suggestions: string[] = [];
 
     if (issues.some((i) => i.type === 'error')) {
-      suggestions.push('⚠️  配置存在Error，请先修复这些问题');
+      suggestions.push('⚠️  ConfigureError，PleaseFixIssue');
     }
 
     if (issues.some((i) => i.type === 'warning')) {
-      suggestions.push('⚠️  配置存在Warning，建议检查');
+      suggestions.push('⚠️  ConfigureWarning，suggestioncheck');
     }
 
     if (issues.some((i) => i.type === 'suggestion')) {
-      suggestions.push('💡  以下优化建议可能提升使用体验');
+      suggestions.push('💡  OptimizesuggestionUse');
     }
 
     return suggestions;
   }
 
   /**
-   * 格式化问题输出
+   * FormatIssueOutput
    */
   formatIssues(issues: ConfigIssue[]): string {
     if (issues.length === 0) {
-      return '✅ 配置Validation通过，未发现问题';
+      return '✅ ConfigureValidation，Issue';
     }
 
     const lines: string[] = [];
 
-    // 按Type分组
+    // TypeGroup
     const errors = issues.filter((i) => i.type === 'error');
     const warnings = issues.filter((i) => i.type === 'warning');
     const suggestions = issues.filter((i) => i.type === 'suggestion');
@@ -190,7 +190,7 @@ export class ConfigSuggester {
       errors.forEach((issue) => {
         lines.push(`  • ${issue.field}: ${issue.message}`);
         if (issue.suggestion !== undefined) {
-          lines.push(`    建议值: ${JSON.stringify(issue.suggestion)}`);
+          lines.push(`    suggestionValue: ${JSON.stringify(issue.suggestion)}`);
         }
       });
     }
@@ -200,17 +200,17 @@ export class ConfigSuggester {
       warnings.forEach((issue) => {
         lines.push(`  • ${issue.field}: ${issue.message}`);
         if (issue.suggestion !== undefined) {
-          lines.push(`    建议值: ${JSON.stringify(issue.suggestion)}`);
+          lines.push(`    suggestionValue: ${JSON.stringify(issue.suggestion)}`);
         }
       });
     }
 
     if (suggestions.length > 0) {
-      lines.push('\n💡 建议:');
+      lines.push('\n💡 suggestion:');
       suggestions.forEach((issue) => {
         lines.push(`  • ${issue.field}: ${issue.message}`);
         if (issue.suggestion !== undefined) {
-          lines.push(`    建议值: ${JSON.stringify(issue.suggestion)}`);
+          lines.push(`    suggestionValue: ${JSON.stringify(issue.suggestion)}`);
         }
       });
     }
@@ -219,7 +219,7 @@ export class ConfigSuggester {
   }
 
   /**
-   * 自动修复可自动修复的问题
+   * FixFixIssue
    */
   autoFix(config: PnceConfig, issues: ConfigIssue[]): PnceConfig {
     const fixedConfig = { ...config };
@@ -227,7 +227,7 @@ export class ConfigSuggester {
     issues.forEach((issue) => {
       if (issue.suggestion !== undefined) {
         (fixedConfig as Record<string, unknown>)[issue.field] = issue.suggestion;
-        logger.debug(`自动修复配置: ${issue.field} = ${issue.suggestion}`);
+        logger.debug(`FixConfigure: ${issue.field} = ${issue.suggestion}`);
       }
     });
 
@@ -236,7 +236,7 @@ export class ConfigSuggester {
 }
 
 /**
- * 导出便利函数
+ * ExportFunction
  */
 export function createConfigSuggester(): ConfigSuggester {
   return new ConfigSuggester();

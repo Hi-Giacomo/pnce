@@ -1,17 +1,17 @@
-// moduleDependenciesType definition
+// module dependenciesType definition
 
 export interface modulesConfig {
-  // moduleDependencies
-  externalmodules?: Record<string, string>; // { "module-name": "^1.0.0" }
+  // module dependencies
+  externalModules?: Record<string, string>; // { "module-name": "^1.0.0" }
 
   // module
   options?: {
     // Directory
     installDir?: string;
-    // YesNo git module directory
+    // Yes/No git module directory
     gitIgnore?: boolean;
-    // YesNoFile
-    lockFile?: boolean;
+    // Yes/Nofile
+    lockfile?: boolean;
   };
 }
 
@@ -22,23 +22,23 @@ export interface modulesLock {
     {
       version: string;
       resolved: string; //  URL
-      integrity?: string; // 
-      dependencies?: Record<string, string>; // moduleDependencies
+      integrity?: string; //
+      dependencies?: Record<string, string>; // module dependencies
     }
   >;
 
-  // FileVersion
-  lockfileVersion: number;
+  // fileversion
+  lockfileversion: number;
 
-  // 
+  //
   generatedAt: string;
 }
 
 export const DEFAULT_MODULES_CONFIG: modulesConfig = {
-  externalmodules: {},
+  externalModules: {},
   options: {
     installDir: 'src/external_modules',
     gitIgnore: true,
-    lockFile: true,
+    lockfile: true,
   },
 };

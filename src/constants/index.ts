@@ -1,6 +1,6 @@
 /**
- * 
- * 
+ *
+ *
  */
 
 /**
@@ -30,7 +30,7 @@ export const HTTP = {
 } as const;
 
 /**
- * 
+ *
  */
 export const DOWNLOAD = {
   /** Directory */
@@ -39,8 +39,8 @@ export const DOWNLOAD = {
   get TEMP_DIR_PATH(): string {
     return `${require('os').homedir()}/${this.TEMP_DIR}`;
   },
-  /** File */
-  TEMP_FILE_EXT: '.tgz',
+  /** file */
+  TEMP_FILE_EXT: '..tgz file',
   /** Default */
   DEFAULT_CONCURRENCY: 3,
   /**  */
@@ -48,18 +48,18 @@ export const DOWNLOAD = {
 } as const;
 
 /**
- * File
+ * file
  */
 export const PATHS = {
-  /** File */
+  /** file */
   CONFIG_FILE: 'config.json',
-  /** moduleFile */
+  /** modulefile */
   MODULE_CONFIG_FILE: 'module.config.json',
-  /** File */
+  /** file */
   PACKAGE_FILE: 'package.json',
-  /** PortCacheFile */
+  /** PortCachefile */
   PORT_CACHE_FILE: '.module-port-cache.json',
-  /** NPMFile */
+  /** NPMfile */
   NPMIGNORE_FILE: '.npmignore',
   /** module directory */
   EXTERNAL_MODULES_DIR: 'src/external_modules',

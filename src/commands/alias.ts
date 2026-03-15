@@ -1,4 +1,4 @@
-import { command } from 'commander';
+import { Command } from 'commander';
 import chalk from 'chalk';
 import { getAliasManager } from '../utils/alias-manager';
 import { getLogger } from '../utils/logger';
@@ -8,7 +8,7 @@ const logger = getLogger();
 /**
  * Alias command
  */
-export const aliascommand = new command('alias')
+export const aliascommand = new Command('alias')
   .description('Manage command aliases')
   .action(() => {
     const aliasManager = getAliasManager();
@@ -36,7 +36,7 @@ export const aliascommand = new command('alias')
 /**
  * Add alias subcommand
  */
-export const addAliascommand = new command('add')
+export const addAliascommand = new Command('add')
   .argument('<alias>', 'Alias name')
   .argument('<command>', 'Original command (arguments can be separated by spaces)')
   .description('Add command alias')
@@ -47,9 +47,9 @@ export const addAliascommand = new command('add')
       console.log(chalk.green(`✓ Alias added: ${alias} -> ${command}`));
       logger.info(`Alias added: ${alias} -> ${command}`);
     } catch (error) {
-      console.log(chalk.red(`Failed to add alias: ${error}`));
+      console.log(chalk.red(`failed to add alias: ${error}`));
       logger.error(
-        'Failed to add alias',
+        'failed to add alias',
         error instanceof Error ? { error } : { error: new Error(String(error)) }
       );
     }
@@ -58,7 +58,7 @@ export const addAliascommand = new command('add')
 /**
  * Remove alias subcommand
  */
-export const removeAliascommand = new command('remove')
+export const removeAliascommand = new Command('remove')
   .argument('<alias>', 'Alias name')
   .description('Remove command alias')
   .action((alias: string) => {
@@ -68,15 +68,15 @@ export const removeAliascommand = new command('remove')
       console.log(chalk.green(`✓ Alias removed: ${alias}`));
       logger.info(`Alias removed: ${alias}`, { alias });
     } catch (error) {
-      console.log(chalk.red(`Failed to remove alias: ${error}`));
-      logger.error('Failed to remove alias', { error });
+      console.log(chalk.red(`failed to remove alias: ${error}`));
+      logger.error('failed to remove alias', { error });
     }
   });
 
 /**
  * List aliases subcommand
  */
-export const listAliascommand = new command('list').description('List all aliases').action(() => {
+export const listAliascommand = new Command('list').description('List all aliases').action(() => {
   const aliasManager = getAliasManager();
   const aliases = aliasManager.list();
 
@@ -95,7 +95,7 @@ export const listAliascommand = new command('list').description('List all aliase
 /**
  * Clear aliases subcommand
  */
-export const clearAliascommand = new command('clear')
+export const clearAliascommand = new Command('clear')
   .description('Clear all aliases')
   .action(() => {
     try {
@@ -104,15 +104,15 @@ export const clearAliascommand = new command('clear')
       console.log(chalk.green('✓ All aliases cleared'));
       logger.info('All aliases cleared');
     } catch (error) {
-      console.log(chalk.red(`Failed to clear aliases: ${error}`));
-      logger.error('Failed to clear aliases', { error });
+      console.log(chalk.red(`failed to clear aliases: ${error}`));
+      logger.error('failed to clear aliases', { error });
     }
   });
 
-export function register(program: command): void {
-  const aliasCmd = program.addcommand(aliascommand);
-  aliasCmd.addcommand(addAliascommand);
-  aliasCmd.addcommand(removeAliascommand);
-  aliasCmd.addcommand(listAliascommand);
-  aliasCmd.addcommand(clearAliascommand);
+export function register(program: Command): void {
+  const aliasCmd = program.addCommand(aliascommand);
+  aliasCmd.addCommand(addAliascommand);
+  aliasCmd.addCommand(removeAliascommand);
+  aliasCmd.addCommand(listAliascommand);
+  aliasCmd.addCommand(clearAliascommand);
 }

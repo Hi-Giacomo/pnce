@@ -33,14 +33,14 @@ describe('ApiService', () => {
   });
 
   describe('getAuthHeaders', () => {
-    it('没有Token时不应该返回Authorization头', () => {
+    it('TokenReturnAuthorization', () => {
       const headers = apiService['getAuthHeaders']();
       expect(headers).toEqual({});
     });
   });
 
   describe('getAxiosInstance', () => {
-    it('应该返回axios实例', () => {
+    it('Returnaxios', () => {
       const instance = apiService.getAxiosInstance();
       expect(instance).toBeDefined();
       expect(instance).toHaveProperty('get');

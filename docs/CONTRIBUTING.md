@@ -152,7 +152,7 @@ git push origin feature/your-feature-name
 
 ### Naming Conventions
 
-- File names: kebab-case (e.g., `auth.service.ts`)
+- file names: kebab-case (e.g., `auth.service.ts`)
 - Class names: PascalCase (e.g., `AuthService`)
 - Functions/variables: camelCase (e.g., `getUserInfo`)
 - Constants: UPPER_SNAKE_CASE (e.g., `API_SERVER`)
@@ -165,7 +165,7 @@ git push origin feature/your-feature-name
 
 ```typescript
 /**
- * Get user information
+ * Get UserInformation
  * @param userId - User ID
  * @returns User info object
  */
@@ -185,7 +185,7 @@ If your changes affect user-visible features:
 
 ## Release Process
 
-PNCE CLI uses Semantic Versioning:
+PNCE CLI uses Semantic versioning:
 
 - **MAJOR**: Incompatible API changes
 - **MINOR**: Backwards-compatible functionality additions

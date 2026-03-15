@@ -1,26 +1,26 @@
-# 模板系统
+# Template System
 
-## 概述
+## Overview
 
-模板系统使用 `src/templates` 目录中的模板文件夹，通过动态复制实现项目初始化。修改模板后，升级 CLI 工具即可直接使用新的模板。
+Template System使用 `src/templates` 目录中的模板文件夹，通过动态复制实现项目初始化。Modifying Templates后，升级 CLI 工具即可直接使用新的模板。
 
-## 目录结构
+## Directory Structure
 
 ```
 src/templates/
-├── service/              # 服务模板目录
-│   ├── src/             # 源代码
-│   ├── document/        # 文档
-│   ├── scripts/         # 脚本
-│   ├── test/           # 测试
-│   ├── logs/           # 日志
+├── service/              # Service template directory
+│   ├── src/             # Source code
+│   ├── document/        # Documentation
+│   ├── scripts/         # Scripts
+│   ├── test/           # Tests
+│   ├── logs/           # Logs
 │   ├── package.json
 │   ├── tsconfig.json
 │   ├── nest-cli.json
 │   ├── module.config.json
 │   └── README.md
-├── microservice/        # 微服务模板目录
-│   ├── src/            # 源代码
+├── microservice/        # 微Service template directory
+│   ├── src/            # Source code
 │   │   ├── main.ts
 │   │   ├── microservice.module.ts
 │   │   ├── microservice.controller.ts
@@ -30,32 +30,32 @@ src/templates/
 │   ├── tsconfig.json
 │   ├── nest-cli.json
 │   └── module.config.json
-└── index.ts            # 模板加载和导出
+└── index.ts            # Template loading and export
 ```
 
-## 使用方式
+## Usage
 
-### 1. 通过命令行（推荐）
+### 1. Via Command Line (Recommended)
 
 ```bash
-# 创建服务项目
+# Create service project
 yarn cli init my-service --type service
 
-# 创建微服务项目
+# Create microservice project
 yarn cli init my-micro --type microservice
 ```
 
-### 2. 直接使用模板 API
+### 2. Use template API directly
 
 ```typescript
 import { copyTemplate } from '../templates';
 
-// 创建服务项目
+// Create service project
 await copyTemplate('service', '/path/to/project', {
   projectName: 'my-service'
 });
 
-// 创建微服务项目
+// Create microservice project
 await copyTemplate('microservice', '/path/to/project', {
   moduleName: 'my-micro',
   normalizedClassName: 'MyMicro',
@@ -64,15 +64,15 @@ await copyTemplate('microservice', '/path/to/project', {
 });
 ```
 
-### 3. 使用兼容接口
+### 3. Use compatible interface
 
 ```typescript
 import { createProjectStructure, generateMicroserviceFiles } from '../commands/templates';
 
-// 创建服务项目
+// Create service project
 await createProjectStructure('/path/to/project', 'my-service');
 
-// 创建微服务项目
+// Create microservice project
 generateMicroserviceFiles(
   '/path/to/project',
   'my-micro',
@@ -82,80 +82,80 @@ generateMicroserviceFiles(
 );
 ```
 
-## 修改模板
+## Modifying Templates
 
-### 修改服务模板
+### Modify service template
 
-1. 进入 `src/templates/service/` 目录
-2. 修改任何文件或添加新文件
-3. 重新编译 CLI 工具：`yarn build`
-4. 使用新模板创建项目
+1. Go to `src/templates/service/` directory
+2. Modify any files or add new files
+3. Recompile CLI tool: `yarn build`
+4. Create project with new template
 
-### 修改微服务模板
+### Modify microservice template
 
-1. 进入 `src/templates/microservice/` 目录
-2. 修改任何文件或添加新文件
-3. 重新编译 CLI 工具：`yarn build`
-4. 使用新模板创建项目
+1. Go to `src/templates/microservice/` directory
+2. Modify any files or add new files
+3. Recompile CLI tool: `yarn build`
+4. Create project with new template
 
-## 添加新模板
+## Adding New Templates
 
-### 步骤 1: 创建模板目录
+### Step 1: Create template directory
 
 ```bash
 mkdir src/templates/your-template
 ```
 
-### 步骤 2: 创建模板文件
+### Step 2: Create template files
 
-在目录中创建完整的项目结构，包括：
-- 源代码文件
-- 配置文件（package.json, tsconfig.json 等）
-- README 文档
+Create complete project structure in directory, including:
+- Source code文件
+- Configuration files (package.json, tsconfig.json, etc.)
+- README Documentation
 
-### 步骤 3: 注册模板
+### Step 3: Register template
 
-编辑 `src/templates/index.ts`，在 `TEMPLATE_DIRS` 中添加：
+Edit `src/templates/index.ts`, add in `TEMPLATE_DIRS`:
 
 ```typescript
 const TEMPLATE_DIRS: TemplateType[] = ['service', 'microservice', 'your-template'];
 ```
 
-在 `TEMPLATE_INFO` 中添加描述：
+Add description in `TEMPLATE_INFO`:
 
 ```typescript
 const TEMPLATE_INFO: Record<TemplateType, { name: string; description: string }> = {
   service: { name: '主服务', description: 'NestJS主服务项目模板' },
   microservice: { name: '微服务', description: 'NestJS微服务模块模板' },
-  'your-template': { name: '你的模板', description: '你的模板描述' },
+  'your-template': { name: 'Your template', description: 'Your template描述' },
 };
 ```
 
-### 步骤 4: 实现后处理逻辑
+### Step 4: Implement post-processing logic
 
-如果需要对模板文件进行特殊处理，在 `index.ts` 中添加相应的处理函数：
+If special processing is needed for template files, add corresponding processing functions in `index.ts`:
 
 ```typescript
 async function processYourTemplate(
   targetPath: string,
   options: { ... }
 ): Promise<void> {
-  // 实现你的模板处理逻辑
+  // 实现Your template处理逻辑
 }
 ```
 
-## 模板变量替换
+## Template Variable Replacement
 
-### 微服务模板
+### Microservice template
 
-微服务模板创建时会自动进行以下替换：
+Microservice template创建时会自动进行以下替换：
 
 1. **文件重命名**：
    - `microservice.module.ts` → `{normalizedFileName}.module.ts`
    - `microservice.controller.ts` → `{normalizedFileName}.controller.ts`
    - `microservice.service.ts` → `{normalizedFileName}.service.ts`
 
-2. **类名替换**：
+2. **Class name替换**：
    - `MicroserviceModule` → `{normalizedClassName}Module`
    - `MicroserviceController` → `{normalizedClassName}Controller`
    - `MicroserviceService` → `{normalizedClassName}Service`
@@ -164,40 +164,40 @@ async function processYourTemplate(
    - `main.ts` 中的模块导入会自动更新
 
 4. **配置文件更新**：
-   - `package.json` 中的 name 字段
-   - `module.config.json` 中的 name 字段
+   - `package.json` in the name field
+   - `module.config.json` in the name field
 
 ### 服务模板
 
-服务模板创建时会进行以下替换：
+Service template creation will perform the following replacements:
 
 1. **配置文件更新**：
-   - `package.json` 中的 name 和 description 字段
-   - `module.config.json` 中的 name 和 description 字段
+   - `package.json` name and description fields in
+   - `module.config.json` name and description fields in
 
-## 模板规范
+## Template Guidelines
 
-### 文件命名规范
+### File naming conventions
 
-- 使用 kebab-case: `microservice.module.ts`
-- 类名使用 PascalCase: `MicroserviceModule`
-- 服务名使用 camelCase: `microserviceService`
+- Use kebab-case: `microservice.module.ts`
+- Class names use PascalCase: `MicroserviceModule`
+- Service names use camelCase: `microserviceService`
 
-### 模板占位符
+### Template placeholders
 
-如果模板需要使用占位符，建议使用以下格式：
-- `{{PROJECT_NAME}}`: 项目名称
-- `{{MODULE_NAME}}`: 模块名称
-- `{{CLASS_NAME}}`: 类名
-- `{{FILE_NAME}}`: 文件名
+If the template needs placeholders, the following format is recommended:
+- `{{PROJECT_NAME}}`: Project name
+- `{{MODULE_NAME}}`: Module name
+- `{{CLASS_NAME}}`: Class name
+- `{{FILE_NAME}}`: File name
 
-（当前版本尚未实现占位符系统，但计划在未来支持）
+(Current version has not implemented placeholder system, but planned for future support)
 
-## API 参考
+## API Reference
 
 ### copyTemplate()
 
-复制模板目录到目标位置。
+Copy template directory to target location.
 
 ```typescript
 async function copyTemplate(
@@ -213,15 +213,15 @@ async function copyTemplate(
 ): Promise<void>
 ```
 
-**参数：**
-- `type`: 模板类型 ('service' | 'microservice')
-- `targetPath`: 目标路径
-- `options`: 可选参数
-  - `projectName`: 项目名称（服务模板）
-  - `moduleName`: 模块名称（微服务模板）
-  - `normalizedClassName`: 规范化的类名
-  - `normalizedCamelCase`: 规范化的驼峰命名
-  - `normalizedFileName`: 规范化的文件名
+**Parameters:**
+- `type`: Template type ('service' | 'microservice')
+- `targetPath`: Target path
+- `options`: Optional parameters
+  - `projectName`: Project name（服务模板）
+  - `moduleName`: Module name（Microservice template）
+  - `normalizedClassName`: 规范化的Class name
+  - `normalizedCamelCase`: Normalized camel case
+  - `normalizedFileName`: 规范化的File name
 
 **示例：**
 ```typescript
@@ -232,7 +232,7 @@ await copyTemplate('service', '/tmp/my-service', {
 
 ### getTemplatePath()
 
-获取模板目录的绝对路径。
+Get absolute path of template directory.
 
 ```typescript
 function getTemplatePath(type: TemplateType): string
@@ -240,7 +240,7 @@ function getTemplatePath(type: TemplateType): string
 
 ### hasTemplate()
 
-检查模板是否存在。
+Check if template exists.
 
 ```typescript
 function hasTemplate(type: TemplateType): boolean
@@ -248,48 +248,48 @@ function hasTemplate(type: TemplateType): boolean
 
 ### getAvailableTemplates()
 
-获取所有可用模板的列表。
+Get list of all available templates.
 
 ```typescript
 function getAvailableTemplates(): Template[]
 ```
 
-## 最佳实践
+## Best Practices
 
-1. **模板简洁**: 保持模板简洁，只包含必要文件
-2. **版本控制**: 模板变更应有版本记录
-3. **测试充分**: 修改模板后充分测试
-4. **文档完善**: 修改模板时更新文档
-5. **命名一致**: 保持命名风格一致
+1. **Keep templates simple**: 保持Keep templates simple，只包含必要文件
+2. **Version control**: Template changes should be versioned
+3. **Tests充分**: Modifying Templates后充分Tests
+4. **Documentation完善**: Modifying Templates时更新Documentation
+5. **Consistent naming**: Keep naming style consistent
 
-## 常见问题
+## FAQ
 
-### Q: 修改模板后需要重新编译吗？
+### Q: Modifying Templates后需要重新编译吗？
 
-A: 是的，需要运行 `yarn build` 重新编译 CLI 工具。
+A: Yes, you need to run `yarn build` to recompile the CLI tool.
 
 ### Q: 如何更新已创建的项目？
 
-A: 模板只影响新创建的项目，已创建的项目需要手动更新。
+A: Templates only affect newly created projects, already created projects need manual updates.
 
 ### Q: 可以使用占位符吗？
 
-A: 当前版本使用硬编码的替换逻辑，计划在未来支持占位符系统。
+A: Current version uses hardcoded replacement logic, placeholder system is planned for future support.
 
 ### Q: 如何调试模板问题？
 
-A: 可以在 `index.ts` 的处理函数中添加 `console.log` 进行调试。
+A: You can add `console.log` in the processing functions in `index.ts` for debugging.
 
-## 相关文件
+## Related Files
 
-- `src/commands/templates/index.ts`: 命令层适配器
-- `src/commands/init.commands.ts`: 初始化命令
-- `tsconfig.json`: TypeScript 配置（已排除模板目录）
+- `src/commands/templates/index.ts`: Command layer adapter
+- `src/commands/init.commands.ts`: Initialization command
+- `tsconfig.json`: TypeScript configuration (template directory excluded)
 
-## 维护建议
+## Maintenance Tips
 
-1. 定期审查模板代码，保持与依赖包最新版本同步
-2. 根据用户反馈优化模板
-3. 添加更多模板类型
-4. 实现占位符系统
-5. 添加模板验证功能
+1. Regularly review template code, keep in sync with latest dependency versions
+2. Optimize templates based on user feedback
+3. 添加更多Template type
+4. Implement placeholder system
+5. Add template validation functionality

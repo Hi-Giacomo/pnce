@@ -34,8 +34,8 @@ export class CryptoUtil {
   }
 
   /**
-   * 
-   * @param text - 
+   *
+   * @param text -
    * @returns （Base64）
    */
   static encrypt(text: string): string {
@@ -49,23 +49,23 @@ export class CryptoUtil {
 
     const authTag = cipher.getAuthTag();
 
-    //  IV、DataAuthenticationTags
+    //  IV、DataAuthTags
     const combined = Buffer.concat([iv, authTag, Buffer.from(encrypted, 'hex')]);
 
     return combined.toString('base64');
   }
 
   /**
-   * 
+   *
    * @param encryptedText - （Base64）
-   * @returns 
-   * @throws Failed
+   * @returns
+   * @throws failed
    */
   static decrypt(encryptedText: string): string {
     const key = this.getEncryptionKey();
     const combined = Buffer.from(encryptedText, 'base64');
 
-    //  IV、AuthenticationTagsData
+    //  IV、AuthTagsData
     const iv = combined.subarray(0, this.IV_LENGTH);
     const authTag = combined.subarray(this.IV_LENGTH, this.IV_LENGTH + this.AUTH_TAG_LENGTH);
     const encrypted = combined.subarray(this.IV_LENGTH + this.AUTH_TAG_LENGTH);
@@ -80,7 +80,7 @@ export class CryptoUtil {
   }
 
   /**
-   * 
+   *
    * @param length - （Default16）
    * @returns （Base64）
    */
@@ -89,8 +89,8 @@ export class CryptoUtil {
   }
 
   /**
-   * 
-   * @param text - 
+   *
+   * @param text -
    * @param salt - （）
    * @returns （Hex）
    */
@@ -105,10 +105,10 @@ export class CryptoUtil {
 
   /**
    * Validation
-   * @param text - 
+   * @param text -
    * @param hash - Validation
    * @param salt - （）
-   * @returns YesNo
+   * @returns Yes/No
    */
   static verifyHash(text: string, hash: string, salt?: string): boolean {
     const computedHash = this.hash(text, salt);

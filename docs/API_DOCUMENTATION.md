@@ -8,11 +8,11 @@
 
 - [Overview](#overview)
 - [General Specifications](#general-specifications)
-- [Authentication Endpoints](#authentication-endpoints)
+- [Auth Endpoints](#authentication-endpoints)
 - [Module Management Endpoints](#module-management-endpoints)
 - [Module Search Endpoints](#module-search-endpoints)
 - [Statistics Endpoints](#statistics-endpoints)
-- [Health Check](#health-check)
+- [Health check](#health-check)
 - [Error Codes](#error-codes)
 - [Data Models](#data-models)
 
@@ -23,12 +23,12 @@
 ### Basic Information
 
 - **Base URL**: `http://localhost:3000` (configurable via environment variables)
-- **API Version**: v1
+- **API version**: v1
 - **Data Format**: JSON
 - **Character Encoding**: UTF-8
-- **Authentication**: Bearer Token (JWT)
+- **Auth**: Bearer Token (JWT)
 
-### OAuth2 Configuration
+### OAuth2 Config
 
 - **Client ID**: `module-registry-cli`
 - **Authorization Mode**: Authorization Code + PKCE
@@ -61,7 +61,7 @@
 }
 ```
 
-### Authentication Method
+### Auth Method
 
 Except for public endpoints, all endpoints require a Token in the request header:
 
@@ -69,7 +69,7 @@ Except for public endpoints, all endpoints require a Token in the request header
 Authorization: Bearer <access_token>
 ```
 
-### File Upload
+### file Upload
 
 Use `multipart/form-data` format to upload files:
 
@@ -79,13 +79,13 @@ Content-Type: multipart/form-data; boundary=----WebKitFormBoundary
 
 ---
 
-## Authentication Endpoints
+## Auth Endpoints
 
 ### 1. User Registration
 
 **Endpoint**: `POST /api/auth/register`
 
-**Authentication Required**: No
+**Auth Required**: No
 
 **Request Parameters**:
 
@@ -121,7 +121,7 @@ Content-Type: multipart/form-data; boundary=----WebKitFormBoundary
 
 **Endpoint**: `POST /api/auth/login`
 
-**Authentication Required**: No
+**Auth Required**: No
 
 **Request Parameters**:
 
@@ -155,7 +155,7 @@ Content-Type: multipart/form-data; boundary=----WebKitFormBoundary
 
 **Endpoint**: `GET /authorize` (under website domain)
 
-**Authentication Required**: No
+**Auth Required**: No
 
 **Request Parameters** (Query):
 
@@ -200,7 +200,7 @@ Where `code` is base64-encoded JSON with format:
 
 **Endpoint**: `GET /api/auth/me`
 
-**Authentication Required**: Yes
+**Auth Required**: Yes
 
 **Response Example**:
 
@@ -222,7 +222,7 @@ Where `code` is base64-encoded JSON with format:
 
 **Endpoint**: `POST /api/auth/refresh`
 
-**Authentication Required**: No (uses refresh_token)
+**Auth Required**: No (uses refresh_token)
 
 **Request Parameters**:
 
@@ -253,16 +253,16 @@ Where `code` is base64-encoded JSON with format:
 
 **Endpoint**: `POST /api/modules/upload`
 
-**Authentication Required**: Yes
+**Auth Required**: Yes
 
 **Request Method**: `multipart/form-data`
 
 **Request Parameters**:
 
 ```
-package: <binary file>       // .tgz file, required
+package: <binary file>       // ..tgz file file, required
 name: string                 // Module name, required
-version: string              // Version number, required
+version: string              // version number, required
 description: string          // Description, optional
 appId: string                // Application ID, optional
 teamId: string               // Team ID, optional
@@ -277,7 +277,7 @@ Authorization: Bearer <access_token>
 Content-Type: multipart/form-data; boundary=----WebKitFormBoundary
 
 ------WebKitFormBoundary
-Content-Disposition: form-data; name="package"; filename="module-1.0.0.tgz"
+Content-Disposition: form-data; name="package"; filename="module-1.0.0..tgz file"
 Content-Type: application/gzip
 
 <binary data>
@@ -322,9 +322,9 @@ microservice
 
 **Error Codes**:
 - `MODULE_001`: Module name format error
-- `MODULE_002`: Version format error
+- `MODULE_002`: version format error
 - `MODULE_003`: Same module already has this version
-- `MODULE_004`: File upload failed
+- `MODULE_004`: file upload failed
 - `MODULE_005`: package.json parsing failed
 - `MODULE_006`: module.config.json format error
 
@@ -334,7 +334,7 @@ microservice
 
 **Endpoint**: `GET /api/modules/:name`
 
-**Authentication Required**: No
+**Auth Required**: No
 
 **Path Parameters**:
 
@@ -378,52 +378,52 @@ microservice
 
 **Endpoint**: `GET /api/modules/:name/:version/download`
 
-**Authentication Required**: Yes
+**Auth Required**: Yes
 
 **Path Parameters**:
 
 - `name`: Module name
-- `version`: Version number
+- `version`: version number
 
-**Response**: Binary file stream (.tgz)
+**Response**: Binary file stream (..tgz file)
 
 **Response Headers**:
 
 ```http
 Content-Type: application/gzip
-Content-Disposition: attachment; filename="auth-service-1.0.0.tgz
+Content-Disposition: attachment; filename="auth-service-1.0.0..tgz file
 Content-Length: 102400
 ```
 
 **Error Codes**:
 - `MODULE_010`: Module does not exist
-- `MODULE_011`: Version does not exist
+- `MODULE_011`: version does not exist
 
 ---
 
-### 9. Delete Module Version
+### 9. Delete Module version
 
 **Endpoint**: `DELETE /api/modules/:name/:version`
 
-**Authentication Required**: Yes
+**Auth Required**: Yes
 
 **Path Parameters**:
 
 - `name`: Module name
-- `version`: Version number
+- `version`: version number
 
 **Response Example**:
 
 ```json
 {
   "success": true,
-  "message": "Version deleted successfully"
+  "message": "version deleted successfully"
 }
 ```
 
 **Error Codes**:
 - `MODULE_010`: Module does not exist
-- `MODULE_011`: Version does not exist
+- `MODULE_011`: version does not exist
 - `MODULE_012`: No permission to delete
 
 ---
@@ -432,7 +432,7 @@ Content-Length: 102400
 
 **Endpoint**: `DELETE /api/modules/:name`
 
-**Authentication Required**: Yes
+**Auth Required**: Yes
 
 **Path Parameters**:
 
@@ -467,7 +467,7 @@ Content-Length: 102400
 
 **Endpoint**: `GET /api/modules`
 
-**Authentication Required**: No
+**Auth Required**: No
 
 **Request Parameters** (Query):
 
@@ -513,7 +513,7 @@ Content-Length: 102400
 
 **Endpoint**: `GET /api/modules/trending`
 
-**Authentication Required**: No
+**Auth Required**: No
 
 **Request Parameters** (Query):
 
@@ -547,7 +547,7 @@ Content-Length: 102400
 
 **Endpoint**: `GET /api/modules/by-author/:author`
 
-**Authentication Required**: No
+**Auth Required**: No
 
 **Path Parameters**:
 
@@ -590,7 +590,7 @@ Content-Length: 102400
 
 **Endpoint**: `GET /api/stats`
 
-**Authentication Required**: No
+**Auth Required**: No
 
 **Response Example**:
 
@@ -599,7 +599,7 @@ Content-Length: 102400
   "success": true,
   "stats": {
     "totalModules": 150,
-    "totalVersions": 450,
+    "totalversions": 450,
     "totalSize": 1073741824,  // Bytes
     "totalDownloads": 50000,
     "topAuthors": [
@@ -628,7 +628,7 @@ Content-Length: 102400
 
 **Endpoint**: `GET /api/stats/modules/:name`
 
-**Authentication Required**: No
+**Auth Required**: No
 
 **Path Parameters**:
 
@@ -639,7 +639,7 @@ Content-Length: 102400
 ```typescript
 {
   "period": string,  // Time period: 'day' | 'week' | 'month' | 'year' | 'all', default 'all'
-  "byVersion": boolean  // Whether to group by version, default false
+  "byversion": boolean  // Whether to group by version, default false
 }
 ```
 
@@ -656,7 +656,7 @@ Content-Length: 102400
       "2024-01-02": 150,
       // ...
     },
-    "downloadsByVersion": {
+    "downloadsByversion": {
       "1.0.0": 3000,
       "0.9.0": 2000
     }
@@ -666,13 +666,13 @@ Content-Length: 102400
 
 ---
 
-## Health Check
+## Health check
 
-### 16. Service Health Check
+### 16. Service Health check
 
 **Endpoint**: `GET /health`
 
-**Authentication Required**: No
+**Auth Required**: No
 
 **Response Example**:
 
@@ -692,7 +692,7 @@ Content-Length: 102400
 
 ## Error Codes
 
-### Authentication Errors (AUTH_xxx)
+### Auth Errors (AUTH_xxx)
 
 | Error Code | Description |
 |-----------|-------------|
@@ -722,13 +722,13 @@ Content-Length: 102400
 | Error Code | Description |
 |-----------|-------------|
 | MODULE_001 | Module name format error |
-| MODULE_002 | Version format error |
+| MODULE_002 | version format error |
 | MODULE_003 | Same module already has this version |
-| MODULE_004 | File upload failed |
+| MODULE_004 | file upload failed |
 | MODULE_005 | package.json parsing failed |
 | MODULE_006 | module.config.json format error |
 | MODULE_010 | Module does not exist |
-| MODULE_011 | Version does not exist |
+| MODULE_011 | version does not exist |
 | MODULE_012 | No permission to operate |
 
 ### Server Errors (SERVER_xxx)
@@ -772,24 +772,24 @@ Content-Length: 102400
   "createdAt": string,     // Creation time, ISO 8601
   "updatedAt": string,     // Update time, ISO 8601
   "downloads": number,      // Download count
-  "versions": {             // Version list
+  "versions": {             // version list
     [version: string]: {
       "uploadedAt": string,  // Upload time
-      "size": number,        // File size (bytes)
-      "sha256": string      // File hash, for integrity verification
+      "size": number,        // file size (bytes)
+      "sha256": string      // file hash, for integrity verification
     }
   }
 }
 ```
 
-### VersionInfo
+### versionInfo
 
 ```typescript
 {
-  "version": string,        // Version number, follows semantic versioning
+  "version": string,        // version number, follows semantic versioning
   "uploadedAt": string,     // Upload time
-  "size": number,           // File size (bytes)
-  "sha256": string          // File hash
+  "size": number,           // file size (bytes)
+  "sha256": string          // file hash
 }
 ```
 
@@ -798,7 +798,7 @@ Content-Length: 102400
 ```typescript
 {
   "totalModules": number,       // Total modules
-  "totalVersions": number,     // Total versions
+  "totalversions": number,     // Total versions
   "totalSize": number,         // Total size (bytes)
   "totalDownloads": number,    // Total downloads
   "topAuthors": Array<{        // Top authors
@@ -827,9 +827,9 @@ Content-Length: 102400
 
 ## Special Notes
 
-### 1. Version Number Specification
+### 1. version Number Specification
 
-Module version numbers must follow [Semantic Versioning 2.0.0](https://semver.org/) specification:
+Module version numbers must follow [Semantic versioning 2.0.0](https://semver.org/) specification:
 
 ```
 MAJOR.MINOR.PATCH
@@ -850,9 +850,9 @@ Module names must follow npm package naming convention:
 Example: my-module, auth_service, user-api
 ```
 
-### 3. File Format Requirements
+### 3. file Format Requirements
 
-Uploaded .tgz files must contain the following files:
+Uploaded ..tgz file files must contain the following files:
 
 ```
 package.json          # Required, NPM package configuration
@@ -894,7 +894,7 @@ README.md             # Documentation (optional)
 }
 ```
 
-### 4. File Integrity Verification
+### 4. file Integrity Verification
 
 To prevent file tampering, calculate SHA256 hash during upload:
 
@@ -926,20 +926,20 @@ To prevent abuse, implement the following rate limits:
 // API rate limiting
 - Per IP: 100 requests/minute
 - Per user: 200 requests/minute
-- File uploads: 10 times/minute
+- file uploads: 10 times/minute
 
-// File size limits
+// file size limits
 - Single file: Maximum 50MB
 - User total storage: 10GB
 ```
 
-### 6. File Storage
+### 6. file Storage
 
 Recommend using object storage services (like S3, MinIO) to store module files:
 
 ```
 Storage path structure:
-modules/{module_name}/{version}/package.tgz
+modules/{module_name}/{version}/package..tgz file
 ```
 
 ### 7. Database Design Recommendations
@@ -975,7 +975,7 @@ CREATE TABLE modules (
 );
 ```
 
-**Module Version Table (module_versions)**
+**Module version Table (module_versions)**
 
 ```sql
 CREATE TABLE module_versions (
@@ -1048,7 +1048,7 @@ curl -X POST http://localhost:3000/api/auth/login \
 # Upload module
 curl -X POST http://localhost:3000/api/modules/upload \
   -H "Authorization: Bearer <token>" \
-  -F "package=@module-1.0.0.tgz" \
+  -F "package=@module-1.0.0..tgz file" \
   -F "name=auth-service" \
   -F "version=1.0.0" \
   -F "description=Auth microservice"
@@ -1111,12 +1111,12 @@ paths:
 
 ## Changelog
 
-| Version | Date | Description |
+| version | Date | Description |
 |---------|------|-------------|
 | 1.0.0 | 2024-01-01 | Initial version |
 
 ---
 
-**Document Version**: v1.0.0
+**Document version**: v1.0.0
 **Last Updated**: 2024-01-01
 **Maintainer**: Pnce Team

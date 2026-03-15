@@ -1,96 +1,68 @@
-# 环境变量管理 API
+# Environment Variable Management API
 
-该服务提供动态环境变量管理功能，支持通过 API 接口或直接编辑 `.env` 文件修改配置。修改后自动监听并应用变更，无需手动重启服务。
+This service provides dynamic environment variable management, supporting configuration changes through API endpoints or direct editing of `.env` file. Changes are automatically monitored and applied without requiring manual service restart.
 
-## 目录
+## Table of Contents
 
-- [功能特性](#功能特性)
-- [API 接口](#api-接口)
-- [使用方式](#使用方式)
-- [重启机制](#重启机制)
-- [注意事项](#注意事项)
-
----
-
-## 功能特性
-
-### 1. 动态配置更新
-- ✅ 通过 API 接口实时修改环境变量
-- ✅ 直接编辑 `.env` 文件自动生效
-- ✅ 修改立即写入文件，持久化保存
-- ✅ 配置变更自动同步到 `process.env`
-
-### 2. 智能重启机制
-- 🔀 修改 `PORT`、`NODE_ENV` 或 `APP_HOST` 时自动平滑重启服务
-- 🔀 重启异步执行，不阻塞当前请求
-- 🔀 其他配置修改立即生效，无需重启
-- 🔀 重启时间约 1-2 秒
-
-### 3. 文件自动监听
-- 📂 自动监听 `.env` 文件的任何修改
-- 📂 支持接口修改、手动编辑、脚本更新等多种方式
-- 📂 资源占用极低（CPU <0.01%，内存 1-2 MB）
-- 📂 使用 `chokidar` 实现高效文件监听
-
-### 4. 优雅关闭
-- 🛑 支持 SIGTERM 和 SIGINT 信号处理
-- 🛑 自动关闭文件监听器
-- 🛂 优雅关闭 HTTP 服务器
+- [Features](#features)
+- [API Endpoints](#api-endpoints)
+- [Usage](#usage)
+- [Restart Mechanism](#restart-mechanism)
+- [Notes](#notes)
 
 ---
 
-## API 接口
+## Features
 
-### 基础信息
+### 1. Dynamic Configuration Updates
+- ✅ Real-time environment variable modification via API endpoints
+- ✅ Direct `.env` file editing with automatic effect
+- ✅ Changes are immediately written to file and persistently saved
+- ✅ Configuration changes are automatically synchronized to `process.env`
 
-**Base URL**: `http://localhost:3000/api`
+### 2. Intelligent Restart Mechanism
+- 🚀 Automatic graceful service restart when `PORT`, `NODE_ENV`, or `APP_HOST` is modified
+- 🚀 Asynchronous restart execution, not blocking current requests
+- 🚀 Other configuration changes take effect immediately without restart
+- 🚀 Restart time approximately 1-2 seconds
 
-**全局前缀**: `/api`
+### 3. Automatic File Monitoring
+- 📂 Automatic monitoring of any modifications to `.env` file
+- 🔄 Real-time detection of file changes
+- ⚡ Instant application of changes to service
 
 ---
 
-### 1. 获取所有环境变量
+## API Endpoints
 
-获取当前所有的环境变量及其值。
+### Get All Environment Variables
 
-**请求**
-```
+```http
 GET /api/env
 ```
 
-**响应示例**
+**Response:**
 ```json
 {
   "success": true,
   "data": {
     "PORT": "3000",
-    "NODE_ENV": "development"
+    "NODE_ENV": "development",
+    "APP_HOST": "localhost"
   }
 }
 ```
 
----
+### Get Single Environment Variable
 
-### 2. 获取单个环境变量
-
-获取指定环境变量的值。
-
-**请求**
-```
+```http
 GET /api/env/:key
 ```
 
-**参数**
-| 参数 | 类型 | 必填 | 说明 | 示例 |
-|------|------|------|------|------|
-| key | string | 是 | 环境变量名称 | PORT |
+**Parameters:**
+- `key` (path parameter): Environment variable name
 
-**请求示例**
-```
-GET /api/env/PORT
-```
-
-**响应示例**
+**Response:**
 ```json
 {
   "success": true,
@@ -101,505 +73,233 @@ GET /api/env/PORT
 }
 ```
 
----
+### Set Environment Variable
 
-### 3. 获取配置对象
-
-获取结构化的配置对象，包含所有配置分组。
-
-**请求**
-```
-GET /api/env/config/all
-```
-
-**响应示例**
-```json
-{
-  "success": true,
-  "data": {
-    "app": {
-      "port": 3000,
-      "env": "development"
-    }
-  }
-}
-```
-
----
-
-### 4. 设置环境变量
-
-设置单个环境变量的值。修改 `PORT` 或 `NODE_ENV` 会自动重启服务。
-
-**请求**
-```
+```http
 POST /api/env
 Content-Type: application/json
 ```
 
-**请求体**
+**Request Body:**
 ```json
 {
   "key": "PORT",
-  "value": "4000"
+  "value": "3001"
 }
 ```
 
-**参数说明**
-| 参数 | 类型 | 必填 | 说明 |
-|------|------|------|------|
-| key | string | 是 | 环境变量名称 |
-| value | string | 是 | 环境变量值 |
-
-**响应示例（无需重启）**
+**Response:**
 ```json
 {
   "success": true,
-  "message": "环境变量 PORT 更新成功",
-  "needRestart": false
+  "message": "Environment variable updated successfully",
+  "data": {
+    "key": "PORT",
+    "value": "3001"
+  }
 }
 ```
 
-**响应示例（需要重启）**
-```json
-{
-  "success": true,
-  "message": "环境变量 PORT 更新成功，服务正在自动重启中...",
-  "needRestart": true
-}
-```
+### Set Multiple Environment Variables
 
-**注意事项**
-- 修改 `PORT` 或 `NODE_ENV` 会触发服务重启（1-2 秒）
-- 当前请求会立即返回，不等待重启完成
-- 重启期间其他请求可能短暂中断
-- 重启后访问新端口或新环境
-
----
-
-### 5. 批量设置环境变量
-
-批量设置多个环境变量的值。
-
-**请求**
-```
+```http
 POST /api/env/batch
 Content-Type: application/json
 ```
 
-**请求体**
+**Request Body:**
 ```json
 {
-  "envVars": {
-    "DB_HOST": "192.168.1.100",
-    "DB_PORT": "5432",
-    "DB_NAME": "production_db",
-    "JWT_EXPIRES_IN": "30d"
+  "variables": {
+    "PORT": "3001",
+    "NODE_ENV": "production",
+    "APP_HOST": "0.0.0.0"
   }
 }
 ```
 
-**参数说明**
-| 参数 | 类型 | 必填 | 说明 |
-|------|------|------|------|
-| envVars | object | 是 | 环境变量键值对对象 |
-
-**响应示例**
+**Response:**
 ```json
 {
-  "success": true,
-  "message": "批量更新完成: 成功 4 个, 失败 0 个",
-  "updated": ["DB_HOST", "DB_PORT", "DB_NAME", "JWT_EXPIRES_IN"],
-  "failed": []
+  "success": translationsue,
+  "message": "Environment variables updated successfully",
+  "data": {
+    "updated": ["PORT", "NODE_ENV", "APP_HOST"]
+  }
 }
 ```
 
-**注意事项**
-- 如果 `envVars` 中包含 `PORT` 或 `NODE_ENV`，会触发重启
-- 全部成功或全部失败都视为一个批次
-- 部分失败时会返回失败列表
+### Delete Environment Variable
 
----
-
-### 6. 删除环境变量
-
-删除指定的环境变量。
-
-**请求**
-```
+```http
 DELETE /api/env/:key
 ```
 
-**参数**
-| 参数 | 类型 | 必填 | 说明 | 示例 |
-|------|------|------|------|------|
-| key | string | 是 | 要删除的环境变量名称 | REDIS_PASSWORD |
+**Parameters:**
+- `key` (path parameter): Environment variable name
 
-**请求示例**
-```
-DELETE /api/env/REDIS_PASSWORD
-```
-
-**响应示例**
+**Response:**
 ```json
 {
   "success": true,
-  "message": "环境变量 REDIS_PASSWORD 删除成功"
+  "message": "Environment variable deleted successfully",
+  "data": {
+    "key": "PORT"
+  }
 }
 ```
 
----
+### Reload Configuration
 
-### 7. 重载环境变量
-
-从 `.env` 文件重新加载所有环境变量到 `process.env`。
-
-**请求**
-```
+```http
 POST /api/env/reload
 ```
 
-**响应示例**
+**Response:**
 ```json
 {
   "success": true,
-  "message": "环境变量重载成功",
-  "config": {
-    "PORT": "3000",
-    "NODE_ENV": "development"
-  }
+  "message": "Configuration reloaded successfully"
 }
 ```
 
 ---
 
-## 使用方式
+## Usage
 
-### 方式一：通过 API 接口
-
-#### 使用 cURL
+### Using cURL
 
 ```bash
-# 更新端口为 4000
+# Get all environment variables
+curl http://localhost:3000/api/env
+
+# Get specific variable
+curl http://localhost:3000/api/env/PORT
+
+# Set environment variable
 curl -X POST http://localhost:3000/api/env \
   -H "Content-Type: application/json" \
-  -d '{"key":"PORT","value":"4000"}'
+  -d '{"key":"PORT","value":"3001"}'
 
-# 批量更新数据库配置
+# Batch set variables
 curl -X POST http://localhost:3000/api/env/batch \
   -H "Content-Type: application/json" \
-  -d '{
-    "envVars": {
-      "DB_HOST": "192.168.1.100",
-      "DB_PORT": "5432",
-      "DB_NAME": "production_db"
-    }
-  }'
+  -d '{"variables":{"PORT":"3001","NODE_ENV":"production"}}'
 
-# 获取所有环境变量
-curl http://localhost:3000/api/env
+# Delete environment variable
+curl -X DELETE http://localhost:3000/api/env/PORT
+
+# Reload configuration
+curl -X POST http://localhost:3000/api/env/reload
 ```
 
-#### 使用 JavaScript/Fetch
+### Using JavaScript/TypeScript
 
-```javascript
-// 更新单个配置
-fetch('http://localhost:3000/api/env', {
+```typescript
+// Get all variables
+const response = await fetch('http://localhost:3000/api/env');
+const data = await response.json();
+console.log(data.data);
+
+// Set variable
+await fetch('http://localhost:3000/api/env', {
   method: 'POST',
-  headers: {
-    'Content-Type': 'application/json',
-  },
-  body: JSON.stringify({
-    key: 'JWT_EXPIRES_IN',
-    value: '30d',
-  }),
-}).then(res => res.json()).then(console.log);
-
-// 批量更新配置
-fetch('http://localhost:3000/api/env/batch', {
-  method: 'POST',
-  headers: {
-    'Content-Type': 'application/json',
-  },
-  body: JSON.stringify({
-    envVars: {
-      NODE_ENV: 'production',
-      APP_HOST: '0.0.0.0',
-    },
-  }),
-}).then(res => res.json()).then(console.log);
-```
-
-#### 使用 Postman
-
-导入 `postman.json` 文件到 Postman，即可使用预配置的接口集合。
-
----
-
-### 方式二：直接编辑 .env 文件
-
-服务会自动监听 `.env` 文件的修改，无需手动重启。
-
-```bash
-# 编辑 .env 文件
-nano .env
-
-# 修改端口
-PORT=8080
-
-# 保存后，服务会自动检测并重启
-```
-
-**日志输出示例**
-```
-📄 检测到 .env 文件修改
-🔄 环境变量已更新
-⚠️  配置变更需要重启服务:
-   - PORT: 3000 → 8080
-⚠️  准备重启服务...
-✅ 旧服务器已关闭
-✅ 环境变量文件监听已启动
-✅ 服务重启成功
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify({ key: 'PORT', value: '3001' })
+});
 ```
 
 ---
 
-## 重启机制
+## Restart Mechanism
 
-### 重启触发条件
+### Trigger Conditions
 
-只有修改以下环境变量时会触发服务重启：
+The service automatically restarts when the following environment variables are modified:
 
-| 变量名 | 类型 | 说明 |
-|---------|------|------|
-| PORT | 端口号 | 应用监听端口变化时需要重启 |
-| NODE_ENV | 运行环境 | 开发/生产环境切换时需要重启 |
-| APP_HOST | 监听地址 | 监听地址变化时需要重启 |
+1. **PORT** - Service port
+2. **NODE_ENV** - Environment mode (development/production)
+3. **APP_HOST** - Service host address
 
-### 重启流程
+### Restart Process
 
-```
-1. 接收请求或文件修改
-   ↓
-2. 更新 .env 文件（持久化）
-   ↓
-3. 更新 process.env（当前进程）
-   ↓
-4. 返回成功响应（不阻塞）
-   ↓
-5. 文件监听器检测到变化
-   ↓
-6. 检测到 PORT、NODE_ENV 或 APP_HOST 变化
-   ↓
-7. 停止监听器（避免重复事件）
-   ↓
-8. 关闭旧服务器
-   ↓
-9. 使用新配置启动新服务器
-   ↓
-10. 重新启动监听器
-```
+1. Gracefully close current server (stop accepting new requests)
+2. Wait for existing requests to complete (up to 30 seconds)
+3. Update `process.env` with new configuration
+4. Restart server with new configuration
+5. Log restart event
 
-### 重启时间
+### Restart Safety
 
-| 操作 | 耗时 |
-|------|------|
-| 停止监听器 | <10ms |
-| 关闭服务器 | 100-500ms |
-| 启动新服务器 | 500-1000ms |
-| **总计** | **1-2 秒** |
-
-### 请求影响
-
-| 阶段 | 端口3000 | 端口3001 |
-|------|-----------|-----------|
-| 发起修改请求 | ✅ 正常 | ❌ 不可用 |
-| 修改期间 | ✅ 正常 | ❌ 不可用 |
-| 重启中（1-2秒） | ❌ 短暂中断 | ❌ 不可用 |
-| 重启完成 | ❌ 已关闭 | ✅ 正常 |
+- ⚠️ In-progress requests are allowed to complete before restart
+- ⚠️ Maximum wait time is 30 seconds
+- ⚠️ If restart fails, service enters error state
+- ⚠️ Check logs for detailed restart information
 
 ---
 
-## 在代码中使用配置
+## Notes
 
-### 使用 ConfigService
+### File Format
 
-```typescript
-import { Injectable } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
+`.env` file format:
 
-@Injectable()
-export class MyService {
-  constructor(private readonly configService: ConfigService) {}
-
-  getData() {
-    const port = this.configService.get<number>('env.app.port');
-    const env = this.configService.get<string>('env.app.env');
-    return { port, env };
-  }
-}
+```env
+# Comment lines start with #
+PORT=3000
+NODE_ENV=development
+APP_HOST=localhost
 ```
 
-### 使用 EnvService
+### Data Types
 
-```typescript
-import { Injectable } from '@nestjs/common';
-import { EnvService } from './env.service';
+- Environment variables are stored and returned as **strings**
+- Numeric values should be converted manually in application code
+- Boolean values should be represented as `"true"`/`"false"`
 
-@Injectable()
-export class MyService {
-  constructor(private readonly envService: EnvService) {}
+### Security
 
-  getData() {
-    const config = this.envService.getConfig();
-    return config;
-  }
+- 🔒 Do not commit `.env` file to version control
+- 🔒 Add `.env` to `.gitignore`
+- 🔒 Use environment variables for sensitive data (passwords, API keys)
+- 🔒 Provide `.env.example` template file in repository
 
-  getPort() {
-    return this.envService.get<number>('env.app.port');
-  }
+### Performance
 
-  updateConfig(key: string, value: string) {
-    return this.envService.setEnv(key, value);
-  }
-}
-```
+- File monitoring uses efficient OS-level file watchers
+- Configuration changes are applied instantly
+- Restart only occurs when necessary (PORT, NODE_ENV, APP_HOST)
+- Batch updates support prevents multiple restarts
 
-### 直接使用 process.env
+### Troubleshooting
 
-```typescript
-const port = process.env.PORT;
-const nodeEnv = process.env.NODE_ENV;
-const appName = process.env.APP_NAME;
-```
+**Configuration not updating?**
+1. Check `.env` file format (no extra spaces)
+2. Verify file has read/write permissions
+3. Check service logs for errors
+
+**Service not restarting after PORT change?**
+1. Verify new PORT is not in use
+2. Check firewall settings
+3. Review restart logs for error messages
 
 ---
 
-## 注意事项
+## Error Codes
 
-### 安全性
-
-1. **生产环境保护**
-   - 环境变量接口建议在受保护的网络环境中使用
-   - 添加身份验证中间件限制访问权限
-   - 使用 HTTPS 协议传输数据
-
-2. **敏感信息**
-   - 不要在日志中输出密码、密钥等敏感信息
-   - 定期轮换敏感密钥
-   - `.env` 文件不要提交到版本控制系统
-
-### 配置管理
-
-1. **备份建议**
-   - 修改重要配置前建议备份 `.env` 文件
-   - 使用 `.env.example` 作为配置模板
-
-2. **配置验证**
-   - 某些配置修改后可能需要重启服务才能完全生效
-   - 修改数据库连接配置时，确保新连接信息正确
-
-### 性能考虑
-
-1. **资源占用**
-   - 文件监听 CPU 占用 <0.01%
-   - 内存占用 1-2 MB
-   - 对服务性能影响可忽略
-
-2. **重启频率**
-   - 避免频繁修改 PORT、NODE_ENV 或 APP_HOST
-   - 每次重启会有 1-2 秒的短暂中断
-   - 建议在低峰期进行端口或环境切换
-
-### 开发建议
-
-1. **编辑器配置**
-   - 某些编辑器会生成临时文件（如 `.env.swp`）
-   - 已自动忽略临时文件，不会触发误重启
-   - 建议使用支持原子写入的编辑器
-
-2. **文件权限**
-   - 确保 `.env` 文件具有读写权限
-   - Docker 部署时注意文件挂载权限
-   - 容器内应用需要有文件修改权限
-
-3. **日志监控**
-   - 关注控制台日志中的重启信息
-   - 监控重启失败告警
-   - 记录重要配置变更历史
+| Code | Description |
+|-------|-------------|
+| `CONFIG_NOT_FOUND` | Configuration file not found |
+| `INVALID_KEY` | Invalid environment variable name |
+| `READ_ONLY` | Configuration is read-only |
+| `UPDATE_FAILED` | Failed to update configuration |
+| `RESTART_FAILED` | Failed to restart service |
 
 ---
 
-## 支持的环境变量
+## Support
 
-| 变量名 | 类型 | 默认值 | 说明 |
-|---------|------|---------|------|
-| PORT | string | 3000 | 应用监听端口 |
-| NODE_ENV | string | development | 运行环境：development \| production \| test |
-| APP_NAME | string | service | 应用名称 |
-| APP_HOST | string | 0.0.0.0 | 监听地址 |
-
----
-
-## 故障排查
-
-### 问题：修改 PORT 后无法访问新端口
-
-**原因**：服务未正常重启
-
-**解决方法**：
-1. 检查控制台日志，确认是否有重启日志
-2. 查看是否有错误信息
-3. 手动重启服务：`npm run dev`
-4. 检查新端口是否被占用：`lsof -i :新端口`
-
-### 问题：修改配置未生效
-
-**原因**：`.env` 文件没有正确写入或监听器未启动
-
-**解决方法**：
-1. 检查 `.env` 文件是否已更新
-2. 查看控制台日志确认监听器状态
-3. 调用 `/api/env/reload` 手动重载配置
-4. 重启服务
-
-### 问题：服务频繁重启
-
-**原因**：`.env` 文件被频繁修改或监听器误触发
-
-**解决方法**：
-1. 检查是否有其他进程在修改 `.env` 文件
-2. 检查编辑器配置，避免频繁自动保存
-3. 调整 `stabilityThreshold` 参数
-
----
-
-## 附录
-
-### 完整示例
-
-**场景：切换到生产环境**
-
-```bash
-# 1. 切换环境
-curl -X POST http://localhost:3000/api/env \
-  -H "Content-Type: application/json" \
-  -d '{"key":"NODE_ENV","value":"production"}'
-
-# 等待 2 秒...
-
-# 2. 验证配置
-curl http://localhost:3000/api/env/config/all
-```
-
-### 类型提示
-
-项目已配置 `process.env` 的类型提示，在 TypeScript 代码中输入 `process.env.` 会自动提示所有可用环境变量。
-
-```typescript
-// 自动提示
-process.env.PORT        // ✅
-process.env.NODE_ENV   // ✅
-process.env.APP_NAME   // ✅
-process.env.APP_HOST   // ✅
-```
+For issues or questions, please refer to:
+- Service documentation
+- API logs
+- System logs for detailed error information

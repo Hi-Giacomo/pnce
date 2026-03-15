@@ -2,13 +2,13 @@
 
 This document answers common questions during the use of PNCE CLI.
 
-## Installation and Configuration
+## installation and Config
 
 ### Q1: Command not found after installation?
 
 **A:** Ensure the global installation path is in the system's PATH environment variable.
 
-Check npm global path:
+check npm global path:
 
 ```bash
 npm config get prefix
@@ -36,13 +36,13 @@ npm update -g pnce
 yarn global upgrade pnce
 ```
 
-## Authentication and Login
+## Auth and Login
 
 ### Q4: Browser doesn't open when logging in?
 
 **A:** Try the following methods:
 
-1. Check if a browser is installed
+1. check if a browser is installed
 2. Manually visit the authorization page and copy the callback URL
 3. Use `--port` parameter to specify a different port:
 
@@ -108,7 +108,7 @@ Private modules usually require appropriate permissions.
 
 ### Q11: Permission error when uploading module?
 
-**A:** Check the following:
+**A:** check the following:
 
 1. If logged in: `pnce login`
 2. If you have upload permission
@@ -124,7 +124,7 @@ pnce lock module-name@1.0.0
 
 This creates a version lock file to ensure the team uses the same version.
 
-## Configuration
+## Config
 
 ### Q13: What is the configuration file priority?
 
@@ -213,7 +213,7 @@ Or set in configuration file:
 
 **A:** Try the following methods:
 
-1. Check network connection
+1. check network connection
 2. Configure proxy (if applicable)
 3. Adjust timeout (set `downloadTimeout` and `uploadTimeout` in config file)
 
@@ -221,7 +221,7 @@ Or set in configuration file:
 
 ### Q20: What to do when getting "Network Error"?
 
-**A:** Check:
+**A:** check:
 
 1. If network connection is normal
 2. If server address is correct

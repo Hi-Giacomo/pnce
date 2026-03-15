@@ -1,7 +1,7 @@
 {
   "name": "microservice",
   "version": "0.0.1",
-  "description": "微服务模块",
+  "description": "Microservice module",
   "main": "dist/index.js",
   "scripts": {
     "build": "nest build",

@@ -35,7 +35,7 @@ export function registerRegistryCommands(program: Command): void {
         const config = getConfigManager().getConfig();
         console.log('Current module service download URL:');
         console.log(`  URL: ${config.apiServer}`);
-        console.log(`  Authentication token: ${config.token ? 'Set' : 'Not set'}`);
+        console.log(`  Auth token: ${config.token ? 'Set' : 'Not set'}`);
       } catch (error) {
         ErrorHandler.handle(error);
       }
@@ -59,7 +59,10 @@ export function registerRegistryCommands(program: Command): void {
         console.log('✓ Connection successful');
         console.log(`  URL: ${config.apiServer}`);
       } catch (error: unknown) {
-        console.error('✗ Connection failed:', error instanceof Error ? error.message : String(error));
+        console.error(
+          '✗ Connection failed:',
+          error instanceof Error ? error.message : String(error)
+        );
         if (error instanceof Error && 'code' in error && error.code === 'ECONNREFUSED') {
           console.error('  Please confirm if module service is running');
         }

@@ -2,7 +2,7 @@
 
 Welcome to PNCE CLI! This guide will help you get started quickly with PNCE CLI.
 
-## Installation
+## installation
 
 ### Install using npm
 
@@ -16,7 +16,7 @@ npm install -g pnce
 yarn global add pnce
 ```
 
-### Verify Installation
+### Verify installation
 
 ```bash
 pnce --version
@@ -24,7 +24,7 @@ pnce --version
 
 ## Basic Usage
 
-### 1. Login Authentication
+### 1. Login Auth
 
 Before first use, you need to login to the PNCE registry:
 
@@ -108,9 +108,9 @@ pnce search <keyword>
 pnce logout
 ```
 
-## Configuration
+## Config
 
-### Using Interactive Configuration Wizard
+### Using Interactive Config Wizard
 
 ```bash
 pnce init
@@ -121,9 +121,9 @@ The wizard will guide you through configuring:
 - Log level
 - Proxy settings
 
-### Manual Configuration
+### Manual Config
 
-Configuration file locations:
+Config file locations:
 - User config: `~/.pnce/config.json`
 - Project config: `./.pnce/config.json`
 
@@ -179,7 +179,7 @@ pnce completion > ~/.config/fish/completions/pnce.fish
 2. Install team modules: `pnce install team-module`
 3. Team members can install and use the same way
 
-### Use Case 3: Multi-environment Configuration
+### Use Case 3: Multi-environment Config
 
 1. Create configuration profile: `pnce profile save prod`
 2. Switch to production config: `pnce profile use prod`
@@ -189,7 +189,7 @@ pnce completion > ~/.config/fish/completions/pnce.fish
 
 ### Q: What to do if login fails?
 
-A: Check network connection and ensure server URL is correct. You can use `pnce config` to view current configuration.
+A: check network connection and ensure server URL is correct. You can use `pnce config` to view current configuration.
 
 ### Q: How to update PNCE CLI?
 
@@ -203,7 +203,7 @@ yarn global upgrade pnce
 
 ### Q: What to do if module installation fails?
 
-A: Check:
+A: check:
 1. If logged in: `pnce login`
 2. If network connection is normal
 3. If module name is correct

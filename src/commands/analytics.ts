@@ -1,4 +1,4 @@
-import { command } from 'commander';
+import { Command } from 'commander';
 import chalk from 'chalk';
 import { getAnalyticsManager } from '../utils/analytics';
 import { getLogger } from '../utils/logger';
@@ -8,7 +8,7 @@ const logger = getLogger();
 /**
  * Analytics command
  */
-export const analyticscommand = new command('analytics')
+export const analyticscommand = new Command('analytics')
   .description('Manage usage analytics (optional)')
   .action(() => {
     const analytics = getAnalyticsManager();
@@ -37,7 +37,7 @@ export const analyticscommand = new command('analytics')
 /**
  * Enable analytics subcommand
  */
-export const enableAnalyticscommand = new command('enable')
+export const enableAnalyticscommand = new Command('enable')
   .argument('[endpoint]', 'Analytics endpoint (optional)')
   .description('Enable usage analytics')
   .action((endpoint?: string) => {
@@ -52,15 +52,15 @@ export const enableAnalyticscommand = new command('enable')
       console.log(chalk.gray('Thank you for helping improve PNCE CLI!\n'));
       logger.info('Usage analytics enabled', { endpoint });
     } catch (error) {
-      console.log(chalk.red(`Failed to enable analytics: ${error}\n`));
-      logger.error('Failed to enable analytics', { error });
+      console.log(chalk.red(`failed to enable analytics: ${error}\n`));
+      logger.error('failed to enable analytics', { error });
     }
   });
 
 /**
  * Disable analytics subcommand
  */
-export const disableAnalyticscommand = new command('disable')
+export const disableAnalyticscommand = new Command('disable')
   .description('Disable usage analytics')
   .action(() => {
     try {
@@ -70,15 +70,15 @@ export const disableAnalyticscommand = new command('disable')
       console.log(chalk.green('✓ Usage analytics disabled\n'));
       logger.info('Usage analytics disabled');
     } catch (error) {
-      console.log(chalk.red(`Failed to disable analytics: ${error}\n`));
-      logger.error('Failed to disable analytics', { error });
+      console.log(chalk.red(`failed to disable analytics: ${error}\n`));
+      logger.error('failed to disable analytics', { error });
     }
   });
 
 /**
  * Clear analytics subcommand
  */
-export const clearAnalyticscommand = new command('clear')
+export const clearAnalyticscommand = new Command('clear')
   .description('Clear local analytics events')
   .action(() => {
     try {
@@ -88,15 +88,15 @@ export const clearAnalyticscommand = new command('clear')
       console.log(chalk.green('✓ Local analytics events cleared\n'));
       logger.info('Local analytics events cleared');
     } catch (error) {
-      console.log(chalk.red(`Failed to clear analytics: ${error}\n`));
-      logger.error('Failed to clear analytics', { error });
+      console.log(chalk.red(`failed to clear analytics: ${error}\n`));
+      logger.error('failed to clear analytics', { error });
     }
   });
 
 /**
  * Analytics status subcommand
  */
-export const statusAnalyticscommand = new command('status')
+export const statusAnalyticscommand = new Command('status')
   .description('Show analytics status')
   .action(() => {
     try {
@@ -120,15 +120,15 @@ export const statusAnalyticscommand = new command('status')
         console.log(chalk.gray('  Use "pnce analytics enable" to help improve the CLI\n'));
       }
     } catch (error) {
-      console.log(chalk.red(`Failed to get status: ${error}\n`));
-      logger.error('Failed to get analytics status', { error });
+      console.log(chalk.red(`failed to get status: ${error}\n`));
+      logger.error('failed to get analytics status', { error });
     }
   });
 
-export function register(program: command): void {
-  const analyticsCmd = program.addcommand(analyticscommand);
-  analyticsCmd.addcommand(enableAnalyticscommand);
-  analyticsCmd.addcommand(disableAnalyticscommand);
-  analyticsCmd.addcommand(clearAnalyticscommand);
-  analyticsCmd.addcommand(statusAnalyticscommand);
+export function register(program: Command): void {
+  const analyticsCmd = program.addCommand(analyticscommand);
+  analyticsCmd.addCommand(enableAnalyticscommand);
+  analyticsCmd.addCommand(disableAnalyticscommand);
+  analyticsCmd.addCommand(clearAnalyticscommand);
+  analyticsCmd.addCommand(statusAnalyticscommand);
 }

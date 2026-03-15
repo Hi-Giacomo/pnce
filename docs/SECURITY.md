@@ -30,9 +30,9 @@ Please try to include the following information:
 
 ---
 
-## Supported Versions
+## Supported versions
 
-| Version | Supported |
+| version | Supported |
 |---------|-----------|
 | 0.0.x   | ✅        |
 | < 0.0.1 | ❌        |
@@ -52,7 +52,7 @@ Please try to include the following information:
    - Revoke tokens after use
    - Use environment variables for CI/CD
 
-3. **Configuration Security**
+3. **Config Security**
    - Do not commit configuration files containing sensitive data
    - Use `.gitignore` to exclude sensitive files
    - Regularly review configuration files
@@ -87,7 +87,7 @@ Please try to include the following information:
 
 ## Security Features
 
-### Authentication
+### Auth
 
 - **OAuth2**: Secure OAuth2 authorization flow
 - **Token Encryption**: Tokens encrypted using AES-256-GCM

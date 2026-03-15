@@ -22,7 +22,7 @@ export class ApiService {
       baseURL: config.apiServer,
     });
 
-    // 
+    //
     retry(this.axiosInstance, {
       retries: HTTP.RETRY_COUNT,
       retryDelay: (retryCount) => retryCount * HTTP.RETRY_DELAY_MS,
@@ -60,7 +60,7 @@ export class ApiService {
   }
 
   /**
-   * Authentication
+   * Auth
    */
   getAuthHeaders() {
     const config = getConfigManager();
@@ -79,33 +79,38 @@ export class ApiService {
 
       switch (status) {
         case 401:
-          throw CliError.unauthorized(data.message || '未authorization，请先login');
+          throw CliError.unauthorized(data.message || 'authorization，Pleaselogin');
         case 403:
-          throw new CliError(ErrorCode.FILE_ACCESS_DENIED, data.message || '无权访问');
+          throw new CliError(ErrorCode.FILE_ACCESS_DENIED, data.message || '');
         case 404:
-          throw CliError.moduleNotFound((error as any).config.url?.split('/').pop() || 'Unknownmodule');
+          throw CliError.moduleNotFound(
+            (error as any).config.url?.split('/').pop() || 'Unknownmodule'
+          );
         case 429:
-          throw new CliError('RATE_LIMIT_EXCEEDED', 'Request过于频繁，请稍后再试', 429);
+          throw new CliError('RATE_LIMIT_EXCEEDED', 'Request，Please', 429);
         default:
-          throw new CliError(ErrorCode.SERVER_ERROR, data.message || `服务器Error: ${status}`);
+          throw new CliError(ErrorCode.SERVER_ERROR, data.message || `serviceError: ${status}`);
       }
     } else if (error && typeof error === 'object' && 'request' in error) {
       // RequestResponse - YesStatus
-      const errorMsg = 'Network requestFailed，请检查网络连接';
+      const errorMsg = 'Network requestfailed，PleasecheckConnection';
       const config = getConfigManager();
       const isOfflineMode = config.get('enableCache') === true;
 
       if (isOfflineMode) {
         throw new CliError(
           'OFFLINE_MODE',
-          `${errorMsg}\nHint：Current处于离线模式，CLI 将尝试使用Cache中的Data\n如需在线模式，请检查网络连接后重试`,
+          `${errorMsg}\nHint：Current，CLI UseCacheMediumData\n，PleasecheckConnectionRetry`,
           -1
         );
       }
       throw CliError.networkError(errorMsg);
     } else {
       // RequestError
-      throw new CliError(ErrorCode.INVALID_INPUT, (error as Error).message || 'Request配置Error');
+      throw new CliError(
+        ErrorCode.INVALID_INPUT,
+        (error as Error).message || 'RequestConfigureError'
+      );
     }
   }
 
@@ -126,7 +131,7 @@ export class ApiService {
    * POSTRequest
    * @param url - RequestURL
    * @param data - RequestData
-   * @param isFormData - YesNoData
+   * @param isFormData - Yes/NoData
    * @returns APIResponseData
    */
   async post<T = unknown>(url: string, data: unknown, isFormData = false): Promise<ApiResponse<T>> {

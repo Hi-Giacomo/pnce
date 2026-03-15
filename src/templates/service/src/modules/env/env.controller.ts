@@ -52,7 +52,7 @@ export class EnvController {
     if (!key || value === undefined) {
       return {
         success: false,
-        message: '参数不完整，需要 key 和 value',
+        message: 'Argument， key  value',
       };
     }
 
@@ -69,7 +69,7 @@ export class EnvController {
     if (!envVars || Object.keys(envVars).length === 0) {
       return {
         success: false,
-        message: '参数不完整，需要 envVars 对象',
+        message: 'Argument， envVars Object',
       };
     }
 

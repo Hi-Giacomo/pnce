@@ -19,13 +19,13 @@ export interface ProgressBarOptions {
   totalSize: number;
 
   /**
-   * 
+   *
    * @default 'shades_classic'
    */
   preset?: keyof typeof Presets;
 
   /**
-   * YesNo
+   * Yes/No
    * @default true
    */
   showSpeed?: boolean;

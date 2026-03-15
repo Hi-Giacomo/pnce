@@ -40,17 +40,17 @@ export class CliError extends Error {
   static versionNotFound(name: string, version: string) {
     return new CliError(
       'VERSION_NOT_FOUND',
-      `Version "${version}" of module "${name}" not found`,
+      `version "${version}" of module "${name}" not found`,
       3,
       { name, version }
     );
   }
 
-  static uploadFailed(message = 'Upload failed') {
+  static uploadfailed(message = 'Upload failed') {
     return new CliError('UPLOAD_FAILED', message, 4);
   }
 
-  static configError(message = 'Configuration error') {
+  static configError(message = 'Config error') {
     return new CliError('CONFIG_ERROR', message, 5);
   }
 
@@ -63,7 +63,7 @@ export class CliError extends Error {
   }
 
   static fileNotFound(path: string) {
-    return new CliError('FILE_NOT_FOUND', `File not found: ${path}`, 8, { path });
+    return new CliError('FILE_NOT_FOUND', `file not found: ${path}`, 8, { path });
   }
 
   static fileAccessDenied(path: string) {
@@ -75,7 +75,7 @@ export class CliError extends Error {
  * Error code specification
  */
 export enum ErrorCode {
-  // Authentication errors (4xx)
+  // Auth errors (4xx)
   AUTH_UNAUTHORIZED = 'AUTH_UNAUTHORIZED',
   AUTH_TOKEN_EXPIRED = 'AUTH_TOKEN_EXPIRED',
   AUTH_LOGIN_FAILED = 'AUTH_LOGIN_FAILED',
@@ -93,11 +93,11 @@ export enum ErrorCode {
   DOWNLOAD_FAILED = 'DOWNLOAD_FAILED',
   INVALID_MODULE_FORMAT = 'INVALID_MODULE_FORMAT',
 
-  // Configuration errors
+  // Config errors
   CONFIG_ERROR = 'CONFIG_ERROR',
   CONFIG_NOT_FOUND = 'CONFIG_NOT_FOUND',
 
-  // File errors
+  // file errors
   FILE_NOT_FOUND = 'FILE_NOT_FOUND',
   FILE_ACCESS_DENIED = 'FILE_ACCESS_DENIED',
   FILE_READ_ERROR = 'FILE_READ_ERROR',
@@ -217,15 +217,16 @@ export class ErrorHandler {
     const hints: Record<string, string> = {
       AUTH_UNAUTHORIZED: 'Please login using `pnce login`',
       AUTH_TOKEN_EXPIRED: 'Please login again using `pnce login`',
-      MODULE_NOT_FOUND: 'Check module name or use `pnce list` to view available modules',
+      MODULE_NOT_FOUND: 'check module name or use `pnce list` to view available modules',
       VERSION_NOT_FOUND: 'Use `pnce info <name>` to view available versions',
-      UPLOAD_FAILED: 'Check network connection and module format, ensure project is properly configured',
-      CONFIG_ERROR: 'Check configuration file or run `pnce init` to initialize configuration',
-      NETWORK_ERROR: 'Check network connection or try again later',
+      UPLOAD_FAILED:
+        'check network connection and module format, ensure project is properly configured',
+      CONFIG_ERROR: 'check configuration file or run `pnce init` to initialize configuration',
+      NETWORK_ERROR: 'check network connection or try again later',
       TIMEOUT_ERROR: 'Request timed out, check network or try again later',
-      INVALID_INPUT: 'Check if input parameters are correct',
-      FILE_NOT_FOUND: 'Check if file path is correct',
-      FILE_ACCESS_DENIED: 'Check file permissions',
+      INVALID_INPUT: 'check if input parameters are correct',
+      FILE_NOT_FOUND: 'check if file path is correct',
+      FILE_ACCESS_DENIED: 'check file permissions',
       INTERNAL_ERROR: 'Unknown error occurred, please retry or contact support team',
     };
 

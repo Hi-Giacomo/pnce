@@ -1,6 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { loadEnvFile, updateEnvFile, deleteEnvFile as deleteEnv } from '../../config/env.config';
+import { loadEnvfile, updateEnvfile, deleteEnvfile as deleteEnv } from '../../config/env.config';
 
 @Injectable()
 export class EnvService {
@@ -12,14 +12,14 @@ export class EnvService {
    * AllEnvironment variables
    */
   getAllEnv(): Record<string, string> {
-    return loadEnvFile();
+    return loadEnvfile();
   }
 
   /**
    * Environment variables
    */
   getEnv(key: string): string {
-    return process.env[key] || loadEnvFile()[key];
+    return process.env[key] || loadEnvfile()[key];
   }
 
   /**
@@ -35,47 +35,47 @@ export class EnvService {
   setEnv(key: string, value: string): { success: boolean; message: string; needRestart?: boolean } {
     try {
       const oldValue = process.env[key];
-      updateEnvFile(key, value);
+      updateEnvfile(key, value);
 
-      //  process.env 
+      //  process.env
       process.env[key] = value;
 
-      // YesNo
+      // Yes/No
       const needRestart = ['PORT', 'NODE_ENV'].includes(key) && oldValue !== value;
 
       if (needRestart) {
-        this.logger.warn(`Environment variables ${key} 从 ${oldValue} 变更为 ${value}`);
-        this.logger.log('准备触发服务重启...');
+        this.logger.warn(`Environment variables ${key}  ${oldValue}  ${value}`);
+        this.logger.log('serviceRestart...');
 
         // ，CurrentRequest
         setImmediate(() => {
-          this.logger.log('正在执行服务重启...');
+          this.logger.log('ProcessingExecuteserviceRestart...');
           if (typeof (global as any).restartServer === 'function') {
             (global as any).restartServer();
-            this.logger.log('restartServer 函数已调用');
+            this.logger.log('restartServer Function');
           } else {
-            this.logger.error('restartServer 函数未定义');
+            this.logger.error('restartServer FunctionUndefined');
           }
         });
 
         return {
           success: true,
-          message: `Environment variables ${key} Update successful，服务正在自动重启中...`,
+          message: `Environment variables ${key} Update successful，serviceProcessingRestartMedium...`,
           needRestart: true,
         };
       }
 
-      this.logger.log(`Environment variables已更新: ${key}=${value}`);
+      this.logger.log(`Environment variablesUpdate: ${key}=${value}`);
       return {
         success: true,
         message: `Environment variables ${key} Update successful`,
         needRestart: false,
       };
     } catch (error) {
-      this.logger.error(`更新Environment variablesFailed: ${error.message}`);
+      this.logger.error(`UpdateEnvironment variablesfailed: ${error.message}`);
       return {
         success: false,
-        message: `Environment variables ${key} 更新Failed: ${error.message}`,
+        message: `Environment variables ${key} Updatefailed: ${error.message}`,
         needRestart: false,
       };
     }
@@ -96,25 +96,25 @@ export class EnvService {
     try {
       Object.entries(envVars).forEach(([key, value]) => {
         try {
-          updateEnvFile(key, value);
+          updateEnvfile(key, value);
           updated.push(key);
-          this.logger.log(`Environment variables已更新: ${key}=${value}`);
+          this.logger.log(`Environment variablesUpdate: ${key}=${value}`);
         } catch (error) {
           failed.push({ key, error: error.message });
-          this.logger.error(`更新Environment variablesFailed: ${key} - ${error.message}`);
+          this.logger.error(`UpdateEnvironment variablesfailed: ${key} - ${error.message}`);
         }
       });
 
       return {
         success: failed.length === 0,
-        message: `批量更新Complete: Success ${updated.length} 个, Failed ${failed.length} 个`,
+        message: `UpdateComplete: Success ${updated.length} , failed ${failed.length} `,
         updated,
         failed,
       };
     } catch (error) {
       return {
         success: false,
-        message: `批量更新Failed: ${error.message}`,
+        message: `Updatefailed: ${error.message}`,
         updated,
         failed,
       };
@@ -127,43 +127,43 @@ export class EnvService {
   deleteEnv(key: string): { success: boolean; message: string } {
     try {
       deleteEnv(key);
-      this.logger.log(`Environment variables已删除: ${key}`);
+      this.logger.log(`Environment variablesDelete: ${key}`);
       return {
         success: true,
-        message: `Environment variables ${key} 删除Success`,
+        message: `Environment variables ${key} DeleteSuccess`,
       };
     } catch (error) {
-      this.logger.error(`删除Environment variablesFailed: ${error.message}`);
+      this.logger.error(`DeleteEnvironment variablesfailed: ${error.message}`);
       return {
         success: false,
-        message: `Environment variables ${key} 删除Failed: ${error.message}`,
+        message: `Environment variables ${key} Deletefailed: ${error.message}`,
       };
     }
   }
 
   /**
-   * AllEnvironment variables(File)
+   * AllEnvironment variables(file)
    */
   reloadEnv(): { success: boolean; message: string; config: Record<string, string> } {
     try {
-      const envVars = loadEnvFile();
+      const envVars = loadEnvfile();
 
       //  process.env
       Object.entries(envVars).forEach(([key, value]) => {
         process.env[key] = value;
       });
 
-      this.logger.log('Environment variables已重载');
+      this.logger.log('Environment variablesReload');
       return {
         success: true,
-        message: 'Environment variables重载Success',
+        message: 'Environment variablesReloadSuccess',
         config: envVars,
       };
     } catch (error) {
-      this.logger.error(`重载Environment variablesFailed: ${error.message}`);
+      this.logger.error(`ReloadEnvironment variablesfailed: ${error.message}`);
       return {
         success: false,
-        message: `Environment variables重载Failed: ${error.message}`,
+        message: `Environment variablesReloadfailed: ${error.message}`,
         config: {},
       };
     }

@@ -1,4 +1,4 @@
-import { command } from 'commander';
+import { Command } from 'commander';
 import chalk from 'chalk';
 import { ConfigManager } from '../config/manager';
 import { getProfileManager } from '../utils/profile-manager';
@@ -7,16 +7,16 @@ import { getLogger } from '../utils/logger';
 const logger = getLogger();
 
 /**
- * Configuration profile command
+ * Config profile command
  */
-export const profilecommand = new command('profile')
+export const profilecommand = new Command('profile')
   .description('Manage configuration profiles (multi-config switching)')
   .action(() => {
     const profileManager = getProfileManager();
     const profiles = profileManager.list();
     const currentProfile = profileManager.getCurrent();
 
-    console.log(chalk.cyan('\n📁 Configuration Profiles\n'));
+    console.log(chalk.cyan('\n📁 Config Profiles\n'));
 
     if (profiles.length === 0) {
       console.log(chalk.gray('No profiles configured\n'));
@@ -45,7 +45,7 @@ export const profilecommand = new command('profile')
 /**
  * Save profile subcommand
  */
-export const saveProfilecommand = new command('save')
+export const saveProfilecommand = new Command('save')
   .argument('<name>', 'Profile name')
   .description('Save current config as profile')
   .action(async (name: string) => {
@@ -56,18 +56,18 @@ export const saveProfilecommand = new command('save')
       const config = configManager.getConfig();
       profileManager.save(name, config);
 
-      console.log(chalk.green(`✓ Configuration profile saved: ${name}\n`));
-      logger.info(`Configuration profile saved: ${name}`, { name });
+      console.log(chalk.green(`✓ Config profile saved: ${name}\n`));
+      logger.info(`Config profile saved: ${name}`, { name });
     } catch (error) {
-      console.log(chalk.red(`Failed to save profile: ${error}\n`));
-      logger.error('Failed to save configuration profile', { error });
+      console.log(chalk.red(`failed to save profile: ${error}\n`));
+      logger.error('failed to save configuration profile', { error });
     }
   });
 
 /**
  * Load profile subcommand
  */
-export const loadProfilecommand = new command('load')
+export const loadProfilecommand = new Command('load')
   .argument('<name>', 'Profile name')
   .description('Load configuration profile (without switching current profile)')
   .action(async (name: string) => {
@@ -77,7 +77,7 @@ export const loadProfilecommand = new command('load')
       const config = profileManager.load(name);
 
       if (!config) {
-        console.log(chalk.red(`✗ Configuration profile not found: ${name}\n`));
+        console.log(chalk.red(`✗ Config profile not found: ${name}\n`));
         return;
       }
 
@@ -86,15 +86,15 @@ export const loadProfilecommand = new command('load')
       console.log(chalk.gray('\nTip: Use "pnce profile use <name>" to switch to this profile\n'));
       logger.info(`Viewed configuration profile: ${name}`);
     } catch (error: unknown) {
-      console.log(chalk.red(`Failed to load profile: ${error}\n`));
-      logger.error('Failed to load configuration profile', { error });
+      console.log(chalk.red(`failed to load profile: ${error}\n`));
+      logger.error('failed to load configuration profile', { error });
     }
   });
 
 /**
  * Use profile subcommand
  */
-export const useProfilecommand = new command('use')
+export const useProfilecommand = new Command('use')
   .argument('<name>', 'Profile name')
   .description('Switch to specified configuration profile')
   .action(async (name: string) => {
@@ -105,7 +105,7 @@ export const useProfilecommand = new command('use')
       const config = profileManager.load(name);
 
       if (!config) {
-        console.log(chalk.red(`✗ Configuration profile not found: ${name}\n`));
+        console.log(chalk.red(`✗ Config profile not found: ${name}\n`));
         return;
       }
 
@@ -118,15 +118,15 @@ export const useProfilecommand = new command('use')
       console.log(chalk.green(`✓ Switched to configuration profile: ${name}\n`));
       logger.info(`Switched to configuration profile: ${name}`, { name });
     } catch (error) {
-      console.log(chalk.red(`Failed to switch profile: ${error}\n`));
-      logger.error('Failed to switch configuration profile', { error });
+      console.log(chalk.red(`failed to switch profile: ${error}\n`));
+      logger.error('failed to switch configuration profile', { error });
     }
   });
 
 /**
  * List profiles subcommand
  */
-export const listProfilecommand = new command('list')
+export const listProfilecommand = new Command('list')
   .description('List all configuration profiles')
   .action(() => {
     const profileManager = getProfileManager();
@@ -154,7 +154,7 @@ export const listProfilecommand = new command('list')
 /**
  * Delete profile subcommand
  */
-export const deleteProfilecommand = new command('delete')
+export const deleteProfilecommand = new Command('delete')
   .argument('<name>', 'Profile name')
   .description('Delete configuration profile')
   .action((name: string) => {
@@ -162,12 +162,12 @@ export const deleteProfilecommand = new command('delete')
       const profileManager = getProfileManager();
       profileManager.delete(name);
 
-      console.log(chalk.green(`✓ Configuration profile deleted: ${name}\n`));
-      logger.info(`Configuration profile deleted: ${name}`);
+      console.log(chalk.green(`✓ Config profile deleted: ${name}\n`));
+      logger.info(`Config profile deleted: ${name}`);
     } catch (error) {
-      console.log(chalk.red(`Failed to delete profile: ${error}\n`));
+      console.log(chalk.red(`failed to delete profile: ${error}\n`));
       logger.error(
-        'Failed to delete configuration profile',
+        'failed to delete configuration profile',
         error instanceof Error ? { error } : { error: new Error(String(error)) }
       );
     }
@@ -176,7 +176,7 @@ export const deleteProfilecommand = new command('delete')
 /**
  * Rename profile subcommand
  */
-export const renameProfilecommand = new command('rename')
+export const renameProfilecommand = new Command('rename')
   .argument('<oldName>', 'Old profile name')
   .argument('<newName>', 'New profile name')
   .description('Rename configuration profile')
@@ -185,23 +185,23 @@ export const renameProfilecommand = new command('rename')
       const profileManager = getProfileManager();
       profileManager.rename(oldName, newName);
 
-      console.log(chalk.green(`✓ Configuration profile renamed: ${oldName} -> ${newName}\n`));
-      logger.info(`Configuration profile renamed: ${oldName} -> ${newName}`);
+      console.log(chalk.green(`✓ Config profile renamed: ${oldName} -> ${newName}\n`));
+      logger.info(`Config profile renamed: ${oldName} -> ${newName}`);
     } catch (error) {
-      console.log(chalk.red(`Failed to rename profile: ${error}\n`));
+      console.log(chalk.red(`failed to rename profile: ${error}\n`));
       logger.error(
-        'Failed to rename configuration profile',
+        'failed to rename configuration profile',
         error instanceof Error ? { error } : { error: new Error(String(error)) }
       );
     }
   });
 
-export function register(program: command): void {
-  const profileCmd = program.addcommand(profilecommand);
-  profileCmd.addcommand(saveProfilecommand);
-  profileCmd.addcommand(loadProfilecommand);
-  profileCmd.addcommand(useProfilecommand);
-  profileCmd.addcommand(listProfilecommand);
-  profileCmd.addcommand(deleteProfilecommand);
-  profileCmd.addcommand(renameProfilecommand);
+export function register(program: Command): void {
+  const profileCmd = program.addCommand(profilecommand);
+  profileCmd.addCommand(saveProfilecommand);
+  profileCmd.addCommand(loadProfilecommand);
+  profileCmd.addCommand(useProfilecommand);
+  profileCmd.addCommand(listProfilecommand);
+  profileCmd.addCommand(deleteProfilecommand);
+  profileCmd.addCommand(renameProfilecommand);
 }

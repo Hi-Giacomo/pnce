@@ -5,7 +5,7 @@ import { getLogger } from './logger';
 const logger = getLogger();
 
 /**
- * AliasFile
+ * Aliasfile
  */
 export interface AliasConfig {
   /**
@@ -37,7 +37,7 @@ export class AliasManager {
         return JSON.parse(content);
       }
     } catch (error) {
-      logger.warn(`加载Alias配置Failed: ${error}`);
+      logger.warn(`LoadAliasConfigurefailed: ${error}`);
     }
 
     return { aliases: {} };
@@ -54,9 +54,9 @@ export class AliasManager {
       }
 
       writeFileSync(this.configPath, JSON.stringify(this.config, null, 2), 'utf-8');
-      logger.debug('Alias配置已保存');
+      logger.debug('AliasConfigureSave');
     } catch (error) {
-      logger.error(`保存Alias配置Failed: ${error}`);
+      logger.error(`SaveAliasConfigurefailed: ${error}`);
       throw error;
     }
   }
@@ -69,7 +69,7 @@ export class AliasManager {
   add(alias: string, command: string): void {
     this.config.aliases[alias] = command;
     this.saveConfig();
-    logger.info(`Alias已添加: ${alias} -> ${command}`);
+    logger.info(`Alias: ${alias} -> ${command}`);
   }
 
   /**
@@ -80,7 +80,7 @@ export class AliasManager {
     if (this.config.aliases[alias]) {
       delete this.config.aliases[alias];
       this.saveConfig();
-      logger.info(`Alias已移除: ${alias}`);
+      logger.info(`Alias: ${alias}`);
     }
   }
 
@@ -97,7 +97,7 @@ export class AliasManager {
       // Aliascommand
       const aliasParts = alias.split(' ');
       const result = [...aliasParts, ...args.slice(1)];
-      logger.debug(`Alias已解析: ${command} -> ${result.join(' ')}`);
+      logger.debug(`Alias: ${command} -> ${result.join(' ')}`);
       return result;
     }
 
@@ -105,7 +105,7 @@ export class AliasManager {
   }
 
   /**
-   * commandYesNoAlias
+   * commandYes/NoAlias
    */
   isAlias(command: string): boolean {
     return !!this.config.aliases[command];
@@ -124,7 +124,7 @@ export class AliasManager {
   clear(): void {
     this.config.aliases = {};
     this.saveConfig();
-    logger.info('AllAlias已清空');
+    logger.info('AllAliasEmpty');
   }
 
   /**

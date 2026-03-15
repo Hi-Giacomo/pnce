@@ -3,46 +3,46 @@
  */
 
 /**
- * 
+ *
  */
 export function capitalize(str: string): string {
   return str.charAt(0).toUpperCase() + str.slice(1);
 }
 
 /**
- * Validationmodule nameYesNo
+ * Validationmodule nameYes/No
  */
-export function validatemoduleName(name: string): { valid: boolean; error?: string } {
+export function validateModuleName(name: string): { valid: boolean; error?: string } {
   // （ @scope/）
   const withoutScope = name.replace(/^@[^/]+\//, '');
 
-  // 
+  //
   const cleanName = withoutScope
     .replace(/\.\.\//g, '')
     .replace(/\.\//g, '')
     .replace(/[\/\\]/g, '');
 
-  // YesNo
+  // Yes/No
   if (/^\d/.test(cleanName)) {
     return {
       valid: false,
-      error: `module name不能以数字开头: "${name}"\n请使用字母开头的名称，例如: "module${cleanName}" 或 "my_${cleanName}"`,
+      error: `module nameNumber: "${name}"\nPleaseUseName，: "module${cleanName}"  "my_${cleanName}"`,
     };
   }
 
-  // YesNoYes
+  // Yes/NoYes
   if (/^\d+$/.test(cleanName.replace(/[-_\s]/g, ''))) {
     return {
       valid: false,
-      error: `module name不能只包含数字: "${name}"\n请添加有意义的字母前缀，例如: "module_${cleanName}" 或 "version_${cleanName}"`,
+      error: `module namePackageNumber: "${name}"\nPlease，: "module_${cleanName}"  "version_${cleanName}"`,
     };
   }
 
-  // YesNo
+  // Yes/No
   if (!cleanName || cleanName.trim() === '') {
     return {
       valid: false,
-      error: 'module name不能为空\n请提供有效的module name',
+      error: 'module nameEmpty\nPleasevalidmodule name',
     };
   }
 
@@ -50,16 +50,16 @@ export function validatemoduleName(name: string): { valid: boolean; error?: stri
 }
 
 /**
- * module name PascalCase 
+ * module name PascalCase
  * @example demo_name_1 -> DemoName1
  * @example my-cool-module -> MyCoolmodule
  * @example test_demo -> TestDemo
  */
-export function normalizemoduleName(name: string): string {
+export function normalizeModuleName(name: string): string {
   // （ @scope/）
   const withoutScope = name.replace(/^@[^/]+\//, '');
 
-  // 
+  //
   const cleaned = withoutScope
     .replace(/\.\.\//g, '')
     .replace(/\.\//g, '')
@@ -71,9 +71,9 @@ export function normalizemoduleName(name: string): string {
 
   const pascalCase = words
     .map((word) => {
-      // YesNoYes
+      // Yes/NoYes
       if (/^\d+$/.test(word)) {
-        return word; // 
+        return word; //
       }
       // ：，
       return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
@@ -84,26 +84,26 @@ export function normalizemoduleName(name: string): string {
 }
 
 /**
- * module name camelCase 
+ * module name camelCase
  * @example demo_name_1 -> demoName1
  * @example my-cool-module -> myCoolmodule
  */
 export function normalizeCamelCase(name: string): string {
-  const pascalCase = normalizemoduleName(name);
-  // 
+  const pascalCase = normalizeModuleName(name);
+  //
   return pascalCase.charAt(0).toLowerCase() + pascalCase.slice(1);
 }
 
 /**
- * moduleFile（kebab-case）
+ * modulefile（kebab-case）
  * @example demo_name_1 -> demo-name-1
  * @example Demomodule -> demo-module
  */
 export function normalizeFileName(name: string): string {
-  // 
+  //
   const withoutScope = name.replace(/^@[^/]+\//, '');
 
-  // 
+  //
   let cleaned = withoutScope
     .replace(/\.\.\//g, '')
     .replace(/\.\//g, '')
@@ -112,11 +112,11 @@ export function normalizeFileName(name: string): string {
   // ：
   cleaned = cleaned.replace(/([a-z])([A-Z])/g, '$1-$2');
 
-  // File：
-  // 1. 
-  // 2. 
-  // 3. 
-  // 4. 
+  // file：
+  // 1.
+  // 2.
+  // 3.
+  // 4.
   const normalized = cleaned
     .replace(/[^a-zA-Z0-9-_]/g, '-')
     .replace(/[-_]+/g, '-')

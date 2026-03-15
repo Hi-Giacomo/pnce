@@ -32,32 +32,32 @@ describe('Init Commands', () => {
   });
 
   describe('service command', () => {
-    it('应该创建服务项目', async () => {
+    it('CreateserviceProject', async () => {
       vi.spyOn(fs, 'existsSync').mockReturnValue(false);
       vi.spyOn(fs, 'mkdirSync').mockReturnValue(undefined);
       vi.spyOn(fs, 'copySync').mockReturnValue(undefined);
       vi.spyOn(fs, 'writeJsonSync').mockReturnValue(undefined);
 
-      // 这里需要实际的命令测试逻辑
-      // 由于命令注册方式，这里只是示例
-      expect(true).toBe(true); // 占位符
+      // Test
+      // Register，YesExample
+      expect(true).toBe(true); // 
     });
 
-    it('如果项目已存在应该报错', async () => {
+    it('Projectalready exists', async () => {
       vi.spyOn(fs, 'existsSync').mockReturnValue(true);
 
-      // 测试重复创建
-      expect(true).toBe(true); // 占位符
+      // TestDuplicateCreate
+      expect(true).toBe(true); // 
     });
   });
 
   describe('microservice command', () => {
-    it('应该创建微服务项目', async () => {
+    it('CreateserviceProject', async () => {
       vi.spyOn(fs, 'existsSync').mockReturnValue(false);
       vi.spyOn(fs, 'mkdirSync').mockReturnValue(undefined);
       vi.spyOn(fs, 'copySync').mockReturnValue(undefined);
 
-      expect(true).toBe(true); // 占位符
+      expect(true).toBe(true); // 
     });
   });
 });

@@ -5,31 +5,31 @@ import { getLogger } from './logger';
 const logger = getLogger();
 
 /**
- * 
+ *
  */
 export interface AnalyticsEvent {
   /**
-   * 
+   *
    */
   event: string;
 
   /**
-   * 
+   *
    */
   timestamp: number;
 
   /**
-   * CLI Version
+   * CLI version
    */
   version: string;
 
   /**
-   * Node.js Version
+   * Node.js version
    */
-  nodeVersion: string;
+  nodeversion: string;
 
   /**
-   * 
+   *
    */
   platform: string;
 
@@ -40,37 +40,37 @@ export interface AnalyticsEvent {
 }
 
 /**
- * 
+ *
  */
 export interface AnalyticsConfig {
   /**
-   * YesNoEnable analytics
+   * Yes/NoEnable analytics
    */
   enabled: boolean;
 
   /**
-   * 
+   *
    */
   endpoint?: string;
 }
 
 /**
- * 
+ *
  */
 export class AnalyticsManager {
   private configPath: string;
   private config: AnalyticsConfig;
-  private eventsFile: string;
+  private eventsfile: string;
 
   constructor(configDir?: string) {
     const configBaseDir = configDir || path.join(require('os').homedir(), '.pnce');
     this.configPath = path.join(configBaseDir, 'analytics.json');
-    this.eventsFile = path.join(configBaseDir, 'analytics-events.json');
+    this.eventsfile = path.join(configBaseDir, 'analytics-events.json');
     this.config = this.loadConfig();
   }
 
   /**
-   * 
+   *
    */
   private loadConfig(): AnalyticsConfig {
     try {
@@ -79,15 +79,15 @@ export class AnalyticsManager {
         return JSON.parse(content);
       }
     } catch (error) {
-      logger.warn(`加载统计配置Failed: ${error}`);
+      logger.warn(`LoadStatisticsConfigurefailed: ${error}`);
     }
 
-    // Default Configuration：Disable analytics
+    // Default Config：Disable analytics
     return { enabled: false };
   }
 
   /**
-   * 
+   *
    */
   private saveConfig(): void {
     try {
@@ -97,14 +97,14 @@ export class AnalyticsManager {
       }
 
       writeFileSync(this.configPath, JSON.stringify(this.config, null, 2), 'utf-8');
-      logger.debug('统计配置已保存');
+      logger.debug('StatisticsConfigureSave');
     } catch (error) {
-      logger.error(`保存统计配置Failed: ${error}`);
+      logger.error(`SaveStatisticsConfigurefailed: ${error}`);
     }
   }
 
   /**
-   * YesNo
+   * Yes/No
    */
   isEnabled(): boolean {
     return this.config.enabled === true;
@@ -119,7 +119,7 @@ export class AnalyticsManager {
       this.config.endpoint = endpoint;
     }
     this.saveConfig();
-    logger.info('使用统计已启用');
+    logger.info('UseStatisticsEnable');
   }
 
   /**
@@ -128,7 +128,7 @@ export class AnalyticsManager {
   disable(): void {
     this.config.enabled = false;
     this.saveConfig();
-    logger.info('使用统计已禁用');
+    logger.info('UseStatisticsDisable');
   }
 
   /**
@@ -144,66 +144,66 @@ export class AnalyticsManager {
         event,
         timestamp: Date.now(),
         version: process.env.PNCE_VERSION || '0.0.9',
-        nodeVersion: process.version,
+        nodeversion: process.version,
         platform: process.platform,
         data,
       };
 
-      // LocalFile
+      // Localfile
       const events = this.loadEvents();
       events.push(eventData);
       this.saveEvents(events);
 
-      logger.debug(`事件已Record: ${event}`);
+      logger.debug(`EventRecord: ${event}`);
 
       // ，
       if (this.config.endpoint) {
         this.sendEvent(eventData).catch((error) => {
-          logger.debug(`发送统计事件Failed: ${error}`);
+          logger.debug(`SendStatisticsEventfailed: ${error}`);
         });
       }
     } catch (error) {
-      logger.debug(`Record统计事件Failed: ${error}`);
+      logger.debug(`RecordStatisticsEventfailed: ${error}`);
     }
   }
 
   /**
-   * 
+   *
    */
   private loadEvents(): AnalyticsEvent[] {
     try {
-      if (existsSync(this.eventsFile)) {
-        const content = readFileSync(this.eventsFile, 'utf-8');
+      if (existsSync(this.eventsfile)) {
+        const content = readFileSync(this.eventsfile, 'utf-8');
         return JSON.parse(content);
       }
     } catch (error) {
-      logger.debug(`加载统计事件Failed: ${error}`);
+      logger.debug(`LoadStatisticsEventfailed: ${error}`);
     }
 
     return [];
   }
 
   /**
-   * 
+   *
    */
   private saveEvents(events: AnalyticsEvent[]): void {
     try {
-      const dir = path.dirname(this.eventsFile);
+      const dir = path.dirname(this.eventsfile);
       if (!existsSync(dir)) {
         mkdirSync(dir, { recursive: true });
       }
 
-      //  100 
+      //  100
       const recentEvents = events.slice(-100);
 
-      writeFileSync(this.eventsFile, JSON.stringify(recentEvents, null, 2), 'utf-8');
+      writeFileSync(this.eventsfile, JSON.stringify(recentEvents, null, 2), 'utf-8');
     } catch (error) {
-      logger.debug(`保存统计事件Failed: ${error}`);
+      logger.debug(`SaveStatisticsEventfailed: ${error}`);
     }
   }
 
   /**
-   * 
+   *
    */
   private async sendEvent(event: AnalyticsEvent): Promise<void> {
     if (!this.config.endpoint) {
@@ -218,9 +218,9 @@ export class AnalyticsManager {
           'Content-Type': 'application/json',
         },
       });
-      logger.debug(`统计事件已发送: ${event.event}`);
+      logger.debug(`StatisticsEventSend: ${event.event}`);
     } catch (error) {
-      logger.debug(`发送统计事件Failed: ${error}`);
+      logger.debug(`SendStatisticsEventfailed: ${error}`);
     }
   }
 
@@ -229,13 +229,13 @@ export class AnalyticsManager {
    */
   clearEvents(): void {
     try {
-      if (existsSync(this.eventsFile)) {
+      if (existsSync(this.eventsfile)) {
         const fs = require('fs-extra');
-        fs.removeSync(this.eventsFile);
-        logger.info('Local统计事件已清空');
+        fs.removeSync(this.eventsfile);
+        logger.info('LocalStatisticsEventEmpty');
       }
     } catch (error) {
-      logger.error(`清空统计事件Failed: ${error}`);
+      logger.error(`EmptyStatisticsEventfailed: ${error}`);
     }
   }
 
@@ -257,7 +257,7 @@ export class AnalyticsManager {
 let analyticsManagerInstance: AnalyticsManager | null = null;
 
 /**
- * 
+ *
  */
 export function getAnalyticsManager(): AnalyticsManager {
   if (!analyticsManagerInstance) {

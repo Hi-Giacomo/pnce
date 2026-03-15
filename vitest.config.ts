@@ -17,7 +17,7 @@ export default defineConfig({
         '**/templates/',
         'src/templates/',
       ],
-      lines: 80, // 生产级覆盖率目标
+      lines: 80, // Production-level coverage target
       functions: 80,
       branches: 75,
       statements: 80,

@@ -9,7 +9,7 @@ import axios from 'axios';
 import retry from 'axios-retry';
 import winston from 'winston';
 import { DOWNLOAD, HTTP } from '../constants';
-import { ApiResponse, moduleInfo } from '../types';
+import { ApiResponse, ModuleInformation } from '../types';
 
 /**
  * module
@@ -41,7 +41,7 @@ export class moduleDownloadService {
   /**
    * module
    * @param moduleName - module name
-   * @param version - Version(,Default)
+   * @param version - version(,Default)
    * @param installDir - Directory
    */
   async install(
@@ -53,22 +53,22 @@ export class moduleDownloadService {
     let targetVersion = version;
     const installPath = path.resolve(initialCwd, installDir, moduleName);
 
-    // Version，Version
+    // version，version
     if (!targetVersion) {
-      targetVersion = await this.getLatestVersion(moduleName);
+      targetVersion = await this.getLatestversion(moduleName);
     }
 
     if (!targetVersion) {
       throw new CliError(
         ErrorCode.VERSION_NOT_FOUND,
-        `module "${moduleName}" 的Version "latest" does not exist`,
+        `module "${moduleName}" version "latest" does not exist`,
         404,
         { name: moduleName, version: 'latest' }
       );
     }
 
-    // YesNoVersion
-    const moduleStatus = await this.checkmoduleStatus(
+    // Yes/Noversion
+    const moduleStatus = await this.checkModuleStatus(
       moduleName,
       targetVersion,
       installDir,
@@ -76,29 +76,29 @@ export class moduleDownloadService {
     );
 
     if (moduleStatus.isInstalled && !moduleStatus.needsUpdate) {
-      console.log(`✓ ${moduleName}@${targetVersion} 已安装`);
+      console.log(`✓ ${moduleName}@${targetVersion} Install`);
       return;
     }
 
     if (moduleStatus.isInstalled && moduleStatus.needsUpdate) {
       console.log(
-        `🔄 ${moduleName} 需要重新安装${moduleStatus.installedVersion ? ` (Current: ${moduleStatus.installedVersion})` : ''}...`
+        `🔄 ${moduleName} Install${moduleStatus.installedversion ? ` (Current: ${moduleStatus.installedversion})` : ''}...`
       );
     }
 
-    console.log(`下载 ${moduleName}@${targetVersion}...`);
+    console.log(`Download ${moduleName}@${targetVersion}...`);
 
-    // 
+    //
     await this.downloadAndExtract(moduleName, targetVersion, installPath, initialCwd);
 
-    console.log(`✓ ${moduleName}@${targetVersion} Installation successful`);
+    console.log(`✓ ${moduleName}@${targetVersion} installation successful`);
   }
 
   /**
    * module（）
-   * @param modules moduleList [{ name, version }]
+   * @param modules module list [{ name, version }]
    * @param installDir Directory
-   * @param concurrency 
+   * @param concurrency
    */
   async installBatch(
     modules: Array<{ name: string; version?: string }>,
@@ -108,23 +108,23 @@ export class moduleDownloadService {
     const initialCwd = process.env.INIT_CWD || process.cwd();
     const progressManager = new MultiProgressManager(this.logger);
 
-    // 
+    //
     const tasks = modules.map((module) => ({
       ...module,
       installPath: path.resolve(initialCwd, installDir, module.name),
     }));
 
-    // 
+    //
     await this.concurrentExecute(tasks, concurrency, progressManager, installDir, initialCwd);
 
     progressManager.stopAll();
   }
 
   /**
-   * moduleVersion
+   * moduleversion
    */
-  private async getLatestVersion(moduleName: string): Promise<string> {
-    const response = await this.api.get<ApiResponse<{ module: moduleInfo }>>(
+  private async getLatestversion(moduleName: string): Promise<string> {
+    const response = await this.api.get<ApiResponse<{ module: ModuleInformation }>>(
       `/api/modules/${moduleName}`
     );
 
@@ -136,17 +136,17 @@ export class moduleDownloadService {
   }
 
   /**
-   * moduleStatus
+   * module status
    */
-  private async checkmoduleStatus(
+  private async checkModuleStatus(
     moduleName: string,
-    targetVersion: string,
+    targetversion: string,
     installDir: string,
     projectRoot: string
   ): Promise<{
     isInstalled: boolean;
     needsUpdate: boolean;
-    installedVersion: string | null;
+    installedversion: string | null;
     installedName: string | null;
   }> {
     const basePath = projectRoot;
@@ -158,7 +158,7 @@ export class moduleDownloadService {
       return {
         isInstalled: false,
         needsUpdate: false,
-        installedVersion: null,
+        installedversion: null,
         installedName: null,
       };
     }
@@ -168,21 +168,21 @@ export class moduleDownloadService {
       return {
         isInstalled: true,
         needsUpdate: true,
-        installedVersion: null,
+        installedversion: null,
         installedName: null,
       };
     }
 
     const moduleConfig = await fs.readJson(moduleConfigPath);
-    const installedVersion = moduleConfig.version || null;
+    const installedversion = moduleConfig.version || null;
     const installedName = moduleConfig.name || null;
 
-    const needsUpdate = installedVersion !== targetVersion;
+    const needsUpdate = installedversion !== targetversion;
 
     return {
       isInstalled: true,
       needsUpdate,
-      installedVersion,
+      installedversion,
       installedName,
     };
   }
@@ -200,7 +200,7 @@ export class moduleDownloadService {
   ): Promise<void> {
     const downloadUrl = `${this.api['axiosInstance'].defaults.baseURL}/api/modules/${moduleName}/${version}/download`;
 
-    // 
+    //
     const axiosInstance = axios.create();
     retry(axiosInstance, {
       retries: HTTP.RETRY_COUNT,
@@ -254,12 +254,12 @@ export class moduleDownloadService {
     // Directory
     await this.extractPackage(tempTgzPath, installPath);
 
-    // File
+    // file
     await fs.remove(tempTgzPath);
   }
 
   /**
-   * 
+   *
    */
   private async concurrentExecute(
     tasks: Array<{
@@ -292,7 +292,7 @@ export class moduleDownloadService {
   }
 
   /**
-   * 
+   *
    */
   private async installTask(
     task: { name: string; version?: string; installPath: string },
@@ -301,21 +301,21 @@ export class moduleDownloadService {
     initialCwd: string
   ): Promise<void> {
     try {
-      // Version
+      // version
       let targetVersion = task.version;
       if (!targetVersion) {
-        targetVersion = await this.getLatestVersion(task.name);
+        targetVersion = await this.getLatestversion(task.name);
       }
 
       // Status
-      const status = await this.checkmoduleStatus(task.name, targetVersion, installDir, initialCwd);
+      const status = await this.checkModuleStatus(task.name, targetVersion, installDir, initialCwd);
 
       if (status.isInstalled && !status.needsUpdate) {
-        console.log(`✓ ${task.name}@${targetVersion} 已安装`);
+        console.log(`✓ ${task.name}@${targetVersion} Install`);
         return;
       }
 
-      // 
+      //
       await this.downloadAndExtract(
         task.name,
         targetVersion,
@@ -324,9 +324,9 @@ export class moduleDownloadService {
         progressManager
       );
 
-      console.log(`✓ ${task.name}@${targetVersion} Installation successful`);
+      console.log(`✓ ${task.name}@${targetVersion} installation successful`);
     } catch (error) {
-      this.logger?.error('安装moduleFailed', {
+      this.logger?.error('Installmodulefailed', {
         name: task.name,
         version: task.version,
         error,
@@ -336,9 +336,9 @@ export class moduleDownloadService {
   }
 
   /**
-   * 
+   *
    */
-  private async extractPackage(tgzPath: string, targetPath: string): Promise<void> {
+  private async extractPackage(tgzFilePath: string, targetPath: string): Promise<void> {
     // Directory（）
     if (await fs.pathExists(targetPath)) {
       await fs.remove(targetPath);
@@ -347,11 +347,11 @@ export class moduleDownloadService {
     await fs.ensureDir(path.dirname(targetPath));
 
     await tar.extract({
-      file: tgzPath,
+      file: tgzFilePath,
       cwd: path.dirname(targetPath),
       strip: 1, // Directory
     });
 
-    this.logger?.debug('解压包Success', { tgzPath, targetPath });
+    this.logger?.debug('ExtractPackageSuccess', { tgzFilePath, targetPath });
   }
 }

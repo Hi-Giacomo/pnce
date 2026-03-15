@@ -4,7 +4,7 @@ import os from 'os';
 import { CliError, ErrorCode, CryptoUtil } from '../utils';
 
 /**
- * Configuration Interface
+ * Config Interface
  */
 export interface PnceConfig {
   /**
@@ -23,7 +23,7 @@ export interface PnceConfig {
   oauthPort: number;
 
   /**
-   * User Authentication Token
+   * User Auth Token
    */
   token?: string;
 
@@ -63,7 +63,7 @@ export interface PnceConfig {
   uploadTimeout: number;
 
   /**
-   * Concurrent Downloads
+   * Concurrent downloads
    */
   maxConcurrentDownloads: number;
 
@@ -94,7 +94,7 @@ export interface PnceConfig {
 }
 
 /**
- * Default Configuration
+ * Default Config
  */
 const DEFAULT_CONFIG: PnceConfig = {
   apiServer: process.env.PNCE_API_SERVER || 'http://localhost:3000',
@@ -113,7 +113,7 @@ const DEFAULT_CONFIG: PnceConfig = {
 };
 
 /**
- * Configuration Priority:  > User > Default Configuration
+ * Config Priority:  > User > Default Config
  */
 export class ConfigManager {
   private userConfigPath: string;
@@ -122,11 +122,11 @@ export class ConfigManager {
   private projectConfig: Partial<PnceConfig> = {};
 
   constructor() {
-    // User Configuration Directory
+    // User Config Directory
     const userConfigDir = path.join(os.homedir(), '.pnce');
     this.userConfigPath = path.join(userConfigDir, 'config.json');
 
-    // Project Configuration Directory
+    // Project Config Directory
     this.projectConfigPath = path.join(process.cwd(), '.pnce', 'config.json');
 
     // Directory
@@ -163,7 +163,7 @@ export class ConfigManager {
       const config = JSON.parse(content);
       return config;
     } catch (error) {
-      console.warn(`Load user configurationFailed: ${error}`);
+      console.warn(`Load user configurationfailed: ${error}`);
       return {};
     }
   }
@@ -181,7 +181,7 @@ export class ConfigManager {
       const config = JSON.parse(content);
       return config;
     } catch (error) {
-      console.warn(`Load project configurationFailed: ${error}`);
+      console.warn(`Load project configurationfailed: ${error}`);
       return {};
     }
   }
@@ -253,7 +253,7 @@ export class ConfigManager {
 
   /**
    * Get merged configuration
-   * : Environment variables >  > User > Default Configuration
+   * : Environment variables >  > User > Default Config
    */
   getConfig(): PnceConfig {
     const envConfig = this.loadEnvConfig();
@@ -297,7 +297,7 @@ export class ConfigManager {
     try {
       writeFileSync(this.userConfigPath, JSON.stringify(this.userConfig, null, 2), 'utf-8');
     } catch (error) {
-      throw new CliError(ErrorCode.CONFIG_ERROR, `Save user configurationFailed: ${error}`);
+      throw new CliError(ErrorCode.CONFIG_ERROR, `Save user configurationfailed: ${error}`);
     }
   }
 
@@ -312,7 +312,7 @@ export class ConfigManager {
       }
       writeFileSync(this.projectConfigPath, JSON.stringify(this.projectConfig, null, 2), 'utf-8');
     } catch (error) {
-      throw new CliError(ErrorCode.CONFIG_ERROR, `Save project configurationFailed: ${error}`);
+      throw new CliError(ErrorCode.CONFIG_ERROR, `Save project configurationfailed: ${error}`);
     }
   }
 
@@ -369,7 +369,7 @@ export class ConfigManager {
   }
 
   /**
-   * Check if token is expired
+   * check if token is expired
    */
   isTokenExpired(): boolean {
     const expiresAt = this.userConfig.tokenExpiresAt;
@@ -389,7 +389,7 @@ export class ConfigManager {
     try {
       return CryptoUtil.decrypt(encryptedToken);
     } catch (error) {
-      console.warn('Failed to decrypt token:', error);
+      console.warn('failed to decrypt token:', error);
       return undefined;
     }
   }
@@ -404,7 +404,7 @@ export class ConfigManager {
     try {
       return CryptoUtil.decrypt(encryptedToken);
     } catch (error) {
-      console.warn('Failed to decrypt refresh token:', error);
+      console.warn('failed to decrypt refresh token:', error);
       return undefined;
     }
   }
@@ -429,17 +429,17 @@ export class ConfigManager {
 
   /**
    * Switch to specified configuration profile
-   * @param profileName 
+   * @param profileName
    */
   switchProfile(profileName: string): void {
     const profilesDir = this.getProfilesDir();
     const profilePath = path.join(profilesDir, `${profileName}.json`);
 
     if (!existsSync(profilePath)) {
-      throw new CliError(ErrorCode.CONFIG_ERROR, `Configuration profile "${profileName}" does not exist`);
+      throw new CliError(ErrorCode.CONFIG_ERROR, `Config profile "${profileName}" does not exist`);
     }
 
-    // 
+    //
     try {
       const content = require('fs-extra').readFileSync(profilePath, 'utf-8');
       const profileConfig = JSON.parse(content);
@@ -452,19 +452,19 @@ export class ConfigManager {
         'utf-8'
       );
 
-      // 
+      //
       this.userConfig = profileConfig;
       this.saveUserConfig();
 
-      console.log(`✅ 已切换到Configuration profile: ${profileName}`);
+      console.log(`✅ Config profile: ${profileName}`);
     } catch (error) {
-      throw new CliError(ErrorCode.CONFIG_ERROR, `加载Configuration profileFailed: ${error}`);
+      throw new CliError(ErrorCode.CONFIG_ERROR, `LoadConfig profilefailed: ${error}`);
     }
   }
 
   /**
    * Save current configuration as profile
-   * @param profileName 
+   * @param profileName
    */
   saveProfile(profileName: string): void {
     const profilesDir = this.getProfilesDir();
@@ -482,9 +482,9 @@ export class ConfigManager {
         JSON.stringify(this.userConfig, null, 2),
         'utf-8'
       );
-      console.log(`✅ 已保存Configuration profile: ${profileName}`);
+      console.log(`✅ SaveConfig profile: ${profileName}`);
     } catch (error) {
-      throw new CliError(ErrorCode.CONFIG_ERROR, `保存Configuration profileFailed: ${error}`);
+      throw new CliError(ErrorCode.CONFIG_ERROR, `SaveConfig profilefailed: ${error}`);
     }
   }
 
@@ -510,21 +510,21 @@ export class ConfigManager {
 
   /**
    * Delete configuration profile
-   * @param profileName 
+   * @param profileName
    */
   deleteProfile(profileName: string): void {
     const profilesDir = this.getProfilesDir();
     const profilePath = path.join(profilesDir, `${profileName}.json`);
 
     if (!existsSync(profilePath)) {
-      throw new CliError(ErrorCode.CONFIG_ERROR, `Configuration profile "${profileName}" does not exist`);
+      throw new CliError(ErrorCode.CONFIG_ERROR, `Config profile "${profileName}" does not exist`);
     }
 
     try {
       require('fs-extra').removeSync(profilePath);
-      console.log(`✅ 已Delete configuration profile: ${profileName}`);
+      console.log(`✅ Delete configuration profile: ${profileName}`);
     } catch (error: unknown) {
-      throw new CliError(ErrorCode.CONFIG_ERROR, `Delete configuration profileFailed: ${error}`);
+      throw new CliError(ErrorCode.CONFIG_ERROR, `Delete configuration profilefailed: ${error}`);
     }
   }
 }

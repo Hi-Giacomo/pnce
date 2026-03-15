@@ -1,51 +1,51 @@
 #!/bin/bash
 
-# PNCE CLI 自动补全安装脚本
+# PNCE CLI Install
 
 set -e
 
 SHELL_TYPE=$(basename "$SHELL")
 
-echo "🚀 安装 PNCE CLI 自动补全..."
+echo "🚀 Install PNCE CLI ..."
 
 case "$SHELL_TYPE" in
   bash)
     if ! grep -q "pnce completion" "$HOME/.bashrc" 2>/dev/null; then
       echo "" >> "$HOME/.bashrc"
-      echo "# PNCE CLI 自动补全" >> "$HOME/.bashrc"
+      echo "# PNCE CLI " >> "$HOME/.bashrc"
       echo "eval \"\$(pnce completion)\"" >> "$HOME/.bashrc"
-      echo "✅ 已添加到 ~/.bashrc"
-      echo "请运行: source ~/.bashrc"
+      echo "✅  ~/.bashrc"
+      echo "PleaseRun: source ~/.bashrc"
     else
-      echo "⚠️  自动补全已配置"
+      echo "⚠️  Configure"
     fi
     ;;
   zsh)
     if ! grep -q "pnce completion" "$HOME/.zshrc" 2>/dev/null; then
       echo "" >> "$HOME/.zshrc"
-      echo "# PNCE CLI 自动补全" >> "$HOME/.zshrc"
+      echo "# PNCE CLI " >> "$HOME/.zshrc"
       echo "eval \"\$(pnce completion)\"" >> "$HOME/.zshrc"
-      echo "✅ 已添加到 ~/.zshrc"
-      echo "请运行: source ~/.zshrc"
+      echo "✅  ~/.zshrc"
+      echo "PleaseRun: source ~/.zshrc"
     else
-      echo "⚠️  自动补全已配置"
+      echo "⚠️  Configure"
     fi
     ;;
   fish)
     COMPLETION_DIR="$HOME/.config/fish/completions"
     mkdir -p "$COMPLETION_DIR"
       pnce completion > "$COMPLETION_DIR/pnce.fish"
-      echo "✅ 已创建 $COMPLETION_DIR/pnce.fish"
-      echo "请重新启动 Fish shell"
+      echo "✅ Create $COMPLETION_DIR/pnce.fish"
+      echo "PleaseStart Fish shell"
     else
-      echo "⚠️  自动补全已配置"
+      echo "⚠️  Configure"
     fi
     ;;
   *)
-    echo "❌ 不支持的 shell: $SHELL_TYPE"
-    echo "支持的 shell: bash, zsh, fish"
+    echo "❌  shell: $SHELL_TYPE"
+    echo " shell: bash, zsh, fish"
     echo ""
-    echo "手动安装方法："
+    echo "InstallMethod："
     echo "  Bash:  echo \"eval \\\"\\\$(pnce completion)\\\"\" >> ~/.bashrc"
     echo "  Zsh:   echo \"eval \\\"\\\$(pnce completion)\\\"\" >> ~/.zshrc"
     echo "  Fish:  pnce completion > ~/.config/fish/completions/pnce.fish"
@@ -53,4 +53,4 @@ case "$SHELL_TYPE" in
     ;;
 esac
 
-echo "🎉 安装完成！输入 'pnce <Tab>' 测试自动补全功能"
+echo "🎉 InstallComplete！Input 'pnce <Tab>' TestFeature"

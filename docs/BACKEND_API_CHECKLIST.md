@@ -1,63 +1,63 @@
-# PNCE 后端接口开发清单
+# PNCE BackendInterface
 
-> 本文档为后端开发人员提供完整的接口开发清单，确保所有功能都能正确实现。
+> DocumentationBackendInterface，FeatureImplementation。
 
 ---
 
-## 📋 开发概览
+## 📋 Overview
 
-### 基础配置
+### Configure
 
-- **Base URL**: `http://localhost:3000` (可通过环境变量 `PNCE_API_SERVER` 配置)
-- **API版本**: v1
-- **数据格式**: JSON
-- **字符编码**: UTF-8
-- **认证方式**: Bearer Token (JWT)
+- **Base URL**: `http://localhost:3000` (Variable `PNCE_API_SERVER` Configure)
+- **APIversion**: v1
+- **DataFormat**: JSON
+- **Encoding**: UTF-8
+- **Auth**: Bearer Token (JWT)
 
-### OAuth2 配置
+### OAuth2 Configure
 
 - **Client ID**: `module-registry-cli`
-- **授权模式**: Authorization Code + PKCE
-- **回调端口**: 8765 (可通过环境变量 `PNCE_OAUTH_PORT` 配置)
-- **授权端点**: `http://localhost:5173/authorize` (可通过环境变量 `PNCE_OAUTH_ENDPOINT` 配置)
+- **Authorization**: Authorization Code + PKCE
+- **CallbackPort**: 8765 (Variable `PNCE_OAUTH_PORT` Configure)
+- **Authorization**: `http://localhost:5173/authorize` (Variable `PNCE_OAUTH_ENDPOINT` Configure)
 - **Scope**: `read write`
-- **超时时间**: 120秒
+- **Timeout**: 120
 
-### 技术栈建议
+### Stacksuggestion
 
-- **后端框架**: NestJS / Express / Fastify
-- **数据库**: PostgreSQL / MySQL / MongoDB
-- **对象存储**: AWS S3 / MinIO / 阿里云OSS
-- **缓存**: Redis
-- **认证**: JWT + OAuth2
+- **BackendFramework**: NestJS / Express / Fastify
+- **DataLibrary**: PostgreSQL / MySQL / MongoDB
+- **Object**: AWS S3 / MinIO / OSS
+- **Cache**: Redis
+- **Auth**: JWT + OAuth2
 
 ---
 
-## 🔐 认证接口（5个）
+## 🔐 AuthInterface（5）
 
-### 1. 用户注册
+### 1. userRegister
 
 ```typescript
 POST /api/auth/register
 ```
 
-**是否需要认证**: 否
+**Yes/NoAuth**: No
 
-**请求头**:
+**Please**:
 ```http
 Content-Type: application/json
 ```
 
-**请求体**:
+**Please**:
 ```typescript
 {
-  username: string;  // 用户名，必填，唯一
-  email: string;     // 邮箱，必填，唯一
-  password: string;  // 密码，必填，最少6位
+  username: string;  // user，，Unique
+  email: string;     // ，，Unique
+  password: string;  // ，，6
 }
 ```
 
-**成功响应**:
+**SuccessResponse**:
 ```json
 {
   "success": true,
@@ -71,39 +71,39 @@ Content-Type: application/json
 }
 ```
 
-**错误响应**:
+**ErrorResponse**:
 ```json
 {
   "success": false,
-  "message": "邮箱已存在",
+  "message": "already exists",
   "errorCode": "AUTH_001"
 }
 ```
 
-**错误码**:
-- `AUTH_001`: 邮箱已存在
-- `AUTH_002`: 用户名已存在
-- `AUTH_003`: 密码格式不正确
+**Error**:
+- `AUTH_001`: already exists
+- `AUTH_002`: useralready exists
+- `AUTH_003`: Format
 
 ---
 
-### 2. 用户登录（邮箱密码）
+### 2. userLogin（）
 
 ```typescript
 POST /api/auth/login
 ```
 
-**是否需要认证**: 否
+**Yes/NoAuth**: No
 
-**请求体**:
+**Please**:
 ```typescript
 {
-  email: string;     // 邮箱，必填
-  password: string;  // 密码，必填
+  email: string;     // ，
+  password: string;  // ，
 }
 ```
 
-**成功响应**:
+**SuccessResponse**:
 ```json
 {
   "success": true,
@@ -117,26 +117,26 @@ POST /api/auth/login
 }
 ```
 
-**错误码**:
-- `AUTH_010`: 邮箱或密码错误
-- `AUTH_011`: 账户已被禁用
+**Error**:
+- `AUTH_010`: Error
+- `AUTH_011`: Disable
 
 ---
 
-### 3. 获取当前用户信息
+### 3. GetCurrentuserInfo
 
 ```typescript
 GET /api/auth/me
 ```
 
-**是否需要认证**: 是
+**Yes/NoAuth**: Yes
 
-**请求头**:
+**Please**:
 ```http
 Authorization: Bearer <access_token>
 ```
 
-**成功响应**:
+**SuccessResponse**:
 ```json
 {
   "success": true,
@@ -153,22 +153,22 @@ Authorization: Bearer <access_token>
 
 ---
 
-### 4. 刷新Token
+### 4. RefreshToken
 
 ```typescript
 POST /api/auth/refresh
 ```
 
-**是否需要认证**: 否（使用 refresh_token）
+**Yes/NoAuth**: No（Use refresh_token）
 
-**请求体**:
+**Please**:
 ```typescript
 {
-  refresh_token: string;  // 刷新令牌
+  refresh_token: string;  // RefreshToken
 }
 ```
 
-**成功响应**:
+**SuccessResponse**:
 ```json
 {
   "success": true,
@@ -177,67 +177,67 @@ POST /api/auth/refresh
 }
 ```
 
-**错误码**:
-- `AUTH_020`: refresh_token 无效或已过期
+**Error**:
+- `AUTH_020`: refresh_token invalid
 
 ---
 
-### 5. 用户登出
+### 5. user
 
 ```typescript
 POST /api/auth/logout
 ```
 
-**是否需要认证**: 是
+**Yes/NoAuth**: Yes
 
-**请求头**:
+**Please**:
 ```http
 Authorization: Bearer <access_token>
 ```
 
-**成功响应**:
+**SuccessResponse**:
 ```json
 {
   "success": true,
-  "message": "登出成功"
+  "message": "Success"
 }
 ```
 
 ---
 
-### 🔐 OAuth2 授权接口
+### 🔐 OAuth2 AuthorizationInterface
 
-### 6. OAuth2 授权页面
+### 6. OAuth2 Authorization
 
 ```typescript
 GET /authorize
 ```
 
-**说明**: 此接口在网站域名下（如 `http://localhost:5173/authorize`），不在 API 服务器
+**Instructions**: Interface（ `http://localhost:5173/authorize`）， API service
 
-**是否需要认证**: 否
+**Yes/NoAuth**: No
 
-**请求参数** (Query):
+**PleaseArgument** (Query):
 ```typescript
 {
-  response_type: string;           // 固定值 "code"
-  client_id: string;               // 固定值 "module-registry-cli"
-  redirect_uri: string;            // 回调地址，如: http://localhost:8765/callback
+  response_type: string;           // Value "code"
+  client_id: string;               // Value "module-registry-cli"
+  redirect_uri: string;            // CallbackURL，: http://localhost:8765/callback
   code_challenge: string;          // PKCE challenge (base64url)
-  code_challenge_method: string;   // 固定值 "S256"
-  state: string;                   // 随机状态值，防止 CSRF
-  scope: string;                   // 固定值 "read write"
+  code_challenge_method: string;   // Value "S256"
+  state: string;                   // RandomStatusValue， CSRF
+  scope: string;                   // Value "read write"
 }
 ```
 
-**响应**: 返回授权页面 HTML
+**Response**: ReturnAuthorization HTML
 
-**授权成功回调格式**:
+**AuthorizationSuccessCallbackFormat**:
 ```
 http://localhost:8765/callback?code=<base64_encoded_data>&state=<state>
 ```
 
-其中 `code` 是 base64 编码的 JSON：
+Medium `code` Yes base64 Encoding JSON：
 ```json
 {
   "accessToken": "jwt_token_string",
@@ -250,54 +250,54 @@ http://localhost:8765/callback?code=<base64_encoded_data>&state=<state>
 }
 ```
 
-**错误码**:
-- `OAUTH_001`: 无效的 client_id
-- `OAUTH_002`: 无效的 redirect_uri
-- `OAUTH_003`: state 验证失败
-- `OAUTH_004`: 授权被拒绝
-- `OAUTH_005`: code_challenge 验证失败
-- `OAUTH_006`: 授权已过期
+**Error**:
+- `OAUTH_001`: invalid client_id
+- `OAUTH_002`: invalid redirect_uri
+- `OAUTH_003`: state ValidateFailure
+- `OAUTH_004`: Authorization
+- `OAUTH_005`: code_challenge ValidateFailure
+- `OAUTH_006`: Authorization
 
 ---
 
-## 📦 模块管理接口（6个）
+## 📦 moduleManageInterface（6）
 
-### 7. 上传模块
+### 7. Uploadmodule
 
 ```typescript
 POST /api/modules/upload
 ```
 
-**是否需要认证**: 是
+**Yes/NoAuth**: Yes
 
-**请求头**:
+**Please**:
 ```http
 Authorization: Bearer <access_token>
 Content-Type: multipart/form-data
 ```
 
-**请求体** (FormData):
+**Please** (FormData):
 ```typescript
 {
-  package: File;         // .tgz 文件，必填
-  name: string;         // 模块名称，必填
-  version: string;      // 版本号，必填（如 "1.0.0"）
-  description?: string; // 描述，可选
-  appId?: string;       // 应用ID，可选
-  teamId?: string;      // 团队ID，可选
-  type?: string;        // 类型: 'service' | 'microservice' | 'library'，默认 'library'
+  package: file;         // ..tgz file file，
+  name: string;         // moduleName，
+  version: string;      // version，（ "1.0.0"）
+  description?: string; // Description，Optional
+  appId?: string;       // ApplicationID，Optional
+  teamId?: string;      // TeamID，Optional
+  type?: string;        // Type: 'service' | 'microservice' | 'library'，Default 'library'
 }
 ```
 
-**成功响应**:
+**SuccessResponse**:
 ```json
 {
   "success": true,
-  "message": "模块上传成功",
+  "message": "moduleUploadSuccess",
   "module": {
     "name": "auth-service",
     "version": "1.0.0",
-    "description": "用户认证微服务",
+    "description": "userAuthservice",
     "author": "testuser",
     "type": "microservice",
     "appId": "",
@@ -309,46 +309,46 @@ Content-Type: multipart/form-data
 }
 ```
 
-**错误码**:
-- `MODULE_001`: 模块名称格式错误
-- `MODULE_002`: 版本号格式错误
-- `MODULE_003`: 同一模块已存在该版本
-- `MODULE_004`: 文件上传失败
-- `MODULE_005`: package.json 解析失败
-- `MODULE_006`: module.config.json 格式错误
+**Error**:
+- `MODULE_001`: moduleNameFormatError
+- `MODULE_002`: versionFormatError
+- `MODULE_003`: modulealready existsversion
+- `MODULE_004`: fileUploadFailure
+- `MODULE_005`: package.json Failure
+- `MODULE_006`: module.config.json FormatError
 
-**文件格式要求**:
-上传的 .tgz 文件必须包含：
+**fileFormat**:
+Upload ..tgz file fileRequiredPackage：
 ```
-package.json          # 必填
-module.config.json    # 必填
-src/                  # 源代码目录
-dist/                 # 编译输出（可选）
-README.md             # 文档（可选）
+package.json          # 
+module.config.json    # 
+src/                  # CodeDirectory
+dist/                 # CompileOutput（Optional）
+README.md             # Documentation（Optional）
 ```
 
 ---
 
-### 8. 获取模块信息
+### 8. Getmodule information
 
 ```typescript
 GET /api/modules/:name
 ```
 
-**是否需要认证**: 否
+**Yes/NoAuth**: No
 
-**路径参数**:
+**PathArgument**:
 ```typescript
-name: string;  // 模块名称
+name: string;  // moduleName
 ```
 
-**成功响应**:
+**SuccessResponse**:
 ```json
 {
   "success": true,
   "module": {
     "name": "auth-service",
-    "description": "用户认证微服务",
+    "description": "userAuthservice",
     "author": "testuser",
     "uploadedBy": "testuser",
     "latest": "1.0.0",
@@ -373,176 +373,176 @@ name: string;  // 模块名称
 }
 ```
 
-**错误码**:
-- `MODULE_010`: 模块不存在
+**Error**:
+- `MODULE_010`: moduledoes not exist
 
 ---
 
-### 9. 下载模块
+### 9. Downloadmodule
 
 ```typescript
 GET /api/modules/:name/:version/download
 ```
 
-**是否需要认证**: 是
+**Yes/NoAuth**: Yes
 
-**路径参数**:
+**PathArgument**:
 ```typescript
-name: string;     // 模块名称
-version: string;   // 版本号
+name: string;     // moduleName
+version: string;   // version
 ```
 
-**响应**: 二进制文件流 (.tgz)
+**Response**: file (..tgz file)
 
-**响应头**:
+**Response**:
 ```http
 Content-Type: application/gzip
-Content-Disposition: attachment; filename="auth-service-1.0.0.tgz"
+Content-Disposition: attachment; filename="auth-service-1.0.0..tgz file"
 Content-Length: 102400
 X-SHA256: abc123...
 ```
 
-**错误码**:
-- `MODULE_010`: 模块不存在
-- `MODULE_011`: 版本不存在
+**Error**:
+- `MODULE_010`: moduledoes not exist
+- `MODULE_011`: versiondoes not exist
 
 ---
 
-### 10. 删除模块版本
+### 10. Deletemoduleversion
 
 ```typescript
 DELETE /api/modules/:name/:version
 ```
 
-**是否需要认证**: 是
+**Yes/NoAuth**: Yes
 
-**路径参数**:
+**PathArgument**:
 ```typescript
-name: string;     // 模块名称
-version: string;  // 版本号
+name: string;     // moduleName
+version: string;  // version
 ```
 
-**成功响应**:
+**SuccessResponse**:
 ```json
 {
   "success": true,
-  "message": "版本删除成功"
+  "message": "versionDeleteSuccess"
 }
 ```
 
-**错误码**:
-- `MODULE_010`: 模块不存在
-- `MODULE_011`: 版本不存在
-- `MODULE_012`: 无权限删除（非模块所有者）
+**Error**:
+- `MODULE_010`: moduledoes not exist
+- `MODULE_011`: versiondoes not exist
+- `MODULE_012`: PermissionDelete（moduleOwner）
 
 ---
 
-### 11. 删除整个模块
+### 11. Deletemodule
 
 ```typescript
 DELETE /api/modules/:name
 ```
 
-**是否需要认证**: 是
+**Yes/NoAuth**: Yes
 
-**路径参数**:
+**PathArgument**:
 ```typescript
-name: string;  // 模块名称
+name: string;  // moduleName
 ```
 
-**查询参数** (Query):
+**Argument** (Query):
 ```typescript
 {
-  force?: boolean;  // 是否强制删除所有版本，默认 false
+  force?: boolean;  // Yes/NoDeleteversion，Default false
 }
 ```
 
-**成功响应**:
+**SuccessResponse**:
 ```json
 {
   "success": true,
-  "message": "模块删除成功"
+  "message": "moduleDeleteSuccess"
 }
 ```
 
-**错误码**:
-- `MODULE_010`: 模块不存在
-- `MODULE_012`: 无权限删除
+**Error**:
+- `MODULE_010`: moduledoes not exist
+- `MODULE_012`: PermissionDelete
 
 ---
 
-### 12. 更新模块信息
+### 12. Updatemodule information
 
 ```typescript
 PUT /api/modules/:name
 ```
 
-**是否需要认证**: 是
+**Yes/NoAuth**: Yes
 
-**路径参数**:
+**PathArgument**:
 ```typescript
-name: string;  // 模块名称
+name: string;  // moduleName
 ```
 
-**请求体**:
+**Please**:
 ```typescript
 {
-  description?: string;  // 新的描述
-  type?: string;        // 新的类型
-  appId?: string;        // 新的应用ID
-  teamId?: string;      // 新的团队ID
+  description?: string;  // Description
+  type?: string;        // Type
+  appId?: string;        // ApplicationID
+  teamId?: string;      // TeamID
 }
 ```
 
-**成功响应**:
+**SuccessResponse**:
 ```json
 {
   "success": true,
-  "message": "模块信息更新成功",
+  "message": "module informationUpdateSuccess",
   "module": {
     "name": "auth-service",
-    "description": "新的描述",
-    // ... 其他字段
+    "description": "Description",
+    // ... 
   }
 }
 ```
 
-**错误码**:
-- `MODULE_010`: 模块不存在
-- `MODULE_012`: 无权限更新
+**Error**:
+- `MODULE_010`: moduledoes not exist
+- `MODULE_012`: PermissionUpdate
 
 ---
 
-## 🔍 模块搜索接口（4个）
+## 🔍 moduleSearchInterface（4）
 
-### 13. 搜索模块
+### 13. Searchmodule
 
 ```typescript
 GET /api/modules
 ```
 
-**是否需要认证**: 否
+**Yes/NoAuth**: No
 
-**查询参数** (Query):
+**Argument** (Query):
 ```typescript
 {
-  q?: string;        // 搜索关键词，可选
-  author?: string;   // 按作者筛选，可选
-  type?: string;     // 按类型筛选: 'service' | 'microservice' | 'library'，可选
-  page?: number;     // 页码，默认 1
-  limit?: number;    // 每页数量，默认 20，最大 100
-  sort?: string;     // 排序: 'name' | 'date' | 'downloads'，默认 'date'
+  q?: string;        // SearchKey，Optional
+  author?: string;   // Author，Optional
+  type?: string;     // Type: 'service' | 'microservice' | 'library'，Optional
+  page?: number;     // ，Default 1
+  limit?: number;    // Count，Default 20， 100
+  sort?: string;     // Sort: 'name' | 'date' | 'downloads'，Default 'date'
 }
 ```
 
-**成功响应**:
+**SuccessResponse**:
 ```json
 {
   "success": true,
   "modules": [
     {
       "name": "auth-service",
-      "description": "用户认证微服务",
+      "description": "userAuthservice",
       "author": "testuser",
       "latest": "1.0.0",
       "type": "microservice",
@@ -561,35 +561,35 @@ GET /api/modules
 
 ---
 
-### 14. 获取热门模块
+### 14. Getmodule
 
 ```typescript
 GET /api/modules/trending
 ```
 
-**是否需要认证**: 否
+**Yes/NoAuth**: No
 
-**查询参数** (Query):
+**Argument** (Query):
 ```typescript
 {
-  period?: string;  // 时间段: 'day' | 'week' | 'month'，默认 'week'
-  limit?: number;   // 返回数量，默认 10，最大 50
+  period?: string;  // : 'day' | 'week' | 'month'，Default 'week'
+  limit?: number;   // ReturnCount，Default 10， 50
 }
 ```
 
-**成功响应**:
+**SuccessResponse**:
 ```json
 {
   "success": true,
   "modules": [
     {
       "name": "auth-service",
-      "description": "用户认证微服务",
+      "description": "userAuthservice",
       "author": "testuser",
       "latest": "1.0.0",
       "type": "microservice",
       "downloads": 500,
-      "downloadsChange": 25.5  // 增长百分比
+      "downloadsChange": 25.5  // 
     }
   ]
 }
@@ -597,35 +597,35 @@ GET /api/modules/trending
 
 ---
 
-### 15. 按作者获取模块
+### 15. AuthorGetmodule
 
 ```typescript
 GET /api/modules/by-author/:author
 ```
 
-**是否需要认证**: 否
+**Yes/NoAuth**: No
 
-**路径参数**:
+**PathArgument**:
 ```typescript
-author: string;  // 作者用户名
+author: string;  // Authoruser
 ```
 
-**查询参数** (Query):
+**Argument** (Query):
 ```typescript
 {
-  page?: number;   // 页码，默认 1
-  limit?: number;  // 每页数量，默认 20
+  page?: number;   // ，Default 1
+  limit?: number;  // Count，Default 20
 }
 ```
 
-**成功响应**:
+**SuccessResponse**:
 ```json
 {
   "success": true,
   "modules": [
     {
       "name": "auth-service",
-      "description": "用户认证微服务",
+      "description": "userAuthservice",
       "latest": "1.0.0",
       "type": "microservice",
       "createdAt": "2024-01-01T00:00:00.000Z",
@@ -643,30 +643,30 @@ author: string;  // 作者用户名
 
 ---
 
-### 16. 获取所有模块列表
+### 16. Getmodule list
 
 ```typescript
 GET /api/modules/list
 ```
 
-**是否需要认证**: 否
+**Yes/NoAuth**: No
 
-**查询参数** (Query):
+**Argument** (Query):
 ```typescript
 {
-  page?: number;   // 页码，默认 1
-  limit?: number;  // 每页数量，默认 20，最大 100
+  page?: number;   // ，Default 1
+  limit?: number;  // Count，Default 20， 100
 }
 ```
 
-**成功响应**:
+**SuccessResponse**:
 ```json
 {
   "success": true,
   "modules": [
     {
       "name": "auth-service",
-      "description": "用户认证微服务",
+      "description": "userAuthservice",
       "author": "testuser",
       "latest": "1.0.0",
       "type": "microservice",
@@ -685,24 +685,24 @@ GET /api/modules/list
 
 ---
 
-## 📊 统计接口（2个）
+## 📊 StatisticsInterface（2）
 
-### 17. 获取全局统计信息
+### 17. GetGlobalStatisticsInfo
 
 ```typescript
 GET /api/stats
 ```
 
-**是否需要认证**: 否
+**Yes/NoAuth**: No
 
-**成功响应**:
+**SuccessResponse**:
 ```json
 {
   "success": true,
   "stats": {
     "totalModules": 150,
-    "totalVersions": 450,
-    "totalSize": 1073741824,  // 字节数
+    "totalversions": 450,
+    "totalSize": 1073741824,  // Section
     "totalDownloads": 50000,
     "topAuthors": [
       {
@@ -732,28 +732,28 @@ GET /api/stats
 
 ---
 
-### 18. 获取模块下载统计
+### 18. GetmoduleDownloadStatistics
 
 ```typescript
 GET /api/stats/modules/:name
 ```
 
-**是否需要认证**: 否
+**Yes/NoAuth**: No
 
-**路径参数**:
+**PathArgument**:
 ```typescript
-name: string;  // 模块名称
+name: string;  // moduleName
 ```
 
-**查询参数** (Query):
+**Argument** (Query):
 ```typescript
 {
-  period?: string;     // 时间段: 'day' | 'week' | 'month' | 'year' | 'all'，默认 'all'
-  byVersion?: boolean; // 是否按版本分组，默认 false
+  period?: string;     // : 'day' | 'week' | 'month' | 'year' | 'all'，Default 'all'
+  byversion?: boolean; // Yes/NoversionGroup，Default false
 }
 ```
 
-**成功响应**:
+**SuccessResponse**:
 ```json
 {
   "success": true,
@@ -765,7 +765,7 @@ name: string;  // 模块名称
       "2024-01-02": 150,
       "2024-01-03": 200
     },
-    "downloadsByVersion": {
+    "downloadsByversion": {
       "1.0.0": 3000,
       "0.9.0": 2000
     }
@@ -775,17 +775,17 @@ name: string;  // 模块名称
 
 ---
 
-## ❤️ 健康检查接口（1个）
+## ❤️ checkInterface（1）
 
-### 19. 服务健康检查
+### 19. servicecheck
 
 ```typescript
 GET /health
 ```
 
-**是否需要认证**: 否
+**Yes/NoAuth**: No
 
-**成功响应**:
+**SuccessResponse**:
 ```json
 {
   "status": "healthy",
@@ -796,67 +796,67 @@ GET /health
     "storage": "available",
     "redis": "connected"
   },
-  "uptime": 86400  // 运行时间（秒）
+  "uptime": 86400  // Run（）
 }
 ```
 
 ---
 
-## ❌ 错误码完整列表
+## ❌ ErrorList
 
-### 认证错误 (AUTH_xxx)
+### AuthError (AUTH_xxx)
 
-| 错误码 | 说明 | HTTP 状态码 |
+| Error | Instructions | HTTP Status |
 |--------|------|-------------|
-| AUTH_001 | 邮箱已存在 | 409 |
-| AUTH_002 | 用户名已存在 | 409 |
-| AUTH_003 | 密码格式不正确 | 400 |
-| AUTH_010 | 邮箱或密码错误 | 401 |
-| AUTH_011 | 账户已被禁用 | 403 |
-| AUTH_012 | Token 无效或已过期 | 401 |
-| AUTH_013 | Token 格式错误 | 401 |
-| AUTH_014 | 无权访问 | 403 |
-| AUTH_020 | refresh_token 无效或已过期 | 401 |
+| AUTH_001 | already exists | 409 |
+| AUTH_002 | useralready exists | 409 |
+| AUTH_003 | Format | 400 |
+| AUTH_010 | Error | 401 |
+| AUTH_011 | Disable | 403 |
+| AUTH_012 | Token invalid | 401 |
+| AUTH_013 | Token FormatError | 401 |
+| AUTH_014 |  | 403 |
+| AUTH_020 | refresh_token invalid | 401 |
 
-### OAuth2 错误 (OAUTH_xxx)
+### OAuth2 Error (OAUTH_xxx)
 
-| 错误码 | 说明 | HTTP 状态码 |
+| Error | Instructions | HTTP Status |
 |--------|------|-------------|
-| OAUTH_001 | 无效的 client_id | 400 |
-| OAUTH_002 | 无效的 redirect_uri | 400 |
-| OAUTH_003 | state 验证失败 | 403 |
-| OAUTH_004 | 授权被拒绝 | 403 |
-| OAUTH_005 | code_challenge 验证失败 | 403 |
-| OAUTH_006 | 授权已过期 | 410 |
+| OAUTH_001 | invalid client_id | 400 |
+| OAUTH_002 | invalid redirect_uri | 400 |
+| OAUTH_003 | state ValidateFailure | 403 |
+| OAUTH_004 | Authorization | 403 |
+| OAUTH_005 | code_challenge ValidateFailure | 403 |
+| OAUTH_006 | Authorization | 410 |
 
-### 模块错误 (MODULE_xxx)
+### moduleError (MODULE_xxx)
 
-| 错误码 | 说明 | HTTP 状态码 |
+| Error | Instructions | HTTP Status |
 |--------|------|-------------|
-| MODULE_001 | 模块名称格式错误 | 400 |
-| MODULE_002 | 版本号格式错误 | 400 |
-| MODULE_003 | 同一模块已存在该版本 | 409 |
-| MODULE_004 | 文件上传失败 | 500 |
-| MODULE_005 | package.json 解析失败 | 400 |
-| MODULE_006 | module.config.json 格式错误 | 400 |
-| MODULE_010 | 模块不存在 | 404 |
-| MODULE_011 | 版本不存在 | 404 |
-| MODULE_012 | 无权限操作 | 403 |
+| MODULE_001 | moduleNameFormatError | 400 |
+| MODULE_002 | versionFormatError | 400 |
+| MODULE_003 | modulealready existsversion | 409 |
+| MODULE_004 | fileUploadFailure | 500 |
+| MODULE_005 | package.json Failure | 400 |
+| MODULE_006 | module.config.json FormatError | 400 |
+| MODULE_010 | moduledoes not exist | 404 |
+| MODULE_011 | versiondoes not exist | 404 |
+| MODULE_012 | Permission | 403 |
 
-### 服务器错误 (SERVER_xxx)
+### serviceError (SERVER_xxx)
 
-| 错误码 | 说明 | HTTP 状态码 |
+| Error | Instructions | HTTP Status |
 |--------|------|-------------|
-| SERVER_001 | 内部服务器错误 | 500 |
-| SERVER_002 | 数据库连接失败 | 503 |
-| SERVER_003 | 存储服务不可用 | 503 |
-| SERVER_004 | 请求超时 | 504 |
+| SERVER_001 | serviceError | 500 |
+| SERVER_002 | DataLibraryConnectionFailure | 503 |
+| SERVER_003 | service | 503 |
+| SERVER_004 | PleaseTimeout | 504 |
 
 ---
 
-## 🗄️ 数据库设计
+## 🗄️ DataLibrary
 
-### 用户表 (users)
+### user (users)
 
 ```sql
 CREATE TABLE users (
@@ -874,7 +874,7 @@ CREATE TABLE users (
 );
 ```
 
-### 模块表 (modules)
+### module (modules)
 
 ```sql
 CREATE TABLE modules (
@@ -897,7 +897,7 @@ CREATE TABLE modules (
 );
 ```
 
-### 模块版本表 (module_versions)
+### moduleversion (module_versions)
 
 ```sql
 CREATE TABLE module_versions (
@@ -916,7 +916,7 @@ CREATE TABLE module_versions (
 );
 ```
 
-### 下载统计表 (download_stats)
+### DownloadStatistics (download_stats)
 
 ```sql
 CREATE TABLE download_stats (
@@ -930,7 +930,7 @@ CREATE TABLE download_stats (
 );
 ```
 
-### 刷新令牌表 (refresh_tokens)
+### RefreshToken (refresh_tokens)
 
 ```sql
 CREATE TABLE refresh_tokens (
@@ -948,22 +948,22 @@ CREATE TABLE refresh_tokens (
 
 ---
 
-## 📦 文件存储结构
+## 📦 file
 
-### 对象存储路径
+### ObjectPath
 
 ```
 modules/
   ├── {module_name}/
   │   ├── {version}/
-  │   │   ├── package.tgz
+  │   │   ├── package..tgz file
   │   │   └── metadata.json
   └── ...
 ```
 
-### 文件完整性校验
+### fileValidate
 
-上传文件时计算 SHA256 哈希：
+UploadfileCalculate SHA256 ：
 ```typescript
 import crypto from 'crypto';
 import fs from 'fs';
@@ -978,11 +978,11 @@ function calculateHash(filePath: string): string {
 
 ---
 
-## 🔒 安全要求
+## 🔒 Security
 
-### 1. 密码加密
+### 1. Encrypt
 
-使用 bcrypt 加密密码，盐值轮数 ≥ 10：
+Use bcrypt Encrypt，Value ≥ 10：
 ```typescript
 import bcrypt from 'bcrypt';
 
@@ -992,168 +992,168 @@ const hashedPassword = await bcrypt.hash(password, saltRounds);
 
 ### 2. JWT Token
 
-- Access Token 有效期：1小时
-- Refresh Token 有效期：7天
-- 使用 RS256 算法签名
+- Access Token valid：1
+- Refresh Token valid：7
+- Use RS256 Signature
 
-### 3. 文件上传限制
+### 3. fileUploadLimitation
 
-- 单个文件最大：50MB
-- 允许的文件类型：.tgz
-- 文件大小验证
-- 文件类型验证
+- file：50MB
+- fileType：..tgz file
+- fileSizeValidate
+- fileTypeValidate
 
-### 4. 限流策略
+### 4. 
 
 ```typescript
-// API 限流
-- 每个 IP: 100 请求/分钟
-- 每个用户: 200 请求/分钟
-- 文件上传: 10 次/分钟
+// API 
+-  IP: 100 Please/
+- user: 200 Please/
+- fileUpload: 10 /
 
-// 存储限制
-- 单个文件: 最大 50MB
-- 用户总存储: 10GB
+// Limitation
+- file:  50MB
+- user: 10GB
 ```
 
 ---
 
-## ✅ 开发检查清单
+## ✅ check
 
-### 基础功能
+### Feature
 
-- [ ] 用户注册
-- [ ] 用户登录
-- [ ] OAuth2 授权
-- [ ] Token 刷新
-- [ ] 用户登出
-- [ ] 获取用户信息
+- [ ] userRegister
+- [ ] userLogin
+- [ ] OAuth2 Authorization
+- [ ] Token Refresh
+- [ ] user
+- [ ] GetuserInfo
 
-### 模块管理
+### moduleManage
 
-- [ ] 上传模块
-- [ ] 获取模块信息
-- [ ] 下载模块
-- [ ] 删除模块版本
-- [ ] 删除整个模块
-- [ ] 更新模块信息
+- [ ] Uploadmodule
+- [ ] Getmodule information
+- [ ] Downloadmodule
+- [ ] Deletemoduleversion
+- [ ] Deletemodule
+- [ ] Updatemodule information
 
-### 模块搜索
+### moduleSearch
 
-- [ ] 搜索模块
-- [ ] 获取热门模块
-- [ ] 按作者获取模块
-- [ ] 获取所有模块列表
+- [ ] Searchmodule
+- [ ] Getmodule
+- [ ] AuthorGetmodule
+- [ ] Getmodule list
 
-### 统计功能
+### StatisticsFeature
 
-- [ ] 全局统计
-- [ ] 模块下载统计
+- [ ] GlobalStatistics
+- [ ] moduleDownloadStatistics
 
-### 系统功能
+### SystemFeature
 
-- [ ] 健康检查
-- [ ] 错误处理
-- [ ] 日志记录
-- [ ] 性能监控
+- [ ] check
+- [ ] ErrorHandle
+- [ ] LogRecord
+- [ ] PerformanceMonitor
 
-### 安全功能
+### SecurityFeature
 
-- [ ] 密码加密
-- [ ] JWT 认证
-- [ ] OAuth2 授权
-- [ ] 限流保护
-- [ ] 文件校验
+- [ ] Encrypt
+- [ ] JWT Auth
+- [ ] OAuth2 Authorization
+- [ ] 
+- [ ] fileValidate
 
-### 文档和测试
+### DocumentationTest
 
-- [ ] API 文档（Swagger）
-- [ ] 单元测试
-- [ ] 集成测试
-- [ ] 部署文档
+- [ ] API Documentation（Swagger）
+- [ ] UnitTest
+- [ ] Test
+- [ ] DeployDocumentation
 
 ---
 
-## 🚀 部署要求
+## 🚀 Deploy
 
-### 环境变量
+### Variable
 
 ```bash
-# 服务器配置
+# serviceConfigure
 PORT=3000
 NODE_ENV=production
 
-# 数据库配置
+# DataLibraryConfigure
 DATABASE_URL=postgresql://user:password@localhost:5432/pnce
 
-# JWT 配置
+# JWT Configure
 JWT_SECRET=your-secret-key
 JWT_EXPIRES_IN=1h
 REFRESH_TOKEN_EXPIRES_IN=7d
 
-# 对象存储配置
+# ObjectConfigure
 S3_ENDPOINT=https://s3.amazonaws.com
 S3_BUCKET=module-registry
 S3_ACCESS_KEY=your-access-key
 S3_SECRET_KEY=your-secret-key
 
-# Redis 配置
+# Redis Configure
 REDIS_URL=redis://localhost:6379
 
-# OAuth2 配置
+# OAuth2 Configure
 OAUTH_CLIENT_ID=module-registry-cli
 OAUTH_REDIRECT_URI=http://localhost:8765/callback
 
-# 限流配置
-RATE_LIMIT_WINDOW=60000  # 1分钟
-RATE_LIMIT_MAX=100        # 最大请求数
+# Configure
+RATE_LIMIT_WINDOW=60000  # 1
+RATE_LIMIT_MAX=100        # Please
 
-# 文件上传配置
+# fileUploadConfigure
 MAX_FILE_SIZE=52428800    # 50MB
 USER_MAX_STORAGE=10737418240  # 10GB
 ```
 
 ---
 
-## 📝 API 测试工具
+## 📝 API TestUtility
 
 ### Postman Collection
 
-建议创建 Postman Collection 进行接口测试，包含所有 19 个接口的示例。
+suggestionCreate Postman Collection InterfaceTest，Package 19 InterfaceExample。
 
-### cURL 示例
+### cURL Example
 
 ```bash
-# 注册
+# Register
 curl -X POST http://localhost:3000/api/auth/register \
   -H "Content-Type: application/json" \
   -d '{"username":"test","email":"test@example.com","password":"password123"}'
 
-# 登录
+# Login
 curl -X POST http://localhost:3000/api/auth/login \
   -H "Content-Type: application/json" \
   -d '{"email":"test@example.com","password":"password123"}'
 
-# 上传模块
+# Uploadmodule
 curl -X POST http://localhost:3000/api/modules/upload \
   -H "Authorization: Bearer <token>" \
-  -F "package=@module-1.0.0.tgz" \
+  -F "package=@module-1.0.0..tgz file" \
   -F "name=auth-service" \
   -F "version=1.0.0" \
   -F "description=Auth microservice"
 
-# 获取模块信息
+# Getmodule information
 curl http://localhost:3000/api/modules/auth-service
 
-# 下载模块
+# Downloadmodule
 curl -O -J http://localhost:3000/api/modules/auth-service/1.0.0/download \
   -H "Authorization: Bearer <token>"
 ```
 
 ---
 
-**文档版本**: v1.0.0
-**最后更新**: 2024-03-06
-**维护者**: PNCE Team
+**Documentationversion**: v1.0.0
+**Update**: 2024-03-06
+****: PNCE Team
 
-祝开发顺利！🎉
+！🎉

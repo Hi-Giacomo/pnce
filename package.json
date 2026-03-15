@@ -1,7 +1,7 @@
 {
   "name": "pnce",
   "version": "0.0.9",
-  "description": "Pnce CLI Tool - 模块化快速开发命令行工具",
+  "description": "Pnce CLI Tool - Modular Rapid Development CLI Tool",
   "type": "commonjs",
   "main": "dist/index.js",
   "bin": {

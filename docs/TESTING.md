@@ -50,7 +50,7 @@ tests/
 ├── commands/           # Command tests
 │   ├── init.test.ts
 │   └── port.commands.test.ts
-├── config/            # Configuration tests
+├── config/            # Config tests
 │   └── manager.test.ts
 ├── services/          # Service tests
 │   └── api.service.test.ts
@@ -63,7 +63,7 @@ tests/
 ## Test Statistics
 
 ### Current Coverage
-- **Test Files**: 7 passed
+- **Test files**: 7 passed
 - **Tests**: 87 passed
 - **Total Duration**: ~660ms
 
@@ -77,7 +77,7 @@ tests/
 
 ### Writing Tests
 
-1. **Mock External Dependencies**: Always mock external services, file system operations, and network calls
+1. **Mock External dependencies**: Always mock external services, file system operations, and network calls
 2. **Test Edge Cases**: Include tests for null, undefined, empty values, and error conditions
 3. **Use Descriptive Names**: Test names should clearly describe what is being tested
 4. **Arrange-Act-Assert Pattern**: Structure tests with clear setup, execution, and assertion phases
@@ -146,15 +146,15 @@ Tests run automatically on:
 
 The following test coverage areas are planned for future implementation:
 
-- [ ] Authentication command tests (login, logout, register, me)
+- [ ] Auth command tests (login, logout, register, me)
 - [ ] Module management command tests (install, remove, update, list)
-- [ ] Configuration management tests (profile, alias, lang)
+- [ ] Config management tests (profile, alias, lang)
 - [ ] Registry management tests
 - [ ] Plugin management tests
 - [ ] Port management integration tests
 - [ ] OAuth2 flow tests
 - [ ] Network retry logic tests
-- [ ] File operation error handling tests
+- [ ] file operation error handling tests
 
 ## Troubleshooting
 

@@ -122,7 +122,7 @@
               "host": ["{{baseUrl}}"],
               "path": ["env", "reload"]
             },
-            "description": "从 .env 文件重新加载所有环境变量到 process.env"
+            "description": "Reload all environment variables from .env file to process.env"
           }
         },
         {
@@ -165,7 +165,7 @@
                   "host": ["{{baseUrl}}"],
                   "path": ["env"]
                 },
-                "description": "修改端口后服务会自动重启，大约 1-2 秒后可通过新端口访问"
+                "description": "After modifying the port, the service will automatically restart and be accessible via the new port in approximately 1-2 seconds"
               }
             },
             {
@@ -217,7 +217,7 @@
               }
             },
             {
-              "name": "切换到开发环境",
+              "name": "Switch to development environment",
               "request": {
                 "method": "POST",
                 "header": [
@@ -289,7 +289,7 @@
                   "path": ["env"]
                 }
               },
-              "description": "更新 JWT 密钥"
+              "description": "Update JWT secret key"
             }
           ]
         }

@@ -5,9 +5,9 @@ import * as path from 'path';
 const ENV_FILE_PATH = path.join(process.cwd(), '.env');
 
 /**
- *  .env File
+ *  .env file
  */
-export function loadEnvFile(): Record<string, string> {
+export function loadEnvfile(): Record<string, string> {
   if (!fs.existsSync(ENV_FILE_PATH)) {
     return {};
   }
@@ -16,13 +16,13 @@ export function loadEnvFile(): Record<string, string> {
   const envVars: Record<string, string> = {};
 
   content.split('\n').forEach((line) => {
-    // 
+    //
     const trimmedLine = line.trim();
     if (!trimmedLine || trimmedLine.startsWith('#')) {
       return;
     }
 
-    //  KEY=VALUE 
+    //  KEY=VALUE
     const [key, ...valueParts] = trimmedLine.split('=');
     const value = valueParts.join('=');
 
@@ -35,9 +35,9 @@ export function loadEnvFile(): Record<string, string> {
 }
 
 /**
- *  .env File
+ *  .env file
  */
-export function saveEnvFile(envVars: Record<string, string>): void {
+export function saveEnvfile(envVars: Record<string, string>): void {
   const lines: string[] = [];
 
   Object.entries(envVars).forEach(([key, value]) => {
@@ -53,30 +53,30 @@ export function saveEnvFile(envVars: Record<string, string>): void {
 /**
  * Environment variables
  */
-export function updateEnvFile(key: string, value: string): void {
-  const currentVars = loadEnvFile();
+export function updateEnvfile(key: string, value: string): void {
+  const currentVars = loadEnvfile();
   currentVars[key] = value;
-  saveEnvFile(currentVars);
+  saveEnvfile(currentVars);
 
-  //  process.env 
+  //  process.env
   process.env[key] = value;
 }
 
 /**
  * Environment variables
  */
-export function deleteEnvFile(key: string): void {
-  const currentVars = loadEnvFile();
+export function deleteEnvfile(key: string): void {
+  const currentVars = loadEnvfile();
   delete currentVars[key];
-  saveEnvFile(currentVars);
+  saveEnvfile(currentVars);
 
-  //  process.env 
+  //  process.env
   delete process.env[key];
 }
 
 export default registerAs('env', () => {
-  //  .env File
-  const envVars = loadEnvFile();
+  //  .env file
+  const envVars = loadEnvfile();
 
   return {
     app: {

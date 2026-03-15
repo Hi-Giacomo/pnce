@@ -19,7 +19,7 @@ export interface CacheEntry<T> {
   cachedAt: number;
 
   /**
-   * 
+   *
    */
   expiresAt: number;
 }
@@ -42,10 +42,10 @@ export class OfflineCacheManager {
   }
 
   /**
-   * CacheFile
+   * Cachefile
    */
-  private getCacheFilePath(key: string): string {
-    //  key File
+  private getCachefilePath(key: string): string {
+    //  key file
     const fileName = key.replace(/[^a-zA-Z0-9_-]/g, '_');
     return path.join(this.cacheDir, `${fileName}.json`);
   }
@@ -63,13 +63,13 @@ export class OfflineCacheManager {
       expiresAt,
     };
 
-    const filePath = this.getCacheFilePath(key);
+    const filePath = this.getCachefilePath(key);
 
     try {
       writeFileSync(filePath, JSON.stringify(entry), 'utf-8');
-      logger.debug(`Cache已保存: ${key}`);
+      logger.debug(`CacheSave: ${key}`);
     } catch (error) {
-      logger.error(`保存CacheFailed: ${error}`);
+      logger.error(`SaveCachefailed: ${error}`);
     }
   }
 
@@ -77,7 +77,7 @@ export class OfflineCacheManager {
    * Cache
    */
   get<T>(key: string): T | null {
-    const filePath = this.getCacheFilePath(key);
+    const filePath = this.getCachefilePath(key);
 
     if (!existsSync(filePath)) {
       return null;
@@ -87,26 +87,26 @@ export class OfflineCacheManager {
       const content = readFileSync(filePath, 'utf-8');
       const entry: CacheEntry<T> = JSON.parse(content);
 
-      // YesNo
+      // Yes/No
       if (Date.now() > entry.expiresAt) {
-        logger.debug(`Cache已过期: ${key}`);
+        logger.debug(`Cache: ${key}`);
         this.delete(key);
         return null;
       }
 
-      logger.debug(`Cache命中: ${key}`);
+      logger.debug(`CacheMedium: ${key}`);
       return entry.data;
     } catch (error) {
-      logger.error(`读取CacheFailed: ${error}`);
+      logger.error(`ReadCachefailed: ${error}`);
       return null;
     }
   }
 
   /**
-   * CacheYesNo
+   * CacheYes/No
    */
   has(key: string): boolean {
-    const filePath = this.getCacheFilePath(key);
+    const filePath = this.getCachefilePath(key);
 
     if (!existsSync(filePath)) {
       return false;
@@ -116,7 +116,7 @@ export class OfflineCacheManager {
       const content = readFileSync(filePath, 'utf-8');
       const entry = JSON.parse(content);
 
-      // YesNo
+      // Yes/No
       return Date.now() <= entry.expiresAt;
     } catch (error) {
       return false;
@@ -127,14 +127,14 @@ export class OfflineCacheManager {
    * Cache
    */
   delete(key: string): void {
-    const filePath = this.getCacheFilePath(key);
+    const filePath = this.getCachefilePath(key);
 
     if (existsSync(filePath)) {
       try {
         unlinkSync(filePath);
-        logger.debug(`Cache已删除: ${key}`);
+        logger.debug(`CacheDelete: ${key}`);
       } catch (error) {
-        logger.error(`删除CacheFailed: ${error}`);
+        logger.error(`DeleteCachefailed: ${error}`);
       }
     }
   }
@@ -151,9 +151,9 @@ export class OfflineCacheManager {
         }
       });
 
-      logger.debug('AllCache已清空');
+      logger.debug('AllCacheEmpty');
     } catch (error) {
-      logger.error(`清空CacheFailed: ${error}`);
+      logger.error(`EmptyCachefailed: ${error}`);
     }
   }
 
@@ -178,14 +178,14 @@ export class OfflineCacheManager {
               cleanedCount++;
             }
           } catch (error) {
-            // Error，OtherFile
+            // Error，Otherfile
           }
         }
       });
 
-      logger.debug(`清理过期Cache: ${cleanedCount} 个`);
+      logger.debug(`CleanCache: ${cleanedCount} `);
     } catch (error) {
-      logger.error(`清理过期CacheFailed: ${error}`);
+      logger.error(`CleanCachefailed: ${error}`);
     }
   }
 
@@ -234,7 +234,7 @@ export class OfflineCacheManager {
 }
 
 /**
- * 
+ *
  */
 export function createOfflineCacheManager(
   cacheDir: string,

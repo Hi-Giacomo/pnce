@@ -1,11 +1,11 @@
 import * as crypto from 'crypto';
 
 /**
- * 输入验证工具类
+ * InputValidateUtilityClass
  */
 export class ValidatorUtil {
   /**
-   * 验证 URL 格式
+   * Validate URL Format
    */
   static isValidUrl(url: string): boolean {
     try {
@@ -17,7 +17,7 @@ export class ValidatorUtil {
   }
 
   /**
-   * 验证端口号
+   * ValidatePort
    */
   static isValidPort(port: number | string): boolean {
     const portNum = typeof port === 'string' ? parseInt(port) : port;
@@ -25,49 +25,49 @@ export class ValidatorUtil {
   }
 
   /**
-   * 验证模块名称
-   * 遵循 npm 包命名规范
+   * ValidatemoduleName
+   *  npm PackageSpecification
    */
   static isValidModuleName(name: string): boolean {
-    // npm 包名规则：1-214字符，小写字母、数字、下划线、连字符、点
+    // npm PackageRule：1-214，、Number、、、
     const regex = /^(?:@[a-z0-9-~][a-z0-9-._~]*\/)?[a-z0-9-~][a-z0-9-._~]*$/;
     return regex.test(name) && name.length <= 214;
   }
 
   /**
-   * 验证版本号（语义化版本）
+   * Validateversion（version）
    */
-  static isValidVersion(version: string): boolean {
+  static isValidversion(version: string): boolean {
     const regex =
       /^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(?:-((?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\.(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\+([0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?$/;
     return regex.test(version);
   }
 
   /**
-   * 验证文件路径
+   * ValidatefilePath
    */
   static isValidPath(path: string): boolean {
     if (!path || path.length === 0) {
       return false;
     }
-    // 基本的路径验证
+    // PathValidate
     return !path.includes('\0') && path.length < 260;
   }
 
   /**
-   * 验证 Token 格式（JWT）
+   * Validate Token Format（JWT）
    */
   static isValidToken(token: string): boolean {
     if (!token || token.length < 10) {
       return false;
     }
-    // JWT 格式：header.payload.signature
+    // JWT Format：header.payload.signature
     const parts = token.split('.');
     return parts.length === 3;
   }
 
   /**
-   * 验证邮箱地址
+   * ValidateURL
    */
   static isValidEmail(email: string): boolean {
     const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -75,7 +75,7 @@ export class ValidatorUtil {
   }
 
   /**
-   * 验证密码强度
+   * Validate
    */
   static validatePasswordStrength(password: string): {
     valid: boolean;
@@ -136,7 +136,7 @@ export class ValidatorUtil {
   }
 
   /**
-   * 验证 JSON 格式
+   * Validate JSON Format
    */
   static isValidJSON(json: string): boolean {
     try {
@@ -148,17 +148,17 @@ export class ValidatorUtil {
   }
 
   /**
-   * 验证并清理输入（防止命令注入）
+   * ValidateCleanInput（）
    */
   static sanitizeInput(input: string): string {
     return input
-      .replace(/[\n\r\t]/g, '') // 移除换行符
-      .replace(/[;&|`$()]/g, '') // 移除特殊字符
+      .replace(/[\n\r\t]/g, '') //
+      .replace(/[;&|`$()]/g, '') //
       .trim();
   }
 
   /**
-   * 验证 IP 地址
+   * Validate IP URL
    */
   static isValidIP(ip: string): boolean {
     const ipv4Regex =
@@ -169,17 +169,17 @@ export class ValidatorUtil {
   }
 
   /**
-   * 生成安全的随机字符串
+   * SecurityRandomString
    */
   static generateSecureRandom(length: number = 32): string {
     return crypto.randomBytes(length).toString('hex');
   }
 
   /**
-   * 验证目录路径是否安全
+   * ValidateDirectoryPathYes/NoSecurity
    */
   static isSafePath(path: string): boolean {
-    // 防止路径遍历攻击
+    // Path
     const normalized = path.replace(/\\/g, '/');
     return !normalized.includes('../') && !normalized.includes('..\\');
   }

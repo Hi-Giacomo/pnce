@@ -1,7 +1,7 @@
 {
   "info": {
     "name": "PNCE Module Registry API",
-    "description": "PNCE 模块注册中心 API 集合",
+    "description": "PNCE Module Registry API Collection",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
     "_postman_id": "pnce-module-registry-api",
     "version": {
@@ -12,10 +12,10 @@
   },
   "item": [
     {
-      "name": "🔐 认证接口",
+      "name": "🔐 Authentication APIs",
       "item": [
         {
-          "name": "1. 用户注册",
+          "name": "1. User Registration",
           "request": {
             "method": "POST",
             "header": [
@@ -33,11 +33,11 @@
               "host": ["{{baseUrl}}"],
               "path": ["api", "auth", "register"]
             },
-            "description": "注册新用户账号"
+            "description": "Register new user account"
           },
           "response": [
             {
-              "name": "注册成功",
+              "name": "Registration successful",
               "originalRequest": {
                 "method": "POST",
                 "header": [],
@@ -68,7 +68,7 @@
               "body": "{\n  \"success\": true,\n  \"access_token\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...\",\n  \"user\": {\n    \"id\": \"uuid\",\n    \"username\": \"testuser\",\n    \"email\": \"test@example.com\",\n    \"createdAt\": \"2024-01-01T00:00:00.000Z\"\n  }\n}"
             },
             {
-              "name": "邮箱已存在",
+              "name": "Email already exists",
               "originalRequest": {
                 "method": "POST",
                 "header": [],
@@ -90,12 +90,12 @@
               "status": "Conflict",
               "code": 409,
               "_postman_previewlanguage": "json",
-              "body": "{\n  \"success\": false,\n  \"message\": \"邮箱已存在\",\n  \"errorCode\": \"AUTH_001\"\n}"
+              "body": "{\n  \"success\": false,\n  \"message\": \"Email already exists\",\n  \"errorCode\": \"AUTH_001\"\n}"
             }
           ]
         },
         {
-          "name": "2. 用户登录",
+          "name": "2. User Login",
           "request": {
             "method": "POST",
             "header": [
@@ -113,11 +113,11 @@
               "host": ["{{baseUrl}}"],
               "path": ["api", "auth", "login"]
             },
-            "description": "使用邮箱密码登录"
+            "description": "Login with email and password"
           },
           "response": [
             {
-              "name": "登录成功",
+              "name": "Login successful",
               "originalRequest": {
                 "method": "POST",
                 "header": [],
@@ -148,7 +148,7 @@
               "body": "{\n  \"success\": true,\n  \"access_token\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...\",\n  \"refresh_token\": \"refresh_token_string\",\n  \"user\": {\n    \"id\": \"uuid\",\n    \"username\": \"testuser\",\n    \"email\": \"test@example.com\"\n  }\n}"
             },
             {
-              "name": "邮箱或密码错误",
+              "name": "Incorrect email or password",
               "originalRequest": {
                 "method": "POST",
                 "header": [],
@@ -170,12 +170,12 @@
               "status": "Unauthorized",
               "code": 401,
               "_postman_previewlanguage": "json",
-              "body": "{\n  \"success\": false,\n  \"message\": \"邮箱或密码错误\",\n  \"errorCode\": \"AUTH_010\"\n}"
+              "body": "{\n  \"success\": false,\n  \"message\": \"Incorrect email or password\",\n  \"errorCode\": \"AUTH_010\"\n}"
             }
           ]
         },
         {
-          "name": "3. 获取当前用户信息",
+          "name": "3. Get Current User Info",
           "request": {
             "method": "GET",
             "header": [
@@ -189,7 +189,7 @@
               "host": ["{{baseUrl}}"],
               "path": ["api", "auth", "me"]
             },
-            "description": "获取当前登录用户的详细信息"
+            "description": "Get detailed information of current logged-in user"
           },
           "response": [
             {
@@ -216,7 +216,7 @@
           ]
         },
         {
-          "name": "4. 刷新Token",
+          "name": "4. Refresh Token",
           "request": {
             "method": "POST",
             "header": [
@@ -234,11 +234,11 @@
               "host": ["{{baseUrl}}"],
               "path": ["api", "auth", "refresh"]
             },
-            "description": "使用 refresh_token 获取新的 access_token"
+            "description": "Get new access_token using refresh_token"
           },
           "response": [
             {
-              "name": "刷新成功",
+              "name": "Refresh successful",
               "originalRequest": {
                 "method": "POST",
                 "header": [],
@@ -263,7 +263,7 @@
               "body": "{\n  \"success\": true,\n  \"access_token\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...\",\n  \"refresh_token\": \"new_refresh_token\"\n}"
             },
             {
-              "name": "refresh_token 无效或已过期",
+              "name": "refresh_token invalid or expired",
               "originalRequest": {
                 "method": "POST",
                 "header": [],
@@ -285,12 +285,12 @@
               "status": "Unauthorized",
               "code": 401,
               "_postman_previewlanguage": "json",
-              "body": "{\n  \"success\": false,\n  \"message\": \"refresh_token 无效或已过期\",\n  \"errorCode\": \"AUTH_020\"\n}"
+              "body": "{\n  \"success\": false,\n  \"message\": \"refresh_token invalid or expired\",\n  \"errorCode\": \"AUTH_020\"\n}"
             }
           ]
         },
         {
-          "name": "5. 用户登出",
+          "name": "5. User Logout",
           "request": {
             "method": "POST",
             "header": [
@@ -304,11 +304,11 @@
               "host": ["{{baseUrl}}"],
               "path": ["api", "auth", "logout"]
             },
-            "description": "登出当前用户，使 access_token 失效"
+            "description": "Logout current user, invalidate access_token"
           },
           "response": [
             {
-              "name": "登出成功",
+              "name": "Logout successful",
               "originalRequest": {
                 "method": "POST",
                 "header": [
@@ -326,14 +326,14 @@
               "status": "OK",
               "code": 200,
               "_postman_previewlanguage": "json",
-              "body": "{\n  \"success\": true,\n  \"message\": \"登出成功\"\n}"
+              "body": "{\n  \"success\": true,\n  \"message\": \"Logout successful\"\n}"
             }
           ]
         }
       ]
     },
     {
-      "name": "📦 模块管理接口",
+      "name": "📦 Module Management APIs",
       "item": [
         {
           "name": "6. 上传模块",
@@ -352,7 +352,7 @@
                   "key": "package",
                   "type": "file",
                   "src": [],
-                  "description": ".tgz 格式的模块包文件"
+                  "description": ".tgz module package file"
                 },
                 {
                   "key": "name",
@@ -366,7 +366,7 @@
                 },
                 {
                   "key": "description",
-                  "value": "用户认证微服务",
+                  "value": "User authentication microservice",
                   "type": "text"
                 },
                 {
@@ -391,11 +391,11 @@
               "host": ["{{baseUrl}}"],
               "path": ["api", "modules", "upload"]
             },
-            "description": "上传模块压缩包到注册中心"
+            "description": "Upload module package to registry"
           },
           "response": [
             {
-              "name": "上传成功",
+              "name": "Upload successful",
               "originalRequest": {
                 "method": "POST",
                 "header": [
@@ -424,7 +424,7 @@
                     },
                     {
                       "key": "description",
-                      "value": "用户认证微服务",
+                      "value": "User authentication microservice",
                       "type": "text"
                     },
                     {
@@ -443,10 +443,10 @@
               "status": "OK",
               "code": 200,
               "_postman_previewlanguage": "json",
-              "body": "{\n  \"success\": true,\n  \"message\": \"模块上传成功\",\n  \"module\": {\n    \"name\": \"auth-service\",\n    \"version\": \"1.0.0\",\n    \"description\": \"用户认证微服务\",\n    \"author\": \"testuser\",\n    \"type\": \"microservice\",\n    \"appId\": \"\",\n    \"teamId\": \"\",\n    \"uploadedAt\": \"2024-01-01T00:00:00.000Z\",\n    \"size\": 102400,\n    \"sha256\": \"abc123...\"\n  }\n}"
+              "body": "{\n  \"success\": true,\n  \"message\": \"Module uploaded successfully\",\n  \"module\": {\n    \"name\": \"auth-service\",\n    \"version\": \"1.0.0\",\n    \"description\": \"User authentication microservice\",\n    \"author\": \"testuser\",\n    \"type\": \"microservice\",\n    \"appId\": \"\",\n    \"teamId\": \"\",\n    \"uploadedAt\": \"2024-01-01T00:00:00.000Z\",\n    \"size\": 102400,\n    \"sha256\": \"abc123...\"\n  }\n}"
             },
             {
-              "name": "模块名称格式错误",
+              "name": "Invalid module name format",
               "originalRequest": {
                 "method": "POST",
                 "header": [],
@@ -459,10 +459,10 @@
               "status": "Bad Request",
               "code": 400,
               "_postman_previewlanguage": "json",
-              "body": "{\n  \"success\": false,\n  \"message\": \"模块名称格式错误\",\n  \"errorCode\": \"MODULE_001\"\n}"
+              "body": "{\n  \"success\": false,\n  \"message\": \"Invalid module name format\",\n  \"errorCode\": \"MODULE_001\"\n}"
             },
             {
-              "name": "版本已存在",
+              "name": "Version already exists",
               "originalRequest": {
                 "method": "POST",
                 "header": [],
@@ -475,7 +475,7 @@
               "status": "Conflict",
               "code": 409,
               "_postman_previewlanguage": "json",
-              "body": "{\n  \"success\": false,\n  \"message\": \"同一模块已存在该版本\",\n  \"errorCode\": \"MODULE_003\"\n}"
+              "body": "{\n  \"success\": false,\n  \"message\": \"This version of the module already exists\",\n  \"errorCode\": \"MODULE_003\"\n}"
             }
           ]
         },
@@ -488,7 +488,7 @@
               "host": ["{{baseUrl}}"],
               "path": ["api", "modules", "auth-service"]
             },
-            "description": "获取指定模块的详细信息，包括所有版本"
+            "description": "Get detailed information of a specified module, including all versions"
           },
           "response": [
             {
@@ -504,10 +504,10 @@
               "status": "OK",
               "code": 200,
               "_postman_previewlanguage": "json",
-              "body": "{\n  \"success\": true,\n  \"module\": {\n    \"name\": \"auth-service\",\n    \"description\": \"用户认证微服务\",\n    \"author\": \"testuser\",\n    \"uploadedBy\": \"testuser\",\n    \"latest\": \"1.0.0\",\n    \"type\": \"microservice\",\n    \"appId\": \"app-123\",\n    \"teamId\": \"team-456\",\n    \"createdAt\": \"2024-01-01T00:00:00.000Z\",\n    \"downloads\": 1500,\n    \"versions\": {\n      \"1.0.0\": {\n        \"uploadedAt\": \"2024-01-01T00:00:00.000Z\",\n        \"size\": 102400,\n        \"sha256\": \"abc123...\"\n      },\n      \"0.9.0\": {\n        \"uploadedAt\": \"2023-12-01T00:00:00.000Z\",\n        \"size\": 98304,\n        \"sha256\": \"def456...\"\n      }\n    }\n  }\n}"
+              "body": "{\n  \"success\": true,\n  \"module\": {\n    \"name\": \"auth-service\",\n    \"description\": \"User authentication microservice\",\n    \"author\": \"testuser\",\n    \"uploadedBy\": \"testuser\",\n    \"latest\": \"1.0.0\",\n    \"type\": \"microservice\",\n    \"appId\": \"app-123\",\n    \"teamId\": \"team-456\",\n    \"createdAt\": \"2024-01-01T00:00:00.000Z\",\n    \"downloads\": 1500,\n    \"versions\": {\n      \"1.0.0\": {\n        \"uploadedAt\": \"2024-01-01T00:00:00.000Z\",\n        \"size\": 102400,\n        \"sha256\": \"abc123...\"\n      },\n      \"0.9.0\": {\n        \"uploadedAt\": \"2023-12-01T00:00:00.000Z\",\n        \"size\": 98304,\n        \"sha256\": \"def456...\"\n      }\n    }\n  }\n}"
             },
             {
-              "name": "模块不存在",
+              "name": "Module does not exist",
               "originalRequest": {
                 "method": "GET",
                 "url": {
@@ -519,7 +519,7 @@
               "status": "Not Found",
               "code": 404,
               "_postman_previewlanguage": "json",
-              "body": "{\n  \"success\": false,\n  \"message\": \"模块不存在\",\n  \"errorCode\": \"MODULE_010\"\n}"
+              "body": "{\n  \"success\": false,\n  \"message\": \"Module does not exist\",\n  \"errorCode\": \"MODULE_010\"\n}"
             }
           ]
         },
@@ -538,7 +538,7 @@
               "host": ["{{baseUrl}}"],
               "path": ["api", "modules", "auth-service", "1.0.0", "download"]
             },
-            "description": "下载指定模块的特定版本",
+            "description": "Download a specific version of a specified module",
             "response": []
           },
           "response": [
@@ -575,10 +575,10 @@
                   "value": "abc123..."
                 }
               ],
-              "body": "[二进制文件流]"
+              "body": "[[Binary file stream]]"
             },
             {
-              "name": "版本不存在",
+              "name": "Version does not exist",
               "originalRequest": {
                 "method": "GET",
                 "header": [
@@ -596,7 +596,7 @@
               "status": "Not Found",
               "code": 404,
               "_postman_previewlanguage": "json",
-              "body": "{\n  \"success\": false,\n  \"message\": \"版本不存在\",\n  \"errorCode\": \"MODULE_011\"\n}"
+              "body": "{\n  \"success\": false,\n  \"message\": \"Version does not exist\",\n  \"errorCode\": \"MODULE_011\"\n}"
             }
           ]
         },
@@ -615,11 +615,11 @@
               "host": ["{{baseUrl}}"],
               "path": ["api", "modules", "auth-service", "1.0.0"]
             },
-            "description": "删除模块的指定版本"
+            "description": "Delete a specific version of a module"
           },
           "response": [
             {
-              "name": "删除成功",
+              "name": "Delete successful",
               "originalRequest": {
                 "method": "DELETE",
                 "header": [
@@ -637,10 +637,10 @@
               "status": "OK",
               "code": 200,
               "_postman_previewlanguage": "json",
-              "body": "{\n  \"success\": true,\n  \"message\": \"版本删除成功\"\n}"
+              "body": "{\n  \"success\": true,\n  \"message\": \"版本Delete successful\"\n}"
             },
             {
-              "name": "无权限删除",
+              "name": "No permission to delete",
               "originalRequest": {
                 "method": "DELETE",
                 "header": [
@@ -658,12 +658,12 @@
               "status": "Forbidden",
               "code": 403,
               "_postman_previewlanguage": "json",
-              "body": "{\n  \"success\": false,\n  \"message\": \"无权限删除（非模块所有者）\",\n  \"errorCode\": \"MODULE_012\"\n}"
+              "body": "{\n  \"success\": false,\n  \"message\": \"No permission to delete (not module owner)\",\n  \"errorCode\": \"MODULE_012\"\n}"
             }
           ]
         },
         {
-          "name": "10. 删除整个模块",
+          "name": "10. Delete entire module",
           "request": {
             "method": "DELETE",
             "header": [
@@ -680,15 +680,15 @@
                 {
                   "key": "force",
                   "value": "true",
-                  "description": "是否强制删除所有版本"
+                  "description": "Whether to force delete all versions"
                 }
               ]
             },
-            "description": "删除整个模块及其所有版本"
+            "description": "Delete entire module and all its versions"
           },
           "response": [
             {
-              "name": "删除成功",
+              "name": "Delete successful",
               "originalRequest": {
                 "method": "DELETE",
                 "header": [
@@ -712,7 +712,7 @@
               "status": "OK",
               "code": 200,
               "_postman_previewlanguage": "json",
-              "body": "{\n  \"success\": true,\n  \"message\": \"模块删除成功\"\n}"
+              "body": "{\n  \"success\": true,\n  \"message\": \"模块Delete successful\"\n}"
             }
           ]
         },
@@ -732,14 +732,14 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"description\": \"更新后的描述信息\",\n  \"type\": \"microservice\"\n}"
+              "raw": "{\n  \"description\": \"Updated description\",\n  \"type\": \"microservice\"\n}"
             },
             "url": {
               "raw": "{{baseUrl}}/api/modules/auth-service",
               "host": ["{{baseUrl}}"],
               "path": ["api", "modules", "auth-service"]
             },
-            "description": "更新模块的描述、类型等信息"
+            "description": "Update module description, type, and other information"
           },
           "response": [
             {
@@ -758,7 +758,7 @@
                 ],
                 "body": {
                   "mode": "raw",
-                  "raw": "{\n  \"description\": \"更新后的描述信息\",\n  \"type\": \"microservice\"\n}",
+                  "raw": "{\n  \"description\": \"Updated description\",\n  \"type\": \"microservice\"\n}",
                   "options": {
                     "raw": {
                       "language": "json"
@@ -774,10 +774,10 @@
               "status": "OK",
               "code": 200,
               "_postman_previewlanguage": "json",
-              "body": "{\n  \"success\": true,\n  \"message\": \"模块信息更新成功\",\n  \"module\": {\n    \"name\": \"auth-service\",\n    \"description\": \"更新后的描述信息\",\n    \"type\": \"microservice\",\n    \"author\": \"testuser\",\n    \"latest\": \"1.0.0\"\n  }\n}"
+              "body": "{\n  \"success\": true,\n  \"message\": \"Module information updated successfully\",\n  \"module\": {\n    \"name\": \"auth-service\",\n    \"description\": \"Updated description\",\n    \"type\": \"microservice\",\n    \"author\": \"testuser\",\n    \"latest\": \"1.0.0\"\n  }\n}"
             },
             {
-              "name": "无权限更新",
+              "name": "No permission to update",
               "originalRequest": {
                 "method": "PUT",
                 "header": [],
@@ -790,7 +790,7 @@
               "status": "Forbidden",
               "code": 403,
               "_postman_previewlanguage": "json",
-              "body": "{\n  \"success\": false,\n  \"message\": \"无权限更新\",\n  \"errorCode\": \"MODULE_012\"\n}"
+              "body": "{\n  \"success\": false,\n  \"message\": \"No permission to update\",\n  \"errorCode\": \"MODULE_012\"\n}"
             }
           ]
         }
@@ -816,13 +816,13 @@
                 {
                   "key": "author",
                   "value": "testuser",
-                  "description": "按作者筛选",
+                  "description": "Filter by author",
                   "disabled": true
                 },
                 {
                   "key": "type",
                   "value": "microservice",
-                  "description": "按类型筛选"
+                  "description": "Filter by type"
                 },
                 {
                   "key": "page",
@@ -841,7 +841,7 @@
                 }
               ]
             },
-            "description": "搜索和筛选模块"
+            "description": "Search and filter modules"
           },
           "response": [
             {
@@ -879,7 +879,7 @@
               "status": "OK",
               "code": 200,
               "_postman_previewlanguage": "json",
-              "body": "{\n  \"success\": true,\n  \"modules\": [\n    {\n      \"name\": \"auth-service\",\n      \"description\": \"用户认证微服务\",\n      \"author\": \"testuser\",\n      \"latest\": \"1.0.0\",\n      \"type\": \"microservice\",\n      \"downloads\": 1500,\n      \"createdAt\": \"2024-01-01T00:00:00.000Z\"\n    }\n  ],\n  \"pagination\": {\n    \"page\": 1,\n    \"limit\": 20,\n    \"total\": 50,\n    \"totalPages\": 3\n  }\n}"
+              "body": "{\n  \"success\": true,\n  \"modules\": [\n    {\n      \"name\": \"auth-service\",\n      \"description\": \"User authentication microservice\",\n      \"author\": \"testuser\",\n      \"latest\": \"1.0.0\",\n      \"type\": \"microservice\",\n      \"downloads\": 1500,\n      \"createdAt\": \"2024-01-01T00:00:00.000Z\"\n    }\n  ],\n  \"pagination\": {\n    \"page\": 1,\n    \"limit\": 20,\n    \"total\": 50,\n    \"totalPages\": 3\n  }\n}"
             }
           ]
         },
@@ -895,7 +895,7 @@
                 {
                   "key": "period",
                   "value": "week",
-                  "description": "时间段: day | week | month"
+                  "description": "Time period: day | week | month"
                 },
                 {
                   "key": "limit",
@@ -904,7 +904,7 @@
                 }
               ]
             },
-            "description": "获取热门模块排行榜"
+            "description": "Get trending module leaderboard"
           },
           "response": [
             {
@@ -930,7 +930,7 @@
               "status": "OK",
               "code": 200,
               "_postman_previewlanguage": "json",
-              "body": "{\n  \"success\": true,\n  \"modules\": [\n    {\n      \"name\": \"auth-service\",\n      \"description\": \"用户认证微服务\",\n      \"author\": \"testuser\",\n      \"latest\": \"1.0.0\",\n      \"type\": \"microservice\",\n      \"downloads\": 500,\n      \"downloadsChange\": 25.5\n    }\n  ]\n}"
+              "body": "{\n  \"success\": true,\n  \"modules\": [\n    {\n      \"name\": \"auth-service\",\n      \"description\": \"User authentication microservice\",\n      \"author\": \"testuser\",\n      \"latest\": \"1.0.0\",\n      \"type\": \"microservice\",\n      \"downloads\": 500,\n      \"downloadsChange\": 25.5\n    }\n  ]\n}"
             }
           ]
         },
@@ -953,7 +953,7 @@
                 }
               ]
             },
-            "description": "获取指定作者的所有模块"
+            "description": "Get all modules by a specific author"
           },
           "response": [
             {
@@ -979,7 +979,7 @@
               "status": "OK",
               "code": 200,
               "_postman_previewlanguage": "json",
-              "body": "{\n  \"success\": true,\n  \"modules\": [\n    {\n      \"name\": \"auth-service\",\n      \"description\": \"用户认证微服务\",\n      \"latest\": \"1.0.0\",\n      \"type\": \"microservice\",\n      \"createdAt\": \"2024-01-01T00:00:00.000Z\",\n      \"downloads\": 1500\n    }\n  ],\n  \"author\": {\n    \"username\": \"testuser\",\n    \"email\": \"test@example.com\",\n    \"moduleCount\": 5,\n    \"totalDownloads\": 10000\n  }\n}"
+              "body": "{\n  \"success\": true,\n  \"modules\": [\n    {\n      \"name\": \"auth-service\",\n      \"description\": \"User authentication microservice\",\n      \"latest\": \"1.0.0\",\n      \"type\": \"microservice\",\n      \"createdAt\": \"2024-01-01T00:00:00.000Z\",\n      \"downloads\": 1500\n    }\n  ],\n  \"author\": {\n    \"username\": \"testuser\",\n    \"email\": \"test@example.com\",\n    \"moduleCount\": 5,\n    \"totalDownloads\": 10000\n  }\n}"
             }
           ]
         },
@@ -1002,7 +1002,7 @@
                 }
               ]
             },
-            "description": "获取所有模块的列表"
+            "description": "Get list of all modules"
           },
           "response": [
             {
@@ -1028,7 +1028,7 @@
               "status": "OK",
               "code": 200,
               "_postman_previewlanguage": "json",
-              "body": "{\n  \"success\": true,\n  \"modules\": [\n    {\n      \"name\": \"auth-service\",\n      \"description\": \"用户认证微服务\",\n      \"author\": \"testuser\",\n      \"latest\": \"1.0.0\",\n      \"type\": \"microservice\",\n      \"downloads\": 1500,\n      \"createdAt\": \"2024-01-01T00:00:00.000Z\"\n    }\n  ],\n  \"pagination\": {\n    \"page\": 1,\n    \"limit\": 20,\n    \"total\": 150,\n    \"totalPages\": 8\n  }\n}"
+              "body": "{\n  \"success\": true,\n  \"modules\": [\n    {\n      \"name\": \"auth-service\",\n      \"description\": \"User authentication microservice\",\n      \"author\": \"testuser\",\n      \"latest\": \"1.0.0\",\n      \"type\": \"microservice\",\n      \"downloads\": 1500,\n      \"createdAt\": \"2024-01-01T00:00:00.000Z\"\n    }\n  ],\n  \"pagination\": {\n    \"page\": 1,\n    \"limit\": 20,\n    \"total\": 150,\n    \"totalPages\": 8\n  }\n}"
             }
           ]
         }
@@ -1046,7 +1046,7 @@
               "host": ["{{baseUrl}}"],
               "path": ["api", "stats"]
             },
-            "description": "获取系统的全局统计信息"
+            "description": "Get global system statistics"
           },
           "response": [
             {
@@ -1078,16 +1078,16 @@
                 {
                   "key": "period",
                   "value": "week",
-                  "description": "时间段: day | week | month | year | all"
+                  "description": "Time period: day | week | month | year | all"
                 },
                 {
                   "key": "byVersion",
                   "value": "true",
-                  "description": "是否按版本分组"
+                  "description": "Whether to group by version"
                 }
               ]
             },
-            "description": "获取指定模块的下载统计"
+            "description": "Get download statistics for a specified module"
           },
           "response": [
             {
@@ -1131,7 +1131,7 @@
               "host": ["{{baseUrl}}"],
               "path": ["health"]
             },
-            "description": "检查服务及其依赖的健康状态"
+            "description": "Check health status of service and its dependencies"
           },
           "response": [
             {
@@ -1150,7 +1150,7 @@
               "body": "{\n  \"status\": \"healthy\",\n  \"timestamp\": \"2024-01-01T00:00:00.000Z\",\n  \"version\": \"1.0.0\",\n  \"services\": {\n    \"database\": \"connected\",\n    \"storage\": \"available\",\n    \"redis\": \"connected\"\n  },\n  \"uptime\": 86400\n}"
             },
             {
-              "name": "数据库连接失败",
+              "name": "Database connection failed",
               "originalRequest": {
                 "method": "GET",
                 "url": {
@@ -1162,17 +1162,17 @@
               "status": "Service Unavailable",
               "code": 503,
               "_postman_previewlanguage": "json",
-              "body": "{\n  \"status\": \"unhealthy\",\n  \"timestamp\": \"2024-01-01T00:00:00.000Z\",\n  \"version\": \"1.0.0\",\n  \"services\": {\n    \"database\": \"disconnected\",\n    \"storage\": \"available\",\n    \"redis\": \"connected\"\n  },\n  \"error\": \"数据库连接失败\"\n}"
+              "body": "{\n  \"status\": \"unhealthy\",\n  \"timestamp\": \"2024-01-01T00:00:00.000Z\",\n  \"version\": \"1.0.0\",\n  \"services\": {\n    \"database\": \"disconnected\",\n    \"storage\": \"available\",\n    \"redis\": \"connected\"\n  },\n  \"error\": \"Database connection failed\"\n}"
             }
           ]
         }
       ]
     },
     {
-      "name": "🌐 OAuth2 授权接口",
+      "name": "🌐 OAuth2 Authorization APIs",
       "item": [
         {
-          "name": "19. OAuth2 授权页面",
+          "name": "19. OAuth2 Authorization Page",
           "request": {
             "method": "GET",
             "url": {
@@ -1210,11 +1210,11 @@
                 }
               ]
             },
-            "description": "OAuth2 授权页面（在网站域名下，不在 API 服务器）"
+            "description": "OAuth2 Authorization Page（在网站域名下，不在 API 服务器）"
           },
           "response": [
             {
-              "name": "授权页面",
+              "name": "Authorization Page",
               "originalRequest": {
                 "method": "GET",
                 "url": {
@@ -1226,7 +1226,7 @@
               "status": "OK",
               "code": 200,
               "_postman_previewlanguage": "html",
-              "body": "<!DOCTYPE html>\n<html>\n<head>\n  <title>授权页面</title>\n</head>\n<body>\n  <h1>是否授权 PNCE CLI 访问您的账号？</h1>\n  <form method=\"POST\">\n    <button type=\"submit\">同意</button>\n    <button type=\"button\">拒绝</button>\n  </form>\n</body>\n</html>"
+              "body": "<!DOCTYPE html>\n<html>\n<head>\n  <title>Authorization Page</title>\n</head>\n<body>\n  <h1>Do you authorize PNCE CLI to access your account?</h1>\n  <form method=\"POST\">\n    <button type=\"submit\">Agree</button>\n    <button type=\"button\">Reject</button>\n  </form>\n</body>\n</html>"
             }
           ]
         }
@@ -1237,23 +1237,23 @@
     {
       "key": "baseUrl",
       "value": "http://localhost:3000",
-      "description": "API 服务器地址"
+      "description": "API server address"
     },
     {
       "key": "oauthEndpoint",
       "value": "http://localhost:5173",
-      "description": "OAuth2 授权端点地址（网站域名）"
+      "description": "OAuth2 authorization endpoint address (website domain)"
     },
     {
       "key": "access_token",
       "value": "",
-      "description": "登录后获取的访问令牌",
+      "description": "Access token obtained after login",
       "type": "string"
     },
     {
       "key": "refresh_token",
       "value": "",
-      "description": "登录后获取的刷新令牌",
+      "description": "Refresh token obtained after login",
       "type": "string"
     }
   ]

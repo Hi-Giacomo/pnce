@@ -4,11 +4,11 @@ import * as crypto from 'crypto';
 
 /**
  * module
- * ValidationmoduleFile
+ * Validationmodulefile
  */
 export class moduleHashService {
   /**
-   * Directory（AllFile）
+   * Directory（Allfile）
    * @param dirPath Directory
    * @returns SHA256
    */
@@ -24,23 +24,23 @@ export class moduleHashService {
   }
 
   /**
-   * File
-   * @param filePath File
+   * file
+   * @param filePath file
    * @returns SHA256
    */
-  async calculateFileHash(filePath: string): Promise<string> {
+  async calculatefileHash(filePath: string): Promise<string> {
     const content = await fs.readFile(filePath);
     return crypto.createHash('sha256').update(content).digest('hex');
   }
 
   /**
-   * ValidationFile
-   * @param filePath File
-   * @param expectedHash 
-   * @returns YesNo
+   * Validationfile
+   * @param filePath file
+   * @param expectedHash
+   * @returns Yes/No
    */
-  async verifyFileHash(filePath: string, expectedHash: string): Promise<boolean> {
-    const actualHash = await this.calculateFileHash(filePath);
+  async verifyfileHash(filePath: string, expectedHash: string): Promise<boolean> {
+    const actualHash = await this.calculatefileHash(filePath);
     return actualHash === expectedHash;
   }
 
@@ -50,30 +50,30 @@ export class moduleHashService {
    * @returns null
    */
   async readInstalledmoduleHash(modulePath: string): Promise<string | null> {
-    const hashFilePath = path.join(modulePath, '.module-hash');
+    const hashfilePath = path.join(modulePath, '.module-hash');
 
-    if (!(await fs.pathExists(hashFilePath))) {
+    if (!(await fs.pathExists(hashfilePath))) {
       return null;
     }
 
-    const hashContent = await fs.readFile(hashFilePath, 'utf-8');
+    const hashContent = await fs.readFile(hashfilePath, 'utf-8');
     return hashContent.trim();
   }
 
   /**
    * module
    * @param modulePath module
-   * @param hash 
+   * @param hash
    */
   async savemoduleHash(modulePath: string, hash: string): Promise<void> {
-    const hashFilePath = path.join(modulePath, '.module-hash');
-    await fs.writeFile(hashFilePath, hash);
+    const hashfilePath = path.join(modulePath, '.module-hash');
+    await fs.writeFile(hashfilePath, hash);
   }
 
   /**
-   * moduleYesNo
+   * moduleYes/No
    * @param modulePath module
-   * @returns YesNo
+   * @returns Yes/No
    */
   async ismoduleModified(modulePath: string): Promise<boolean> {
     const savedHash = await this.readInstalledmoduleHash(modulePath);
@@ -88,7 +88,7 @@ export class moduleHashService {
   /**
    * Directory
    * @param dirPath Directory
-   * @param callback ，File
+   * @param callback ，file
    */
   private async walkDirectory(
     dirPath: string,
@@ -106,7 +106,7 @@ export class moduleHashService {
           await this.walkDirectory(filePath, callback);
         }
       } else if (stat.isFile()) {
-        //  lock FileFile
+        //  lock filefile
         const skipPatterns = ['.lock', '.log', '.DS_Store', 'npm-debug'];
         const shouldSkip = skipPatterns.some((pattern) => file.endsWith(pattern));
 

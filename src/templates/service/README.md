@@ -1,121 +1,122 @@
 # Service
 
-Service 微服务模板项目，基于 NestJS 构建，提供模块化的服务架构。
+NestJS-based modular service template with microservice architecture.
 
-## 功能特性
+## Features
 
-- 模块化架构设计
-- 动态环境变量管理
-- 热重载支持（开发模式）
-- CORS 跨域支持
-- 环境文件自动监听
-- 优雅关闭处理（SIGTERM/SIGINT）
+- Modular architecture design
+- Dynamic environment variable management
+- Hot reload support (development mode)
+- CORS cross-origin support
+- Automatic environment file monitoring
+- Graceful shutdown handling (SIGTERM/SIGINT)
 
-## 安装
+## Installation
 
 ```bash
-# 使用 npm
+# Using npm
 npm install
 
-# 使用 yarn
+# Using yarn
 yarn install
 ```
 
-## 运行
+## Running
 
 ```bash
-# 开发模式（带热重载）
+# Development mode (with hot reload)
 npm run dev
 
-# 开发模式（指定环境）
+# Development mode (specify environment)
 npm run dev:main
 
-# 生产模式
+# Production mode
 npm run build
 npm run start:prod
 ```
 
-## 构建
+## Building
 
 ```bash
 npm run build
 ```
 
-## 项目结构
+## Project Structure
 
 ```
 service/
 ├── src/
-│   ├── config/           # 配置文件
-│   │   ├── env.config.ts # 环境变量配置
-│   │   └── env.interface.ts
-│   ├── modules/          # 业务模块
-│   │   ├── env/         # 环境变量管理模块
-│   │   └── hello/       # Hello 示例模块
-│   └── main.ts          # 应用入口
-├── docs/                # 项目文档
-├── postman.json         # Postman 接口集合
-├── package.json         # 依赖配置
-├── module.config.json   # 模块配置
-├── .env                 # 环境变量配置
-└── tsconfig.json        # TypeScript 配置
+│   ├── config/           # Configuration files
+│   │   ├── env.config.ts # Environment variable configuration
+│   │   └── index.ts     # Configuration entry
+│   ├── modules/          # Business modules
+│   │   └── env/        # Environment management module
+│   │       ├── env.module.ts
+│   │       ├── env.controller.ts
+│   │       ├── env.service.ts
+│   │       └── env.dto.ts
+│   ├── main.ts           # Application entry point
+│   └── app.module.ts     # Root module
+├── .env                # Environment variables (created automatically)
+├── .env.example         # Environment variable template
+├── package.json         # Project dependencies
+├── tsconfig.json        # TypeScript configuration
+├── nest-cli.json       # Nest CLI configuration
+└── README.md            # Project documentation
 ```
 
-## API 接口
+## Environment Variables
 
-### Hello 接口
+Create a `.env` file in the project root with the following variables:
 
-- `GET /api/hello/world` - 获取 Hello World 消息
+```env
+# Server Configuration
+PORT=3000
+NODE_ENV=development
+APP_HOST=localhost
 
-### 环境变量管理接口
+# Database Configuration (optional)
+DB_HOST=localhost
+DB_PORT=5432
+DB_USERNAME=postgres
+DB_PASSWORD=password
+DB_NAME=service_db
 
-- `GET /api/env` - 获取所有环境变量
-- `GET /api/env/:key` - 获取单个环境变量
-- `GET /api/env/config/all` - 获取配置对象
-- `POST /api/env` - 设置环境变量
-- `POST /api/env/batch` - 批量设置环境变量
-- `DELETE /api/env/:key` - 删除环境变量
-- `POST /api/env/reload` - 重载环境变量
-
-详细 API 文档请查看 [docs/ENV_API.md](./docs/ENV_API.md)
-
-## 环境变量
-
-项目使用 `.env` 文件管理环境变量，支持以下变量：
-
-### 应用配置
-- `PORT` - 服务端口（默认: 3000）
-- `NODE_ENV` - 运行环境（development/production/test）
-- `APP_NAME` - 应用名称（默认: service）
-- `APP_HOST` - 监听地址（默认: 0.0.0.0）
-
-## 热重载机制
-
-开发模式下，修改以下环境变量会自动重启服务：
-- `PORT` - 服务端口变更
-- `NODE_ENV` - 运行环境变更
-- `APP_HOST` - 监听地址变更
-
-其他环境变量修改后立即生效，无需重启。
-
-## 优雅关闭
-
-服务支持优雅关闭，当收到 SIGTERM 或 SIGINT 信号时会：
-1. 停止环境变量文件监听
-2. 关闭 HTTP 服务器
-3. 退出进程
-
-## Postman 导入
-
-导入 `postman.json` 文件到 Postman 即可使用预配置的接口集合。
-
-## 配置
-
-编辑 `module.config.json` 来配置应用和团队关联：
-
-```json
-{
-  "appId": "your-app-id",
-  "teamId": "your-team-id"
-}
+# API Configuration (optional)
+API_PREFIX=/api
+API_VERSION=v1
 ```
+
+## API Documentation
+
+See [ENV_API.md](docs/ENV_API.md) for API endpoint documentation.
+
+## Development
+
+```bash
+# Start development server with hot reload
+npm run dev
+
+# Run tests
+npm run test
+
+# Run tests in watch mode
+npm run test:watch
+
+# Run e2e tests
+npm run test:e2e
+```
+
+## Production Deployment
+
+```bash
+# Build for production
+npm run build
+
+# Start production server
+npm run start:prod
+```
+
+## License
+
+[Your License]

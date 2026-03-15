@@ -1,4 +1,4 @@
-import { command } from 'commander';
+import { Command } from 'commander';
 import * as path from 'path';
 import * as fs from 'fs-extra';
 import { moduleUploadService } from '../services/module-upload.service';
@@ -10,7 +10,7 @@ import { getConfigManager } from '../config/manager';
  * modulecommand
  */
 export function registermodulecommands(
-  program: command,
+  program: Command,
   moduleUploadService: moduleUploadService,
   _moduleDownloadService: moduleDownloadService
 ): void {
@@ -24,7 +24,7 @@ export function registermodulecommands(
     .action(async (options) => {
       try {
         const configManager = getConfigManager();
-        // Check if logged in
+        // check if logged in
         if (!configManager.getToken()) {
           throw new Error('Please login first, run: pnce login');
         }

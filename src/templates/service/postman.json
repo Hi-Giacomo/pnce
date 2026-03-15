@@ -1,7 +1,7 @@
 {
   "info": {
     "name": "Service API",
-    "description": "Service 微服务接口集合",
+    "description": "Service Microservice API Collection",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
     "version": "1.0.0"
   },
@@ -26,16 +26,16 @@
               "host": ["{{baseUrl}}"],
               "path": ["hello", "world"]
             },
-            "description": "获取 Hello World 消息"
+            "description": "Get Hello World message"
           }
         }
       ]
     },
     {
-      "name": "环境变量管理",
+      "name": "Environment Variable Management",
       "item": [
         {
-          "name": "获取所有环境变量",
+          "name": "Get All Environment Variables",
           "request": {
             "method": "GET",
             "header": [],
@@ -44,11 +44,11 @@
               "host": ["{{baseUrl}}"],
               "path": ["env"]
             },
-            "description": "获取当前所有环境变量的值"
+            "description": "Get values of all current environment variables"
           }
         },
         {
-          "name": "获取单个环境变量",
+          "name": "Get Single Environment Variable",
           "request": {
             "method": "GET",
             "header": [],
@@ -57,11 +57,11 @@
               "host": ["{{baseUrl}}"],
               "path": ["env", "PORT"]
             },
-            "description": "获取指定环境变量的值，将 PORT 替换为实际的变量名"
+            "description": "Get the value of a specified environment variable, replace PORT with actual variable name"
           }
         },
         {
-          "name": "获取配置对象",
+          "name": "Get Configuration Object",
           "request": {
             "method": "GET",
             "header": [],
@@ -70,11 +70,11 @@
               "host": ["{{baseUrl}}"],
               "path": ["env", "config", "all"]
             },
-            "description": "获取结构化的配置对象"
+            "description": "Get structured configuration object"
           }
         },
         {
-          "name": "设置环境变量",
+          "name": "Set Environment Variable",
           "request": {
             "method": "POST",
             "header": [
@@ -92,11 +92,11 @@
               "host": ["{{baseUrl}}"],
               "path": ["env"]
             },
-            "description": "设置单个环境变量。修改 PORT 或 NODE_ENV 会自动重启服务。"
+            "description": "Set a single environment variable. Modifying PORT or NODE_ENV will automatically restart the service."
           }
         },
         {
-          "name": "批量设置环境变量",
+          "name": "Batch Set Environment Variables",
           "request": {
             "method": "POST",
             "header": [
@@ -114,11 +114,11 @@
               "host": ["{{baseUrl}}"],
               "path": ["env", "batch"]
             },
-            "description": "批量设置多个环境变量，包含 PORT 或 NODE_ENV 会触发重启"
+            "description": "Set multiple environment variables in batch, including PORT or NODE_ENV will trigger restart"
           }
         },
         {
-          "name": "删除环境变量",
+          "name": "Delete Environment Variable",
           "request": {
             "method": "DELETE",
             "header": [],
@@ -127,11 +127,11 @@
               "host": ["{{baseUrl}}"],
               "path": ["env", "REDIS_PASSWORD"]
             },
-            "description": "删除指定的环境变量，将 REDIS_PASSWORD 替换为实际的变量名"
+            "description": "Delete specified environment variable, replace REDIS_PASSWORD with actual variable name"
           }
         },
         {
-          "name": "重载环境变量",
+          "name": "Reload Environment Variables",
           "request": {
             "method": "POST",
             "header": [],
@@ -140,7 +140,7 @@
               "host": ["{{baseUrl}}"],
               "path": ["env", "reload"]
             },
-            "description": "从 .env 文件重新加载所有环境变量到 process.env"
+            "description": "Reload all environment variables from .env file to process.env"
           }
         }
       ]

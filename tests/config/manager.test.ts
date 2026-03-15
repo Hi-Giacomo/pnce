@@ -5,17 +5,17 @@ import path from 'path';
 
 describe('ConfigManager', () => {
   const testConfigDir = path.join(process.cwd(), '.pnce-test');
-  const testConfigFile = path.join(testConfigDir, 'config.json');
+  const testConfigfile = path.join(testConfigDir, 'config.json');
 
   beforeEach(async () => {
-    // 确保测试目录存在
+    // TestDirectory
     await fs.ensureDir(testConfigDir);
   });
 
   afterEach(async () => {
-    // 清理测试配置文件
-    if (await fs.pathExists(testConfigFile)) {
-      await fs.remove(testConfigFile);
+    // CleanTestConfigurefile
+    if (await fs.pathExists(testConfigfile)) {
+      await fs.remove(testConfigfile);
     }
   });
 

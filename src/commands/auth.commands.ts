@@ -1,4 +1,4 @@
-import { command } from 'commander';
+import { Command } from 'commander';
 import { AuthService } from '../services/auth.service';
 import { AuthResponse } from '../types';
 import { ErrorHandler } from '../utils/errors';
@@ -7,9 +7,12 @@ import { getConfigManager } from '../config/manager';
 /**
  * Register authentication-related commands
  * @param program - commander program instance
- * @param authService - Authentication service instance
+ * @param authService - Auth service instance
  */
-export function registerAuthcommands(program: command, authService: AuthService): void {
+export async function registerAuthCommands(
+  program: Command,
+  authService: AuthService
+): Promise<void> {
   // Register command
   program
     .command('register')
@@ -21,7 +24,9 @@ export function registerAuthcommands(program: command, authService: AuthService)
       try {
         const response = await authService.register(options);
         // Token automatically saved to configuration by AuthService
-        console.log(`✓ Registration successful! User: ${response.user.username || response.user.email}`);
+        console.log(
+          `✓ Registration successful! User: ${response.user.username || response.user.email}`
+        );
       } catch (error) {
         ErrorHandler.handle(error);
       }
@@ -42,7 +47,7 @@ export function registerAuthcommands(program: command, authService: AuthService)
           response = await authService.login(options);
         } else {
           // Default use web-based authorization login
-          response = await authService.weblogin();
+          response = await authService.webLogin();
         }
 
         // Token automatically saved to configuration by AuthService
@@ -54,10 +59,10 @@ export function registerAuthcommands(program: command, authService: AuthService)
       }
     });
 
-  // View user info command
+  // View UserInfo command
   program
     .command('me')
-    .description('View current user information')
+    .description('View current UserInformation')
     .action(async () => {
       try {
         const configManager = getConfigManager();
@@ -70,7 +75,7 @@ export function registerAuthcommands(program: command, authService: AuthService)
         }
 
         const user = await authService.me();
-        console.log('Current user information:');
+        console.log('Current UserInformation:');
         console.log(`  Username: ${user.username || 'N/A'}`);
         console.log(`  email: ${user.email || 'N/A'}`);
       } catch (error) {

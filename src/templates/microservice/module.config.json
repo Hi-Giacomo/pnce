@@ -1,6 +1,6 @@
 {
   "name": "microservice",
-  "description": "微服务模块",
+  "description": "Microservice module",
   "author": "module-author",
   "version": "0.0.1",
   "type": "microservice",

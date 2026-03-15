@@ -14,12 +14,12 @@ export enum LogLevel {
 }
 
 /**
- * 
+ *
  */
 export interface LoggerConfig {
   level: LogLevel;
   dir: string;
-  maxFiles: number;
+  maxfiles: number;
   maxSize: string;
   format: 'json' | 'simple';
 }
@@ -30,9 +30,9 @@ export interface LoggerConfig {
 function getDefaultConfig(): LoggerConfig {
   return {
     level: (process.env.PNCE_LOG_LEVEL || 'info') as LogLevel,
-    // UserDirectory，YesCurrentDirectory
+    // UserDirectory，YesCurrent directory
     dir: path.join(os.homedir(), '.pnce', 'logs'),
-    maxFiles: 30,
+    maxfiles: 30,
     maxSize: '10m',
     format: (process.env.PNCE_LOG_FORMAT || 'simple') as 'json' | 'simple',
   };
@@ -46,7 +46,7 @@ async function ensureLogDir(config: LoggerConfig): Promise<void> {
 }
 
 /**
- * 
+ *
  */
 function createLogFormat(config: LoggerConfig): winston.Logform.Format {
   if (config.format === 'json') {
@@ -80,7 +80,7 @@ export async function createLogger(config?: Partial<LoggerConfig>): Promise<wins
   const logFormat = createLogFormat(finalConfig);
 
   const transports: winston.transport[] = [
-    // 
+    //
     new winston.transports.Console({
       format:
         finalConfig.format === 'json'
@@ -95,11 +95,11 @@ export async function createLogger(config?: Partial<LoggerConfig>): Promise<wins
       level: finalConfig.level,
     }),
 
-    // ErrorFile
+    // Errorfile
     new winston.transports.File({
       filename: path.join(finalConfig.dir, 'error.log'),
       level: 'error',
-      maxFiles: finalConfig.maxFiles,
+      maxFiles: finalConfig.maxfiles,
       maxsize: parseInt(finalConfig.maxSize) * 1024 * 1024,
       format: winston.format.combine(
         winston.format.timestamp(),
@@ -108,10 +108,10 @@ export async function createLogger(config?: Partial<LoggerConfig>): Promise<wins
       ),
     }),
 
-    // AllFile
+    // Allfile
     new winston.transports.File({
       filename: path.join(finalConfig.dir, 'combined.log'),
-      maxFiles: finalConfig.maxFiles,
+      maxFiles: finalConfig.maxfiles,
       maxsize: parseInt(finalConfig.maxSize) * 1024 * 1024,
       format: winston.format.combine(winston.format.timestamp(), winston.format.json()),
     }),
@@ -127,7 +127,7 @@ export async function createLogger(config?: Partial<LoggerConfig>): Promise<wins
 }
 
 /**
- * Logger - 
+ * Logger -
  */
 export class Logger {
   private logger: winston.Logger;
@@ -165,7 +165,7 @@ export class Logger {
   }
 
   /**
-   * 
+   *
    */
   child(defaultMeta: Record<string, unknown>): Logger {
     return new Logger(this.logger.child(defaultMeta));

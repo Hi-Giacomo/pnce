@@ -1,7 +1,7 @@
 import { readFileSync, writeFileSync, existsSync, mkdirSync } from 'fs';
 import path from 'path';
 import { getLogger } from './logger';
-import { command } from 'commander';
+import { Command } from 'commander';
 import { PnceConfig, ConfigManager } from '../config/manager';
 import { Logger } from 'winston';
 
@@ -32,19 +32,19 @@ export interface Plugin {
   author?: string;
 
   /**
-   * 
+   *
    */
   init?(context: PluginContext): void | Promise<void>;
 
   /**
-   * 
+   *
    */
   destroy?(): void | Promise<void>;
 
   /**
    * command
    */
-  registercommands?: (program: command) => void;
+  registercommands?: (program: Command) => void;
 
   /**
    * Validation
@@ -52,7 +52,7 @@ export interface Plugin {
   validateConfig?: (config: PnceConfig) => boolean;
 
   /**
-   * 
+   *
    */
   hooks?: {
     /**
@@ -73,16 +73,16 @@ export interface Plugin {
 }
 
 /**
- * 
+ *
  */
 export interface PluginContext {
   /**
-   * CLI Version
+   * CLI version
    */
   version: string;
 
   /**
-   * 
+   *
    */
   config: PnceConfig | null;
 
@@ -100,7 +100,7 @@ export interface PluginContext {
 }
 
 /**
- * 
+ *
  */
 export interface PluginManifest {
   /**
@@ -114,27 +114,27 @@ export interface PluginManifest {
   version: string;
 
   /**
-   * File
+   * file
    */
   entry: string;
 
   /**
-   * Dependencies
+   * dependencies
    */
   dependencies?: Record<string, string>;
 
   /**
-   * YesNo
+   * Yes/No
    */
   enabled: boolean;
 }
 
 /**
- * 
+ *
  */
 export class PluginSystem {
   private pluginsDir: string;
-  private manifestFile: string;
+  private manifestfile: string;
   private plugins: Map<string, Plugin> = new Map();
   private manifests: Map<string, PluginManifest> = new Map();
   private configManager: ConfigManager;
@@ -142,9 +142,9 @@ export class PluginSystem {
   constructor(pluginsDir?: string, configManager?: ConfigManager) {
     const configBaseDir = pluginsDir || path.join(require('os').homedir(), '.pnce');
     this.pluginsDir = path.join(configBaseDir, 'plugins');
-    this.manifestFile = path.join(configBaseDir, 'plugins-manifest.json');
+    this.manifestfile = path.join(configBaseDir, 'plugins-manifest.json');
 
-    // 
+    //
     this.configManager = configManager || new ConfigManager();
 
     // Directory
@@ -156,12 +156,12 @@ export class PluginSystem {
   }
 
   /**
-   * 
+   *
    */
   private loadManifest(): void {
     try {
-      if (existsSync(this.manifestFile)) {
-        const content = readFileSync(this.manifestFile, 'utf-8');
+      if (existsSync(this.manifestfile)) {
+        const content = readFileSync(this.manifestfile, 'utf-8');
         const manifests: PluginManifest[] = JSON.parse(content);
 
         manifests.forEach((manifest) => {
@@ -169,45 +169,45 @@ export class PluginSystem {
         });
       }
     } catch (error) {
-      logger.warn(`加载插件清单Failed: ${error}`);
+      logger.warn(`LoadPluginfailed: ${error}`);
     }
   }
 
   /**
-   * 
+   *
    */
   private saveManifest(): void {
     try {
       const manifests = Array.from(this.manifests.values());
-      writeFileSync(this.manifestFile, JSON.stringify(manifests, null, 2), 'utf-8');
-      logger.debug('插件清单已保存');
+      writeFileSync(this.manifestfile, JSON.stringify(manifests, null, 2), 'utf-8');
+      logger.debug('PluginSave');
     } catch (error) {
-      logger.error(`保存插件清单Failed: ${error}`);
+      logger.error(`SavePluginfailed: ${error}`);
     }
   }
 
   /**
-   * 
-   * @param plugin - 
+   *
+   * @param plugin -
    */
   async register(plugin: Plugin): Promise<void> {
     try {
-      // YesNo
+      // Yes/No
       if (this.plugins.has(plugin.name)) {
-        throw new Error(`插件已存在: ${plugin.name}`);
+        throw new Error(`Pluginalready exists: ${plugin.name}`);
       }
 
       // Current
       const config = this.configManager.getConfig();
 
-      // 
+      //
       const context: PluginContext = {
         version: process.env.PNCE_VERSION || '0.0.9',
         config: config,
         logger: logger as unknown as Logger,
         utils: {
           track: (event: string, data?: Record<string, unknown>) => {
-            logger.debug(`插件事件: ${plugin.name}.${event}`, data);
+            logger.debug(`PluginEvent: ${plugin.name}.${event}`, data);
           },
         },
       };
@@ -218,20 +218,20 @@ export class PluginSystem {
 
       this.plugins.set(plugin.name, plugin);
 
-      // 
+      //
       const manifest: PluginManifest = {
         name: plugin.name,
         version: plugin.version,
-        entry: '', // File
+        entry: '', // file
         enabled: true,
       };
       this.manifests.set(plugin.name, manifest);
       this.saveManifest();
 
-      logger.info(`插件已注册: ${plugin.name}@${plugin.version}`);
+      logger.info(`PluginRegister: ${plugin.name}@${plugin.version}`);
     } catch (error) {
       logger.error(
-        `注册插件Failed: ${plugin.name}`,
+        `RegisterPluginfailed: ${plugin.name}`,
         error instanceof Error ? { error } : { error: String(error) }
       );
       throw error;
@@ -239,7 +239,7 @@ export class PluginSystem {
   }
 
   /**
-   * 
+   *
    * @param name - Plugin name
    */
   async unregister(name: string): Promise<void> {
@@ -247,10 +247,10 @@ export class PluginSystem {
       const plugin = this.plugins.get(name);
 
       if (!plugin) {
-        throw new Error(`插件does not exist: ${name}`);
+        throw new Error(`Plugindoes not exist: ${name}`);
       }
 
-      // 
+      //
       if (plugin.destroy) {
         await plugin.destroy();
       }
@@ -259,10 +259,10 @@ export class PluginSystem {
       this.manifests.delete(name);
       this.saveManifest();
 
-      logger.info(`插件已注销: ${name}`);
+      logger.info(`Plugin: ${name}`);
     } catch (error) {
       logger.error(
-        `注销插件Failed: ${name}`,
+        `Pluginfailed: ${name}`,
         error instanceof Error ? { error } : { error: String(error) }
       );
       throw error;
@@ -270,7 +270,7 @@ export class PluginSystem {
   }
 
   /**
-   * 
+   *
    * @param name - Plugin name
    */
   get(name: string): Plugin | undefined {
@@ -285,50 +285,50 @@ export class PluginSystem {
   }
 
   /**
-   * 
+   *
    * @param name - Plugin name
    */
   async enable(name: string): Promise<void> {
     const manifest = this.manifests.get(name);
     if (!manifest) {
-      throw new Error(`插件清单does not exist: ${name}`);
+      throw new Error(`Plugindoes not exist: ${name}`);
     }
 
     manifest.enabled = true;
     this.saveManifest();
 
-    logger.info(`插件已启用: ${name}`);
+    logger.info(`PluginEnable: ${name}`);
   }
 
   /**
-   * 
+   *
    * @param name - Plugin name
    */
   async disable(name: string): Promise<void> {
     const manifest = this.manifests.get(name);
     if (!manifest) {
-      throw new Error(`插件清单does not exist: ${name}`);
+      throw new Error(`Plugindoes not exist: ${name}`);
     }
 
     manifest.enabled = false;
     this.saveManifest();
 
-    logger.info(`插件已禁用: ${name}`);
+    logger.info(`PluginDisable: ${name}`);
   }
 
   /**
    * Allcommand
-   * @param program - commander 
+   * @param program - commander
    */
-  registerAllcommands(program: command): void {
+  registerAllcommands(program: Command): void {
     this.plugins.forEach((plugin) => {
       if (plugin.registercommands) {
         try {
           plugin.registercommands(program);
-          logger.debug(`插件command已注册: ${plugin.name}`);
+          logger.debug(`PlugincommandRegister: ${plugin.name}`);
         } catch (error) {
           logger.error(
-            `注册插件commandFailed: ${plugin.name}`,
+            `RegisterPlugincommandfailed: ${plugin.name}`,
             error instanceof Error ? { error } : { error: String(error) }
           );
         }
@@ -339,7 +339,7 @@ export class PluginSystem {
   /**
    * command
    * @param command - command
-   * @param args - 
+   * @param args -
    */
   async triggerBeforecommand(command: string, args: string[]): Promise<void> {
     const promises: Promise<void>[] = [];
@@ -359,8 +359,8 @@ export class PluginSystem {
   /**
    * command
    * @param command - command
-   * @param args - 
-   * @param result - 
+   * @param args -
+   * @param result -
    */
   async triggerAftercommand(command: string, args: string[], result: unknown): Promise<void> {
     const promises: Promise<void>[] = [];
@@ -417,7 +417,7 @@ export class PluginSystem {
 let pluginSystemInstance: PluginSystem | null = null;
 
 /**
- * 
+ *
  */
 export function getPluginSystem(): PluginSystem {
   if (!pluginSystemInstance) {
@@ -427,7 +427,7 @@ export function getPluginSystem(): PluginSystem {
 }
 
 /**
- * 
+ *
  */
 export function createPluginSystem(
   pluginsDir?: string,

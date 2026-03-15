@@ -2,9 +2,9 @@ const fs = require('fs-extra');
 const path = require('path');
 
 /**
- * 从 default.config.ts 中提取版本号
+ *  default.config.ts Mediumversion
  */
-function getCLIVersion() {
+function getCLIversion() {
   const configPath = path.join(__dirname, '..', 'src', 'config', 'default.config.ts');
   const configContent = fs.readFileSync(configPath, 'utf-8');
   const versionMatch = configContent.match(/export const CLI_VERSION = "([^"]+)"/);
@@ -12,9 +12,9 @@ function getCLIVersion() {
 }
 
 /**
- * 更新 package.json 中的版本号
+ * Update package.json Mediumversion
  */
-async function updatePackageVersion(version) {
+async function updatePackageversion(version) {
   if (!version) {
     console.warn('⚠️  Could not find CLI_VERSION in default.config.ts');
     return;
@@ -24,7 +24,7 @@ async function updatePackageVersion(version) {
   const packageJson = await fs.readJson(packagePath);
 
   if (packageJson.version === version) {
-    console.log(`✅ Version already up to date: ${version}`);
+    console.log(`✅ version already up to date: ${version}`);
     return;
   }
 
@@ -34,27 +34,27 @@ async function updatePackageVersion(version) {
 }
 
 /**
- * 复制模板文件到 dist 目录
- * 只复制非编译文件，排除 .ts 文件（源代码）和 .d.ts 文件（类型声明）
+ * Copyfile dist Directory
+ * CopyCompilefile，Exclude .ts file（Code） .d.ts file（Type）
  */
 async function copyTemplates() {
   const srcTemplatesDir = path.join(__dirname, '..', 'src', 'templates');
   const distTemplatesDir = path.join(__dirname, '..', 'dist', 'templates');
 
-  // 确保 dist/templates 目录存在
+  //  dist/templates Directory
   await fs.ensureDir(distTemplatesDir);
 
-  // 复制 service 模板
+  // Copy service 
   const serviceSrcDir = path.join(srcTemplatesDir, 'service');
   const serviceDistDir = path.join(distTemplatesDir, 'service');
 
   if (await fs.pathExists(serviceSrcDir)) {
     await fs.copy(serviceSrcDir, serviceDistDir, {
       filter: (src) => {
-        // 排除 TypeScript 源文件（只保留模板文件）
+        // Exclude TypeScript file（file）
         const relativePath = path.relative(serviceSrcDir, src);
-        // 保留所有非 .ts 文件（除了 index.ts、index.d.ts 等构建文件）
-        // 实际上模板目录中应该只有源文件，不需要排除
+        //  .ts file（ index.ts、index.d.ts Buildfile）
+        // DirectoryMediumfile，Exclude
         return !relativePath.endsWith('.d.ts') &&
                !relativePath.endsWith('.d.ts.map') &&
                !relativePath.endsWith('.js') &&
@@ -64,7 +64,7 @@ async function copyTemplates() {
     console.log('✅ Service template copied');
   }
 
-  // 复制 microservice 模板
+  // Copy microservice 
   const microserviceSrcDir = path.join(srcTemplatesDir, 'microservice');
   const microserviceDistDir = path.join(distTemplatesDir, 'microservice');
 
@@ -84,14 +84,14 @@ async function copyTemplates() {
   console.log('✨ All templates copied to dist/templates');
 }
 
-// 主函数：同步版本号并复制模板
+// Function：SyncversionCopy
 async function main() {
   try {
-    // 1. 同步版本号
-    const version = getCLIVersion();
-    await updatePackageVersion(version);
+    // 1. Syncversion
+    const version = getCLIversion();
+    await updatePackageversion(version);
 
-    // 2. 复制模板文件
+    // 2. Copyfile
     await copyTemplates();
   } catch (error) {
     console.error('❌ Error:', error);

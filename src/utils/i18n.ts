@@ -52,7 +52,7 @@ export class I18nManager {
         console.warn(`Language pack not found: ${localePath}`);
       }
     } catch (error) {
-      console.error(`Failed to load language pack (${lang}):`, error);
+      console.error(`failed to load language pack (${lang}):`, error);
     }
   }
 
