@@ -1,8 +1,7 @@
-import { module } from '@nestjs/common';
-import { Envmodule } from './env/env.module';
-import { Hellomodule } from './hello/hello.module';
-
-@module({
-  imports: [Envmodule, Hellomodule],
+import { Module } from '@nestjs/common';
+import { EnvModule } from './env/env.module';
+import { HelloModule } from './hello/hello.module';
+@Module({
+  imports: [EnvModule, HelloModule],
 })
-export class Mainmodule {}
+export class MainModule {}

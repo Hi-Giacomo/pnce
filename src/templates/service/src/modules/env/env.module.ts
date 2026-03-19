@@ -1,12 +1,12 @@
-import { module } from '@nestjs/common';
-import { Configmodule } from '@nestjs/config';
+import { Module } from '@nestjs/common';
+import { ConfigModule } from '@nestjs/config';
 import { EnvController } from './env.controller';
 import { EnvService } from './env.service';
 import envConfig from '../../config/env.config';
 
-@module({
+@Module({
   imports: [
-    Configmodule.forRoot({
+    ConfigModule.forRoot({
       isGlobal: true,
       load: [envConfig],
     }),
@@ -15,4 +15,4 @@ import envConfig from '../../config/env.config';
   providers: [EnvService],
   exports: [EnvService],
 })
-export class Envmodule {}
+export class EnvModule {}

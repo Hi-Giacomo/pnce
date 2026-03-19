@@ -1,12 +1,12 @@
-import { module } from '@nestjs/common';
+import { Module } from '@nestjs/common';
 import { HelloController } from './hello.controller';
 import { HelloService } from './hello.service';
-import { Envmodule } from '../env/env.module';
+import { EnvModule } from '../env/env.module';
 
-@module({
-  imports: [Envmodule],
+@Module({
+  imports: [EnvModule],
   controllers: [HelloController],
   providers: [HelloService],
   exports: [HelloService],
 })
-export class Hellomodule {}
+export class HelloModule {}

@@ -10,6 +10,7 @@ import {
 import { generateMicroservicefiles, createProjectStructure } from '../templates';
 import { ErrorHandler } from '../utils/errors';
 import { PATHS } from '../constants';
+import { PortManagerService } from '../services/port-manager.service';
 
 /**
  * Update parent project's package.json localModules
@@ -84,7 +85,7 @@ export function registerInitCommands(program: Command): void {
     .option('-d, --directory <dir>', 'Project directory path (default is current directory)')
     .option(
       '-t, --type <type>',
-      'Project type: microservice (microservice) or service (service)',
+      'Project type: microservice (microservice) or service (service). Aliases: ms (microservice), sv (service)',
       'service'
     )
     .action(async (name, options) => {
@@ -129,13 +130,24 @@ export function registerInitCommands(program: Command): void {
       const normalizedFileName = normalizeFileName(moduleName);
 
       // Validate project type
-      if (options.type !== 'microservice' && options.type !== 'service') {
-        console.error('❌ Project type must be microservice or service');
+      // Map type aliases
+      let type = options.type;
+      if (type === 'ms') {
+        type = 'microservice';
+      } else if (type === 'sv') {
+        type = 'service';
+      }
+
+      if (type !== 'microservice' && type !== 'service') {
+        console.error('❌ Project type must be microservice (or ms) or service (or sv)');
+        console.error('💡 Supported aliases:');
+        console.error('   - microservice or ms: Create a microservice module');
+        console.error('   - service or sv: Create a main service');
         return;
       }
 
       // Service type
-      if (options.type === 'service') {
+      if (type === 'service') {
         const projectPath = targetDir;
         if (fs.existsSync(projectPath)) {
           console.error('❌ Directory already exists');
@@ -194,6 +206,10 @@ export function registerInitCommands(program: Command): void {
         normalizedCamelCase,
         normalizedFileName
       );
+
+      // Allocate unique port
+      const port = await PortManagerService.allocatePort(actualTargetDir, moduleName);
+      console.log(`✓ 端口分配: ${port}`);
 
       // If in project, record to parent project's config files
       if (parentProjectDir) {

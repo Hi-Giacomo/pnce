@@ -1,0 +1,63 @@
+{
+  "_comment": "这个文件展示了如何配置 package.json 以支持 npm 和 pnpm",
+  "_note": "根据你选择的包管理器，选择对应的配置方式"
+}
+
+{
+  "name": "main",
+  "version": "0.0.1",
+  "private": true,
+  "_comment_npm": "npm workspaces 配置（如果你使用 npm）",
+  "workspaces": [
+    "src/local_modules/*",
+    "src/external_modules/*"
+  ],
+  "_comment_pnpm": "如果你使用 pnpm，需要创建 pnpm-workspace.yaml 文件（见下方）",
+  "scripts": {
+    "build": "nest build",
+    "dev": "cross-env ENV_NAME=main nest start --watch",
+    "dev:main": "cross-env ENV_NAME=main nest start --watch",
+    "start": "nest start",
+    "start:prod": "node dist/main",
+    "format": "prettier --write \"src/**/*.ts\""
+  }
+}
+
+{
+  "_comment": "微服务 package.json（npm 和 pnpm 都适用）",
+  "name": "microservice",
+  "version": "0.0.1",
+  "description": "Microservice module",
+  "main": "dist/index.js",
+  "private": true,
+  "_note": "微服务不需要 workspaces 配置",
+  "scripts": {
+    "build": "nest build",
+    "dev": "nest start --watch",
+    "start": "nest start"
+  }
+}
+
+{
+  "_comment": "pnpm-workspace.yaml 文件（仅在使用 pnpm 时需要）",
+  "filename": "pnpm-workspace.yaml",
+  "content": "packages:\n  - 'src/local_modules/*'\n  - 'src/external_modules/*'"
+}
+
+{
+  "_comment": "使用方式对比",
+  "npm": {
+    "安装依赖": "npm install",
+    "添加依赖": "npm install package-name",
+    "删除依赖": "npm uninstall package-name",
+    "更新依赖": "npm update",
+    "运行脚本": "npm run script-name"
+  },
+  "pnpm": {
+    "安装依赖": "pnpm install",
+    "添加依赖": "pnpm add package-name",
+    "删除依赖": "pnpm remove package-name",
+    "更新依赖": "pnpm update",
+    "运行脚本": "pnpm run script-name"
+  }
+}

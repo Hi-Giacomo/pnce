@@ -5,9 +5,13 @@
   "author": "",
   "private": true,
   "license": "UNLICENSED",
+  "workspaces": [
+    "src/local_modules/*",
+    "src/external_modules/*"
+  ],
   "scripts": {
     "build": "nest build",
-    "dev": "cross-env ENV_NAME=main nest start --watch",
+    "dev": "cross-env NODE_ENV=development ENV_NAME=main nest start --watch",
     "dev:main": "cross-env ENV_NAME=main nest start --watch",
     "start": "nest start",
     "start:prod": "node dist/main",
@@ -35,5 +39,8 @@
     "prettier": "^3.4.2",
     "ts-node": "^10.9.2",
     "typescript": "^5.7.3"
+  },
+  "localModules": {
+    "{{moduleName}}": "{{version}}-local"
   }
 }

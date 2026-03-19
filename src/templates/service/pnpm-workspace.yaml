@@ -1,0 +1,3 @@
+packages:
+  - 'src/local_modules/*'
+  - 'src/external_modules/*'

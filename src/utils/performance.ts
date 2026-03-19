@@ -4,7 +4,7 @@
 
 export interface PerformanceMetric {
   name: string;
-  duration: number; // 
+  duration: number;
   timestamp: number;
   metadata?: Record<string, unknown>;
 }
@@ -60,14 +60,14 @@ class PerformanceMonitor {
   }
 
   /**
-   * 
+   * Get metrics by name
    */
   getMetricsByName(name: string): PerformanceMetric[] {
     return this.metrics.filter((m) => m.name === name);
   }
 
   /**
-   * All
+   * Clear all metrics
    */
   clear(): void {
     this.metrics = [];
@@ -75,7 +75,7 @@ class PerformanceMonitor {
   }
 
   /**
-   * 
+   * Print performance report
    */
   printReport(): void {
     if (!this.enabled || this.metrics.length === 0) {
@@ -92,7 +92,7 @@ class PerformanceMonitor {
   }
 
   /**
-   * 
+   * Generate performance report
    */
   private generateReport(): Array<{
     name: string;
@@ -116,5 +116,5 @@ class PerformanceMonitor {
   }
 }
 
-// 
+//
 export const performance = new PerformanceMonitor();

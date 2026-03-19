@@ -8,6 +8,7 @@ import { ErrorHandler, CliError } from '../utils';
 import { getConfig } from '../config';
 import { ApiResponse, ModuleInformation } from '../types';
 import { PATHS } from '../constants';
+import { PortManagerService } from '../services/port-manager.service';
 
 /**
  * module package.json  localModules
@@ -216,6 +217,22 @@ export function registerInstallCommands(
             console.log(`✓ module ${moduleName} PortConfigure ${options.port}`);
           } else {
             console.log(`  Hint: module ${moduleName}  ${PATHS.MODULE_CONFIG_FILE}，ConfigurePort`);
+          }
+        } else {
+          // Auto-allocate port if not specified
+          const moduleDir = path.join(initialCwd, installDir, moduleName);
+          const moduleConfigPath = path.join(moduleDir, PATHS.MODULE_CONFIG_FILE);
+
+          if (fs.existsSync(moduleConfigPath)) {
+            const config = await fs.readJson(moduleConfigPath);
+
+            // Only allocate port if not already set
+            if (!config.port) {
+              const port = await PortManagerService.allocatePort(moduleDir, moduleName);
+              console.log(`✓ 自动分配端口: ${port} for ${moduleName}`);
+            } else {
+              console.log(`✓ 已配置端口: ${config.port} for ${moduleName}`);
+            }
           }
         }
       } catch (error) {

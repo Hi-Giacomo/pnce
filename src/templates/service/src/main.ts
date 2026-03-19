@@ -1,6 +1,6 @@
 // @ts-ignore - YesTemplatefile，dependencies
 import { NestFactory } from '@nestjs/core';
-import { Mainmodule } from './modules';
+import { MainModule } from './modules';
 // @ts-ignore - YesTemplatefile，dependencies
 import { INestApplication } from '@nestjs/common';
 // @ts-ignore - YesTemplatefile，dependencies
@@ -8,12 +8,14 @@ import * as chokidar from 'chokidar';
 import * as path from 'path';
 // @ts-ignore - YesTemplatefile，dependencies
 import { loadEnvfile } from './config/env.config';
+import { MicroserviceManager } from './managers';
 
 let app: INestApplication | null = null;
 let envWatcher: chokidar.FSWatcher | null = null;
+let microserviceManager: MicroserviceManager | null = null;
 
 async function bootstrap() {
-  app = await NestFactory.create(Mainmodule);
+  app = await NestFactory.create(MainModule);
 
   //  CORS
   app.enableCors({
@@ -45,6 +47,9 @@ async function bootstrap() {
   console.log(`🌐 Run: ${nodeEnv}`);
   console.log(`📍 URL: http://localhost:${port}/api\n`);
 
+  // Start microservices
+  await startMicroservices();
+
   // Environment variablesfile
   startEnvWatcher();
 }
@@ -64,6 +69,34 @@ let lastKnownConfig: ConfigState = {
   nodeEnv: 'development',
   host: '0.0.0.0',
 };
+
+/**
+ * Start microservices
+ */
+async function startMicroservices(): Promise<void> {
+  try {
+    microserviceManager = MicroserviceManager.getInstance();
+    await microserviceManager.startAll();
+  } catch (error) {
+    console.log('⚠️  Microservice manager error, skipping microservice startup');
+  }
+}
+
+/**
+ * Stop microservices
+ */
+async function stopMicroservices(): Promise<void> {
+  try {
+    if (microserviceManager) {
+      await microserviceManager.stopAll();
+    }
+  } catch (error) {
+    console.error(
+      '❌ Error stopping microservices:',
+      error instanceof Error ? error.message : String(error),
+    );
+  }
+}
 
 function startEnvWatcher(): void {
   const envfilePath = path.join(process.cwd(), '.env');
@@ -157,6 +190,9 @@ async function restartServer() {
       envWatcher = null;
     }
 
+    // 停止微服务
+    await stopMicroservices();
+
     if (app) {
       //
       await app.close();
@@ -184,9 +220,10 @@ function stopEnvWatcher(): void {
 }
 
 //
-process.on('SIGTERM', () => {
+process.on('SIGTERM', async () => {
   console.log('\n SIGTERM ，ProcessingCloseservice...');
   stopEnvWatcher();
+  await stopMicroservices();
   if (app) {
     app.close().then(() => {
       console.log('✅ serviceClose');
@@ -197,9 +234,10 @@ process.on('SIGTERM', () => {
   }
 });
 
-process.on('SIGINT', () => {
+process.on('SIGINT', async () => {
   console.log('\n SIGINT ，ProcessingCloseservice...');
   stopEnvWatcher();
+  await stopMicroservices();
   if (app) {
     app.close().then(() => {
       console.log('✅ serviceClose');

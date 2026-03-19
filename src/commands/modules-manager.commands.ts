@@ -19,7 +19,9 @@ export function registerModulesManagerCommands(
       try {
         const projectDir = process.env.INIT_CWD || process.cwd();
         modulesManager.initConfig(projectDir);
-        console.log('\n💡 Hint: You can now use the following commands to manage module dependencies:');
+        console.log(
+          '\n💡 Hint: You can now use the following commands to manage module dependencies:'
+        );
         console.log('   yarn cli modules-add <module>     - Add module dependencies');
         console.log('   yarn cli modules-install          - Install all dependencies');
         console.log('   yarn cli modules-list             - View dependencies list');
