@@ -1,295 +1,277 @@
-# Template System
+# 依赖管理方案 - 支持任意深度嵌套
 
-## Overview
+## 🎯 设计目标
 
-Template System使用 `src/templates` 目录中的模板文件夹，通过动态复制实现项目初始化。Modifying Templates后，升级 CLI 工具即可直接使用新的模板。
+1. **简单至上**：开发者不需要理解复杂的 workspace 机制
+2. **符合习惯**：在任何目录执行 `yarn install` 都能正常工作
+3. **智能查找**：自动找到最近的 service 或 microservice
+4. **支持任意嵌套**：无论多少层嵌套都能正确工作
 
-## Directory Structure
+---
 
-```
-src/templates/
-├── service/              # Service template directory
-│   ├── src/             # Source code
-│   ├── document/        # Documentation
-│   ├── scripts/         # Scripts
-│   ├── test/           # Tests
-│   ├── logs/           # Logs
-│   ├── package.json
-│   ├── tsconfig.json
-│   ├── nest-cli.json
-│   ├── module.config.json
-│   └── README.md
-├── microservice/        # 微Service template directory
-│   ├── src/            # Source code
-│   │   ├── main.ts
-│   │   ├── microservice.module.ts
-│   │   ├── microservice.controller.ts
-│   │   ├── microservice.service.ts
-│   │   └── index.ts
-│   ├── package.json
-│   ├── tsconfig.json
-│   ├── nest-cli.json
-│   └── module.config.json
-└── index.ts            # Template loading and export
-```
+## 💡 核心方案：智能 preinstall 脚本
 
-## Usage
+### 原理
 
-### 1. Via Command Line (Recommended)
+1. **递归向上查找**：从当前目录查找最近的 `module.config.json`
+2. **判断服务类型**：
+   - `type === "service"` → 主服务，找到目标
+   - `type === "microservice"` → 微服务，继续向上查找
+3. **执行安装**：在找到的服务目录执行 `yarn install`
+4. **依赖提升**：yarn workspace 自动处理依赖提升
 
-```bash
-# Create service project
-yarn cli init my-service --type service
+### 优势
 
-# Create microservice project
-yarn cli init my-micro --type microservice
-```
+✅ **智能查找**：自动找到最近的服务（service 或 microservice）
+✅ **支持任意嵌套**：无论多少层都能正确工作
+✅ **符合大众习惯**：在任何目录执行 `yarn install`
+✅ **无感知**：对开发者完全透明
+✅ **简单可靠**：逻辑清晰，易于维护
 
-### 2. Use template API directly
+---
 
-```typescript
-import { copyTemplate } from '../templates';
+## 🔧 配置方式
 
-// Create service project
-await copyTemplate('service', '/path/to/project', {
-  projectName: 'my-service'
-});
+### 主服务 package.json
 
-// Create microservice project
-await copyTemplate('microservice', '/path/to/project', {
-  moduleName: 'my-micro',
-  normalizedClassName: 'MyMicro',
-  normalizedCamelCase: 'myMicro',
-  normalizedFileName: 'my-micro'
-});
-```
-
-### 3. Use compatible interface
-
-```typescript
-import { createProjectStructure, generateMicroserviceFiles } from '../commands/templates';
-
-// Create service project
-await createProjectStructure('/path/to/project', 'my-service');
-
-// Create microservice project
-generateMicroserviceFiles(
-  '/path/to/project',
-  'my-micro',
-  'MyMicro',
-  'myMicro',
-  'my-micro'
-);
-```
-
-## Modifying Templates
-
-### Modify service template
-
-1. Go to `src/templates/service/` directory
-2. Modify any files or add new files
-3. Recompile CLI tool: `yarn build`
-4. Create project with new template
-
-### Modify microservice template
-
-1. Go to `src/templates/microservice/` directory
-2. Modify any files or add new files
-3. Recompile CLI tool: `yarn build`
-4. Create project with new template
-
-## Adding New Templates
-
-### Step 1: Create template directory
-
-```bash
-mkdir src/templates/your-template
-```
-
-### Step 2: Create template files
-
-Create complete project structure in directory, including:
-- Source code文件
-- Configuration files (package.json, tsconfig.json, etc.)
-- README Documentation
-
-### Step 3: Register template
-
-Edit `src/templates/index.ts`, add in `TEMPLATE_DIRS`:
-
-```typescript
-const TEMPLATE_DIRS: TemplateType[] = ['service', 'microservice', 'your-template'];
-```
-
-Add description in `TEMPLATE_INFO`:
-
-```typescript
-const TEMPLATE_INFO: Record<TemplateType, { name: string; description: string }> = {
-  service: { name: '主服务', description: 'NestJS主服务项目模板' },
-  microservice: { name: '微服务', description: 'NestJS微服务模块模板' },
-  'your-template': { name: 'Your template', description: 'Your template描述' },
-};
-```
-
-### Step 4: Implement post-processing logic
-
-If special processing is needed for template files, add corresponding processing functions in `index.ts`:
-
-```typescript
-async function processYourTemplate(
-  targetPath: string,
-  options: { ... }
-): Promise<void> {
-  // 实现Your template处理逻辑
+```json
+{
+  "name": "main",
+  "private": true,
+  "workspaces": [
+    "src/local_modules/*",
+    "src/external_modules/*"
+  ]
 }
 ```
 
-## Template Variable Replacement
+### 微服务 package.json
 
-### Microservice template
-
-Microservice template创建时会自动进行以下替换：
-
-1. **文件重命名**：
-   - `microservice.module.ts` → `{normalizedFileName}.module.ts`
-   - `microservice.controller.ts` → `{normalizedFileName}.controller.ts`
-   - `microservice.service.ts` → `{normalizedFileName}.service.ts`
-
-2. **Class name替换**：
-   - `MicroserviceModule` → `{normalizedClassName}Module`
-   - `MicroserviceController` → `{normalizedClassName}Controller`
-   - `MicroserviceService` → `{normalizedClassName}Service`
-
-3. **导入语句更新**：
-   - `main.ts` 中的模块导入会自动更新
-
-4. **配置文件更新**：
-   - `package.json` in the name field
-   - `module.config.json` in the name field
-
-### 服务模板
-
-Service template creation will perform the following replacements:
-
-1. **配置文件更新**：
-   - `package.json` name and description fields in
-   - `module.config.json` name and description fields in
-
-## Template Guidelines
-
-### File naming conventions
-
-- Use kebab-case: `microservice.module.ts`
-- Class names use PascalCase: `MicroserviceModule`
-- Service names use camelCase: `microserviceService`
-
-### Template placeholders
-
-If the template needs placeholders, the following format is recommended:
-- `{{PROJECT_NAME}}`: Project name
-- `{{MODULE_NAME}}`: Module name
-- `{{CLASS_NAME}}`: Class name
-- `{{FILE_NAME}}`: File name
-
-(Current version has not implemented placeholder system, but planned for future support)
-
-## API Reference
-
-### copyTemplate()
-
-Copy template directory to target location.
-
-```typescript
-async function copyTemplate(
-  type: TemplateType,
-  targetPath: string,
-  options?: {
-    projectName?: string;
-    moduleName?: string;
-    normalizedClassName?: string;
-    normalizedCamelCase?: string;
-    normalizedFileName?: string;
+```json
+{
+  "name": "microservice",
+  "version": "0.0.1",
+  "description": "Microservice module",
+  "main": "dist/index.js",
+  "private": true,
+  "workspaces": [
+    "src/local_modules/*",
+    "src/external_modules/*"
+  ],
+  "scripts": {
+    "preinstall": "node preinstall.js"
   }
-): Promise<void>
+}
 ```
 
-**Parameters:**
-- `type`: Template type ('service' | 'microservice')
-- `targetPath`: Target path
-- `options`: Optional parameters
-  - `projectName`: Project name（服务模板）
-  - `moduleName`: Module name（Microservice template）
-  - `normalizedClassName`: 规范化的Class name
-  - `normalizedCamelCase`: Normalized camel case
-  - `normalizedFileName`: 规范化的File name
+### preinstall.js 脚本
 
-**示例：**
-```typescript
-await copyTemplate('service', '/tmp/my-service', {
-  projectName: 'my-service'
-});
+```javascript
+// 递归向上查找最近的服务（service 或 microservice）
+function findNearestService(dir) {
+  const moduleConfigPath = path.join(dir, 'module.config.json');
+
+  if (fs.existsSync(moduleConfigPath)) {
+    const config = JSON.parse(fs.readFileSync(moduleConfigPath, 'utf8'));
+
+    // 找到 service 或 microservice
+    if (config.type === 'service' || config.type === 'microservice') {
+      return { dir, type: config.type };
+    }
+  }
+
+  // 继续向上查找
+  const parentDir = path.dirname(dir);
+  if (parentDir === dir) return null;
+  return findNearestService(parentDir);
+}
+
+// 执行 yarn install
+const service = findNearestService(__dirname);
+if (service) {
+  const serviceType = service.type === 'service' ? '主服务' : '微服务';
+  console.log(`📦 找到${serviceType} at: ${service.dir}`);
+
+  process.chdir(service.dir);
+  execSync('yarn install');
+}
 ```
 
-### getTemplatePath()
+**详细说明**：参见 [PREINSTALL-LOGIC.md](./PREINSTALL-LOGIC.md)
 
-Get absolute path of template directory.
+---
 
-```typescript
-function getTemplatePath(type: TemplateType): string
+## 📊 嵌套场景示例
+
+### 场景 1：深层嵌套（5 层）
+
+```
+main/                                   (type: "service")
+  └── src/local_modules/
+      └── m1/                           (type: "microservice")
+          └── src/local_modules/
+              └── m2/                   (type: "microservice")
+                  └── src/local_modules/
+                      └── m3/           (type: "microservice")
+                          └── src/local_modules/
+                              └── m4/  ← 当前目录
+                                  (type: "microservice")
 ```
 
-### hasTemplate()
+**在 m4 中执行 `yarn install`**：
 
-Check if template exists.
+1. 查找最近的 service：
+   - m4 → m3 (microservice) → 继续向上
+   - m3 → m2 (microservice) → 继续向上
+   - m2 → m1 (microservice) → 继续向上
+   - m1 → main (service) → **找到主服务**
 
-```typescript
-function hasTemplate(type: TemplateType): boolean
+2. 在 main 中执行 `yarn install`：
+   - 所有依赖安装到 `main/node_modules`
+   - 版本冲突的包保留在各自目录
+
+### 场景 2：没有主服务（孤立微服务）
+
+```
+temp/
+  └── microservice/                       (type: "microservice")
+      └── src/local_modules/
+          └── sub-module/  ← 当前目录
+              (type: "microservice")
 ```
 
-### getAvailableTemplates()
+**在 sub-module 中执行 `yarn install`**：
 
-Get list of all available templates.
+1. 查找最近的 service：
+   - sub-module → microservice (service) → **找到目标**
 
-```typescript
-function getAvailableTemplates(): Template[]
+2. 在 microservice 中执行 `yarn install`：
+   - 所有依赖安装到 `microservice/node_modules`
+   - 版本冲突的包保留在各自目录
+
+### 场景 3：任意嵌套位置
+
+```
+main/                                   (type: "service")
+  └── src/local_modules/
+      └── module-a/                      (type: "microservice")
+          └── external_modules/
+              └── vendor-a/                 (type: "service")
+                  └── node_modules/         ← 已有依赖
+                      └── vendor-b/  ← 当前目录
+                          (type: "microservice")
 ```
 
-## Best Practices
+**在 vendor-b 中执行 `yarn install`**：
 
-1. **Keep templates simple**: 保持Keep templates simple，只包含必要文件
-2. **Version control**: Template changes should be versioned
-3. **Tests充分**: Modifying Templates后充分Tests
-4. **Documentation完善**: Modifying Templates时更新Documentation
-5. **Consistent naming**: Keep naming style consistent
+1. 查找最近的 service：
+   - vendor-b → vendor-a (service) → **找到目标**
 
-## FAQ
+2. 在 vendor-a 中执行 `yarn install`：
+   - vendor-a 的 workspaces 不包括 vendor-b
+   - 依赖安装到 `vendor-a/node_modules`
 
-### Q: Modifying Templates后需要重新编译吗？
+---
 
-A: Yes, you need to run `yarn build` to recompile the CLI tool.
+## 🎉 最终效果
 
-### Q: 如何更新已创建的项目？
+### 在任意目录执行 `yarn install`
 
-A: Templates only affect newly created projects, already created projects need manual updates.
+✅ **自动找到最近的服务**（service 或 microservice）
+✅ **依赖安装到正确的 node_modules**
+✅ **版本冲突自动处理**
+✅ **支持任意深度的嵌套**
+✅ **完全符合大众习惯**
 
-### Q: 可以使用占位符吗？
+### 依赖提升规则
 
-A: Current version uses hardcoded replacement logic, placeholder system is planned for future support.
+| 当前目录 | 目标服务 | 依赖位置 |
+|----------|----------|----------|
+| m4（深层嵌套） | main | `main/node_modules` |
+| m3（深层嵌套） | m2 | `m2/node_modules` |
+| m2（中层嵌套） | m1 | `m1/node_modules` |
+| m1（最外层微服务） | main | `main/node_modules` |
+| 独立微服务 | 微服务本身 | `microservice/node_modules` |
 
-### Q: 如何调试模板问题？
+---
 
-A: You can add `console.log` in the processing functions in `index.ts` for debugging.
+## 🚀 快速开始
 
-## Related Files
+### 使用方式
 
-- `src/commands/templates/index.ts`: Command layer adapter
-- `src/commands/init.commands.ts`: Initialization command
-- `tsconfig.json`: TypeScript configuration (template directory excluded)
+```bash
+# 在任何目录执行 yarn install
+cd main/src/local_modules/m1/src/local_modules/m2/src/local_modules/m3
+yarn install
 
-## Maintenance Tips
+# 脚本会自动：
+# 1. 查找最近的服务（main）
+# 2. 在 main 中执行 yarn install
+# 3. 依赖安装到 main/node_modules
+```
 
-1. Regularly review template code, keep in sync with latest dependency versions
-2. Optimize templates based on user feedback
-3. 添加更多Template type
-4. Implement placeholder system
-5. Add template validation functionality
+### 依赖分布
+
+```
+main/
+  ├── node_modules/          # 大部分依赖（共享）
+  │   ├── @nestjs/common/
+  │   ├── @nestjs/core/
+  │   └── ... (其他依赖)
+  └── src/local_modules/
+      └── m1/
+          ├── node_modules/  # 版本冲突的依赖
+          │   └── @types/node@25.x
+          └── src/local_modules/
+              └── m2/
+                  └── node_modules/  # 版本冲突的依赖
+                  │   └── reflect-metadata@0.1.x
+                  └── src/local_modules/
+                      └── m3/
+                          └── node_modules/  # 版本冲突的依赖
+                              └── lodash@3.x
+```
+
+---
+
+## 📋 配置要求
+
+### 主服务
+
+- ✅ 配置 `workspaces`
+- ✅ 配置 `private: true`
+- ✅ 可以有 `module.config.json`（type: "service"）
+
+### 微服务
+
+- ✅ 配置 `workspaces`（支持嵌套）
+- ✅ 配置 `private: true`
+- ✅ 必须有 `module.config.json`（type: "microservice"）
+- ✅ 必须有 `preinstall.js` 脚本
+
+---
+
+## 📝 总结
+
+### 核心优势
+
+1. ✅ **智能查找**：自动找到最近的服务（service 或 microservice）
+2. ✅ **支持任意嵌套**：无论多少层都能正确工作
+3. ✅ **符合大众习惯**：在任何目录执行 `yarn install`
+4. ✅ **无感知**：对开发者完全透明
+5. ✅ **简单可靠**：逻辑清晰，易于维护
+
+### 使用效果
+
+在任何微服务中执行 `yarn install`，依赖会自动安装到**最近的服务**的 node_modules 中。
+
+就这么简单！
+
+---
+
+## 📚 相关文档
+
+- **Preinstall 逻辑**: [PREINSTALL-LOGIC.md](./PREINSTALL-LOGIC.md)
+- **配置示例**: [package-json-example.json](./package-json-example.json)
+- **快速开始**: [QUICK-START.md](./QUICK-START.md)
+- **完整方案**: [FINAL-SOLUTION.md](./FINAL-SOLUTION.md)

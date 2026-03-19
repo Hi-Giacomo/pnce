@@ -17,7 +17,7 @@ initLogger()
     });
   })
   .catch((error) => {
-    console.warn('failed to initialize logging system:', error.message);
+    console.warn('Failed to initialize logging system:', error.message);
   });
 
 // Global error handling
@@ -33,15 +33,72 @@ const program = new Command();
 
 program
   .name('pnce')
-  .description('Pnce CLI Tool - Modular rapid development CLI tool')
+  .description('PNCE CLI - Progressive NestJS CLI for Microservices Architecture')
   .version(CLI_VERSION, '-v, --version')
+  .helpOption('-h, --help', 'Display help for command')
   .addHelpText(
     'before',
-    '\nTip: Some commands support flat access, e.g., pnce set can also be accessed via pnce lang set\n'
+    `
+╭───────────────────────────────────────────────────────────╮
+│                                                  │
+│  PNCE CLI - Progressive NestJS CLI              │
+│  Version: ${CLI_VERSION}                           │
+│                                                  │
+│  A modular development tool for building           │
+│  microservices architecture with automatic          │
+│  dependency management, port mapping, and        │
+│  auto-loading capabilities.                      │
+│                                                  │
+╰───────────────────────────────────────────────────╯
+
+Usage: pnce [command] [options]
+
+Examples:
+  pnce init my-service                    Create a new service
+  pnce init my-microservice -t ms          Create a new microservice
+  pnce set lang en                        Set language preference
+  pnce alias add ls="list -a"           Add command alias
+
+For detailed help on any command, run:
+  pnce [command] --help
+`
   )
   .addHelpText(
     'after',
-    '\n\ncommand Group Help:\n  - lang: Language settings (set, list)\n  - alias: command aliases (add, remove, list, clear)\n  - analytics: Usage analytics (enable, disable, clear, status)\n  - profile: Config profiles (save, load, use, list, delete, rename)\n  - plugin: Plugin management (list, info)\n'
+    `
+╭───────────────────────────────────────────────────────────╮
+│                                                  │
+│  Command Groups                                  │
+│                                                  │
+│  Core Commands:                                  │
+│  • init        - Initialize new services/microservices │
+│  • install     - Install dependencies               │
+│  • set         - Configuration management          │
+│                                                  │
+│  Management Commands:                             │
+│  • lang        - Language settings                 │
+│  • alias       - Command aliases                   │
+│  • analytics   - Usage analytics                  │
+│  • profile     - Configuration profiles            │
+│  • plugin      - Plugin management                 │
+│  • modules     - Module management                │
+│  • port        - Port management                  │
+│  • registry    - Module registry                  │
+│                                                  │
+│  Configuration:                                   │
+│  • Config file: ~/.pnce/.pnce-config.json   │
+│  • Environment: PNCE_ENV=development|production │
+│                                                  │
+╰───────────────────────────────────────────────────╯
+
+Get started:
+  1. Create your first service: pnce init my-app
+  2. Navigate to directory: cd my-app
+  3. Install dependencies: pnpm install
+  4. Start development: pnpm run dev
+
+Need help? Visit: https://github.com/your-org/pnce-cli
+`
   );
 
 // Set initial working directory environment variable

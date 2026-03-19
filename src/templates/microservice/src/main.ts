@@ -1,6 +1,6 @@
 // @ts-ignore - YesTemplatefile，dependencies
 import { NestFactory } from '@nestjs/core';
-import { Mainmodule } from './modules';
+import { MainModule } from './modules';
 // @ts-ignore - YesTemplatefile，dependencies
 import { INestApplication } from '@nestjs/common';
 // @ts-ignore - YesTemplatefile，dependencies
@@ -8,12 +8,14 @@ import * as chokidar from 'chokidar';
 import * as path from 'path';
 // @ts-ignore - YesTemplatefile，dependencies
 import { loadEnvfile } from './config/env.config';
+import { MicroserviceManager } from './managers';
 
 let app: INestApplication | null = null;
 let envWatcher: chokidar.FSWatcher | null = null;
+let microserviceManager: MicroserviceManager | null = null;
 
 async function bootstrap() {
-  app = await NestFactory.create(Mainmodule);
+  app = await NestFactory.create(MainModule);
 
   //  CORS
   app.enableCors();
@@ -31,6 +33,9 @@ async function bootstrap() {
   console.log(`🚀 microservice serviceStart`);
   console.log(`📡 Port: ${port}`);
   console.log(`🌐 URL: http://localhost:${port}/api`);
+
+  // Start microservices
+  await startMicroservices();
 
   // Environment variablesfile
   startEnvWatcher();
@@ -71,6 +76,34 @@ function startEnvWatcher(): void {
 
 let lastKnownPort: string = '3000';
 let lastKnownEnv: string = 'development';
+
+/**
+ * Start microservices
+ */
+async function startMicroservices(): Promise<void> {
+  try {
+    microserviceManager = MicroserviceManager.getInstance();
+    await microserviceManager.startAll();
+  } catch (error) {
+    console.log('⚠️  Microservice manager error, skipping microservice startup');
+  }
+}
+
+/**
+ * Stop microservices
+ */
+async function stopMicroservices(): Promise<void> {
+  try {
+    if (microserviceManager) {
+      await microserviceManager.stopAll();
+    }
+  } catch (error) {
+    console.error(
+      '❌ Error stopping microservices:',
+      error instanceof Error ? error.message : String(error)
+    );
+  }
+}
 
 function handleEnvfileChange(): void {
   try {
@@ -148,6 +181,40 @@ async function restartServer() {
 }
 
 //
+process.on('SIGTERM', async () => {
+  console.log('\n SIGTERM ，ProcessingCloseservice...');
+  const stopEnvWatcher = (global as any).stopEnvWatcher;
+  if (stopEnvWatcher) {
+    stopEnvWatcher();
+  }
+  await stopMicroservices();
+  if (app) {
+    app.close().then(() => {
+      console.log('✅ serviceClose');
+      process.exit(0);
+    });
+  } else {
+    process.exit(0);
+  }
+});
+
+process.on('SIGINT', async () => {
+  console.log('\n SIGINT ，ProcessingCloseservice...');
+  const stopEnvWatcher = (global as any).stopEnvWatcher;
+  if (stopEnvWatcher) {
+    stopEnvWatcher();
+  }
+  await stopMicroservices();
+  if (app) {
+    app.close().then(() => {
+      console.log('✅ serviceClose');
+      process.exit(0);
+    });
+  } else {
+    process.exit(0);
+  }
+});
+
 (global as any).stopEnvWatcher = () => {
   if (envWatcher) {
     envWatcher.close();
