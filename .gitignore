@@ -43,9 +43,6 @@ Thumbs.db
 # 模块哈希文件
 .module-hash
 
-# PNCE CLI 临时目录
-.pnce/
-.pnce-test/
 
 # 打包输出
 release/

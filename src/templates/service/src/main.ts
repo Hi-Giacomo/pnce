@@ -1,254 +1,37 @@
-// @ts-ignore - YesTemplatefile，dependencies
 import { NestFactory } from '@nestjs/core';
 import { MainModule } from './modules';
-// @ts-ignore - YesTemplatefile，dependencies
-import { INestApplication } from '@nestjs/common';
-// @ts-ignore - YesTemplatefile，dependencies
-import * as chokidar from 'chokidar';
-import * as path from 'path';
-// @ts-ignore - YesTemplatefile，dependencies
-import { loadEnvfile } from './config/env.config';
-import { MicroserviceManager } from './managers';
-
-let app: INestApplication | null = null;
-let envWatcher: chokidar.FSWatcher | null = null;
-let microserviceManager: MicroserviceManager | null = null;
+import { Logger } from '@nestjs/common';
+import { Transport } from '@nestjs/microservices';
+import { MSMMainModule } from './local_modules/microservice-manage';
 
 async function bootstrap() {
-  app = await NestFactory.create(MainModule);
+  const logger = new Logger('Main');
 
-  //  CORS
-  app.enableCors({
-    origin: true,
-    credentials: true,
-    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
-    allowedHeaders: 'Content-Type,authorization',
-  });
-
-  // Global
+  // 创建主应用
+  const app = await NestFactory.create(MainModule);
+  app.enableCors();
   app.setGlobalPrefix('api');
 
-  // Environment variablesGet configuration
   const port = process.env.PORT || 3000;
-  const appName = process.env.APP_NAME || 'service';
-  const nodeEnv = process.env.NODE_ENV || 'development';
-
   await app.listen(port);
 
-  //
-  lastKnownConfig = {
-    port: process.env.PORT || '3000',
-    nodeEnv: process.env.NODE_ENV || 'development',
-    host: process.env.APP_HOST || '0.0.0.0',
-  };
-
-  console.log(`\n🚀 ${appName} serviceStart`);
-  console.log(`📡 Port: ${port}`);
-  console.log(`🌐 Run: ${nodeEnv}`);
-  console.log(`📍 URL: http://localhost:${port}/api\n`);
-
-  // Start microservices
-  await startMicroservices();
-
-  // Environment variablesfile
-  startEnvWatcher();
-}
-
-//  bootstrap ，Global
-(global as Record<string, unknown>).restartServer = restartServer;
-(global as Record<string, unknown>).stopEnvWatcher = stopEnvWatcher;
-
-interface ConfigState {
-  port: string;
-  nodeEnv: string;
-  host: string;
-}
-
-let lastKnownConfig: ConfigState = {
-  port: '3000',
-  nodeEnv: 'development',
-  host: '0.0.0.0',
-};
-
-/**
- * Start microservices
- */
-async function startMicroservices(): Promise<void> {
-  try {
-    microserviceManager = MicroserviceManager.getInstance();
-    await microserviceManager.startAll();
-  } catch (error) {
-    console.log('⚠️  Microservice manager error, skipping microservice startup');
-  }
-}
-
-/**
- * Stop microservices
- */
-async function stopMicroservices(): Promise<void> {
-  try {
-    if (microserviceManager) {
-      await microserviceManager.stopAll();
-    }
-  } catch (error) {
-    console.error(
-      '❌ Error stopping microservices:',
-      error instanceof Error ? error.message : String(error),
-    );
-  }
-}
-
-function startEnvWatcher(): void {
-  const envfilePath = path.join(process.cwd(), '.env');
-  console.log('🔍 Startfile:', envfilePath);
-
-  if (envWatcher) {
-    envWatcher.close();
-  }
-
-  envWatcher = chokidar.watch(envfilePath, {
-    persistent: true,
-    ignoreInitial: true,
-    awaitWriteFinish: {
-      stabilityThreshold: 200,
-      pollInterval: 100,
+  // 创建微服务管理模块
+  const microserviceApp = await NestFactory.createMicroservice(MSMMainModule, {
+    name: 'MICROSERVICE_MANAGE_APP',
+    transport: Transport.TCP,
+    options: {
+      port: process.env.MICROSERVICE_PORT ? parseInt(process.env.MICROSERVICE_PORT) + 1 : 3001,
+      host: process.env.MICROSERVICE_HOST || 'localhost',
     },
   });
 
-  envWatcher.on('change', () => {
-    console.log('\n📄  .env file');
-    handleEnvfileChange();
-  });
+  await microserviceApp.listen();
 
-  envWatcher.on('error', (error: Error) => {
-    console.error('❌  .env file:', error);
-  });
-
-  console.log('✅ Environment variablesfileStart\n');
+  // 输出启动信息
+  logger.log(`╭────────────────────────────────────────╮`);
+  logger.log(`│  🚀 Service started on port ${port}`.padEnd(36) + `│`);
+  logger.log(`│  📍 http://localhost:${port}/api`.padEnd(36) + `│`);
+  logger.log(`╰────────────────────────────────────────╯`);
 }
 
-function handleEnvfileChange(): void {
-  try {
-    // Environment variables
-    const newEnvVars = loadEnvfile();
-
-    // file
-    const newConfig = {
-      port: newEnvVars.PORT || '3000',
-      nodeEnv: newEnvVars.NODE_ENV || 'development',
-      host: newEnvVars.APP_HOST || '0.0.0.0',
-    };
-
-    //  process.env
-    Object.entries(newEnvVars).forEach(([key, value]) => {
-      process.env[key] = value;
-    });
-
-    console.log('🔄 Environment variablesUpdate');
-
-    // Yes/No
-    const changedKeys: string[] = [];
-    if (lastKnownConfig.port !== newConfig.port) {
-      changedKeys.push(`PORT: ${lastKnownConfig.port} → ${newConfig.port}`);
-    }
-    if (lastKnownConfig.nodeEnv !== newConfig.nodeEnv) {
-      changedKeys.push(`NODE_ENV: ${lastKnownConfig.nodeEnv} → ${newConfig.nodeEnv}`);
-    }
-    if (lastKnownConfig.host !== newConfig.host) {
-      changedKeys.push(`APP_HOST: ${lastKnownConfig.host} → ${newConfig.host}`);
-    }
-
-    if (changedKeys.length > 0) {
-      console.log('⚠️  ConfigureRestartservice:');
-      changedKeys.forEach((change) => console.log(`   - ${change}`));
-
-      //
-      lastKnownConfig = newConfig;
-
-      //
-      setImmediate(() => {
-        restartServer();
-      });
-    } else {
-      console.log('✅ ConfigureApplication，Restartservice\n');
-    }
-  } catch (error) {
-    console.error(
-      '❌ Handle .env filefailed:',
-      error instanceof Error ? error.message : String(error),
-    );
-  }
-}
-
-async function restartServer() {
-  console.log('\n⚠️  Restartservice...\n');
-
-  try {
-    // ，
-    if (envWatcher) {
-      await envWatcher.close();
-      envWatcher = null;
-    }
-
-    // 停止微服务
-    await stopMicroservices();
-
-    if (app) {
-      //
-      await app.close();
-      console.log('✅ serviceClose');
-    }
-
-    //
-    await bootstrap();
-    console.log('✅ serviceRestartSuccess\n');
-  } catch (error) {
-    console.error(
-      '❌ Restartservicefailed:',
-      error instanceof Error ? error.message : String(error),
-    );
-    process.exit(1);
-  }
-}
-
-function stopEnvWatcher(): void {
-  if (envWatcher) {
-    envWatcher.close();
-    envWatcher = null;
-    console.log('Environment variablesStop');
-  }
-}
-
-//
-process.on('SIGTERM', async () => {
-  console.log('\n SIGTERM ，ProcessingCloseservice...');
-  stopEnvWatcher();
-  await stopMicroservices();
-  if (app) {
-    app.close().then(() => {
-      console.log('✅ serviceClose');
-      process.exit(0);
-    });
-  } else {
-    process.exit(0);
-  }
-});
-
-process.on('SIGINT', async () => {
-  console.log('\n SIGINT ，ProcessingCloseservice...');
-  stopEnvWatcher();
-  await stopMicroservices();
-  if (app) {
-    app.close().then(() => {
-      console.log('✅ serviceClose');
-      process.exit(0);
-    });
-  } else {
-    process.exit(0);
-  }
-});
-
-bootstrap().catch((error: Error) => {
-  console.error('❌ Startfailed:', error.message);
-  process.exit(1);
-});
+bootstrap();

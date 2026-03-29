@@ -18,6 +18,7 @@ export const configValidatecommand = new Command('validate')
       const config = configManager.getConfig();
       const suggester = createConfigSuggester();
 
+      logger.info('Starting configuration validation...');
       console.log(chalk.cyan('\n🔍 ConfigureValidation / Config Validation\n'));
 
       // Validation
@@ -30,6 +31,7 @@ export const configValidatecommand = new Command('validate')
       if (options.fix && issues.length > 0) {
         const fixableIssues = issues.filter((i) => i.suggestion !== undefined);
         if (fixableIssues.length > 0) {
+          logger.info('Auto-fixing configuration issues...');
           console.log(chalk.yellow('\n🔧 Fix / Auto-fixing...'));
 
           const fixedConfig = suggester.autoFix(config, issues);
@@ -37,21 +39,29 @@ export const configValidatecommand = new Command('validate')
             fixedConfig as Partial<ReturnType<typeof configManager.getConfig>>
           );
 
+          logger.info(`Fixed ${fixableIssues.length} issues.`);
           console.log(chalk.green(`✓ Fix ${fixableIssues.length} Issue\n`));
           logger.info(`FixConfigure: ${fixableIssues.length} Issue`);
         } else {
+          logger.info('No fixable issues found.');
           console.log(chalk.gray('\nFixIssue\n'));
         }
       }
 
       // file
+      logger.info('Configuration file path:');
       console.log(chalk.gray('Configurefile:'));
+      logger.info(`  ${configManager.getUserConfigPath()}`);
       console.log(chalk.gray(`  ${configManager.getUserConfigPath()}\n`));
 
       if (issues.some((i) => i.type === 'error')) {
         process.exit(1);
       }
     } catch (error: unknown) {
+      logger.error(
+        `Configuration validation failed: ${error}`,
+        error instanceof Error ? { error } : { error: new Error(String(error)) }
+      );
       console.log(chalk.red(`\n❌ ConfigureValidationfailed: ${error}\n`));
       logger.error('ConfigureValidationfailed', { error });
       process.exit(1);
@@ -73,13 +83,19 @@ export const configcheckCommand = new Command('check')
       const errors = issues.filter((i) => i.type === 'error');
 
       if (errors.length === 0) {
+        logger.info('Configuration is valid.');
         console.log(chalk.green('✓ Configurevalid\n'));
         process.exit(0);
       } else {
+        logger.error(`Configuration is invalid: ${errors.length} errors.`);
         console.log(chalk.red(`✗ Configureinvalid: ${errors.length} Error\n`));
         process.exit(1);
       }
-    } catch (error) {
+    } catch (error: unknown) {
+      logger.error(
+        `Configuration check failed: ${error}`,
+        error instanceof Error ? { error } : { error: new Error(String(error)) }
+      );
       console.log(chalk.red(`✗ checkfailed: ${error}\n`));
       process.exit(1);
     }

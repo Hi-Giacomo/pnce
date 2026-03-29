@@ -14,18 +14,23 @@ export const aliascommand = new Command('alias')
     const aliasManager = getAliasManager();
     const aliases = aliasManager.list();
 
+    logger.info('Listing command aliases');
     console.log(chalk.cyan('\ncommand Aliases\n'));
 
     if (Object.keys(aliases).length === 0) {
+      logger.info('No aliases configured');
       console.log(chalk.gray('No aliases configured\n'));
     } else {
+      logger.info('Alias -> command mapping:');
       console.log(chalk.white('Alias -> command\n'));
       Object.entries(aliases).forEach(([alias, command]) => {
+        logger.debug(`  ${alias} -> ${command}`);
         console.log(chalk.green(`  ${alias}`) + chalk.gray(' -> ') + chalk.white(command));
       });
       console.log();
     }
 
+    logger.info('Alias command usage instructions:');
     console.log(chalk.gray('Usage:'));
     console.log('  pnce alias add <alias> <command>  - Add alias');
     console.log('  pnce alias remove <alias>         - Remove alias');
@@ -44,14 +49,13 @@ export const addAliascommand = new Command('add')
     try {
       const aliasManager = getAliasManager();
       aliasManager.add(alias, command);
-      console.log(chalk.green(`✓ Alias added: ${alias} -> ${command}`));
-      logger.info(`Alias added: ${alias} -> ${command}`);
+      logger.info(`✓ Alias added: ${alias} -> ${command}`);
     } catch (error) {
-      console.log(chalk.red(`failed to add alias: ${error}`));
       logger.error(
-        'failed to add alias',
+        `failed to add alias: ${error}`,
         error instanceof Error ? { error } : { error: new Error(String(error)) }
       );
+      console.log(chalk.red(`❌ failed to add alias: ${error}`));
     }
   });
 
@@ -65,11 +69,13 @@ export const removeAliascommand = new Command('remove')
     try {
       const aliasManager = getAliasManager();
       aliasManager.remove(alias);
-      console.log(chalk.green(`✓ Alias removed: ${alias}`));
-      logger.info(`Alias removed: ${alias}`, { alias });
+      logger.info(`✓ Alias removed: ${alias}`);
     } catch (error) {
-      console.log(chalk.red(`failed to remove alias: ${error}`));
-      logger.error('failed to remove alias', { error });
+      logger.error(
+        `failed to remove alias: ${error}`,
+        error instanceof Error ? { error } : { error: new Error(String(error)) }
+      );
+      console.log(chalk.red(`❌ failed to remove alias: ${error}`));
     }
   });
 
@@ -80,12 +86,15 @@ export const listAliascommand = new Command('list').description('List all aliase
   const aliasManager = getAliasManager();
   const aliases = aliasManager.list();
 
+  logger.info('Listing all aliases');
   console.log(chalk.cyan('\nAlias List:\n'));
 
   if (Object.keys(aliases).length === 0) {
+    logger.info('No aliases configured');
     console.log(chalk.gray('No aliases configured\n'));
   } else {
     Object.entries(aliases).forEach(([alias, command]) => {
+      logger.debug(`  ${alias} -> ${command}`);
       console.log(chalk.green(`  ${alias}`) + chalk.gray(' -> ') + chalk.white(command));
     });
     console.log();
@@ -101,11 +110,13 @@ export const clearAliascommand = new Command('clear')
     try {
       const aliasManager = getAliasManager();
       aliasManager.clear();
-      console.log(chalk.green('✓ All aliases cleared'));
-      logger.info('All aliases cleared');
+      logger.info('✓ All aliases cleared');
     } catch (error) {
-      console.log(chalk.red(`failed to clear aliases: ${error}`));
-      logger.error('failed to clear aliases', { error });
+      logger.error(
+        `failed to clear aliases: ${error}`,
+        error instanceof Error ? { error } : { error: new Error(String(error)) }
+      );
+      console.log(chalk.red(`❌ failed to clear aliases: ${error}`));
     }
   });
 

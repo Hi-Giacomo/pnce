@@ -11,7 +11,7 @@ import { DOWNLOAD, EXCLUDE_PATTERNS, DEFAULT_NPMIGNORE, PATHS } from '../constan
  * module
  * module
  */
-export class moduleUploadService {
+export class ModuleUploadService {
   constructor(
     private api: ApiService,
     private logger?: Logger

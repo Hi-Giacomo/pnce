@@ -10,7 +10,7 @@ import { PackageJson, ModuleInformation, versionInfo, Stats, ApiResponse } from 
  * module
  * module、version
  */
-export class moduleService {
+export class ModuleService {
   constructor(private api: ApiService) {}
 
   /**

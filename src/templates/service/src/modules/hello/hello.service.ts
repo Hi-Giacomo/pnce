@@ -1,6 +1,4 @@
 import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
 
 @Injectable()
-export class HelloService {
-  constructor() {}
-}
+export class HelloService {}

@@ -15,7 +15,7 @@ import { ApiResponse, ModuleInformation } from '../types';
  * module
  * module、
  */
-export class moduleDownloadService {
+export class ModuleDownloadService {
   private logger: Logger;
 
   constructor(

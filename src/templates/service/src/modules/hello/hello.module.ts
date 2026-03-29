@@ -1,10 +1,11 @@
 import { Module } from '@nestjs/common';
+import { ClientsModule, Transport } from '@nestjs/microservices';
 import { HelloController } from './hello.controller';
 import { HelloService } from './hello.service';
-import { EnvModule } from '../env/env.module';
+import { ModulesConfig } from '../../config/modules.config';
 
 @Module({
-  imports: [EnvModule],
+  imports: [ClientsModule.register([ModulesConfig.local.tcp.microservice])],
   controllers: [HelloController],
   providers: [HelloService],
   exports: [HelloService],

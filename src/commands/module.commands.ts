@@ -1,8 +1,8 @@
 import { Command } from 'commander';
 import * as path from 'path';
 import * as fs from 'fs-extra';
-import { moduleUploadService } from '../services/module-upload.service';
-import { moduleDownloadService } from '../services/module-download.service';
+import { ModuleUploadService } from '../services/module-upload.service';
+import { ModuleDownloadService } from '../services/module-download.service';
 import { ErrorHandler } from '../utils/errors';
 import { getConfigManager } from '../config/manager';
 
@@ -11,8 +11,8 @@ import { getConfigManager } from '../config/manager';
  */
 export function registermodulecommands(
   program: Command,
-  moduleUploadService: moduleUploadService,
-  _moduleDownloadService: moduleDownloadService
+  moduleUploadService: ModuleUploadService,
+  _moduleDownloadService: ModuleDownloadService
 ): void {
   // Upload module command
   program

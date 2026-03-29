@@ -6,6 +6,12 @@ module.exports = [
   js.configs.recommended,
   ...tseslint.configs.recommended,
   {
+    languageOptions: {
+      parserOptions: {
+        project: './tsconfig.json',
+        tsconfigRootDir: __dirname,
+      },
+    },
     plugins: {
       prettier: eslintPluginPrettier,
     },
@@ -28,6 +34,16 @@ module.exports = [
     },
   },
   {
-    ignores: ['dist/', 'node_modules/', '*.js', 'coverage/', 'tests/'],
+    ignores: [
+      'dist/',
+      'node_modules/',
+      '*.js',
+      'coverage/',
+      'tests/',
+      'temp/',
+      'src/templates/',
+      '**/temp/',
+      '**/*/temp/',
+    ],
   },
 ];

@@ -1,16 +1,17 @@
-import { Controller, Get } from '@nestjs/common';
-import { HelloService } from './hello.service';
+import { Controller, Get, Inject, Optional } from '@nestjs/common';
+import { ClientProxy } from '@nestjs/microservices';
+import { HELLO_MSG } from './hello.messages';
 
-@Controller()
+@Controller('hello')
 export class HelloController {
-  constructor(private readonly helloService: HelloService) {}
+  constructor(@Optional() @Inject('MICROSERVICE_CLIENT') private microservice?: ClientProxy) {}
 
-  @Get('hello/world')
+  @Get('world')
   getHelloWorld() {
-    return {
-      message: 'Hello, World!',
-      service: 'microservice',
-      timestamp: new Date().toISOString(),
-    };
+    if (!this.microservice) {
+      return { message: 'Microservice not connected', data: HELLO_MSG.world };
+    }
+
+    return this.microservice.send(HELLO_MSG.world, {});
   }
 }

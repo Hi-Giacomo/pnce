@@ -44,7 +44,7 @@ async function copyTemplates() {
   //  dist/templates Directory
   await fs.ensureDir(distTemplatesDir);
 
-  // Copy service 
+  // Copy service
   const serviceSrcDir = path.join(srcTemplatesDir, 'service');
   const serviceDistDir = path.join(distTemplatesDir, 'service');
 
@@ -55,16 +55,18 @@ async function copyTemplates() {
         const relativePath = path.relative(serviceSrcDir, src);
         //  .ts file（ index.ts、index.d.ts Buildfile）
         // DirectoryMediumfile，Exclude
-        return !relativePath.endsWith('.d.ts') &&
-               !relativePath.endsWith('.d.ts.map') &&
-               !relativePath.endsWith('.js') &&
-               !relativePath.endsWith('.js.map');
+        return (
+          !relativePath.endsWith('.d.ts') &&
+          !relativePath.endsWith('.d.ts.map') &&
+          !relativePath.endsWith('.js') &&
+          !relativePath.endsWith('.js.map')
+        );
       },
     });
     console.log('✅ Service template copied');
   }
 
-  // Copy microservice 
+  // Copy microservice
   const microserviceSrcDir = path.join(srcTemplatesDir, 'microservice');
   const microserviceDistDir = path.join(distTemplatesDir, 'microservice');
 
@@ -72,13 +74,35 @@ async function copyTemplates() {
     await fs.copy(microserviceSrcDir, microserviceDistDir, {
       filter: (src) => {
         const relativePath = path.relative(microserviceSrcDir, src);
-        return !relativePath.endsWith('.d.ts') &&
-               !relativePath.endsWith('.d.ts.map') &&
-               !relativePath.endsWith('.js') &&
-               !relativePath.endsWith('.js.map');
+        return (
+          !relativePath.endsWith('.d.ts') &&
+          !relativePath.endsWith('.d.ts.map') &&
+          !relativePath.endsWith('.js') &&
+          !relativePath.endsWith('.js.map')
+        );
       },
     });
     console.log('✅ Microservice template copied');
+  }
+
+  // Copy example docs
+  const exampleSrcDir = path.join(srcTemplatesDir, 'example', 'docs');
+  const exampleDistDir = path.join(distTemplatesDir, 'example', 'docs');
+
+  if (await fs.pathExists(exampleSrcDir)) {
+    await fs.ensureDir(path.dirname(exampleDistDir));
+    await fs.copy(exampleSrcDir, exampleDistDir, {
+      filter: (src) => {
+        const relativePath = path.relative(exampleSrcDir, src);
+        return (
+          !relativePath.endsWith('.d.ts') &&
+          !relativePath.endsWith('.d.ts.map') &&
+          !relativePath.endsWith('.js') &&
+          !relativePath.endsWith('.js.map')
+        );
+      },
+    });
+    console.log('✅ Example docs template copied');
   }
 
   console.log('✨ All templates copied to dist/templates');

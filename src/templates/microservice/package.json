@@ -1,28 +1,25 @@
 {
-  "name": "microservice",
+  "name": "",
   "version": "0.0.1",
-  "description": "Microservice module",
+  "description": "",
   "main": "dist/index.js",
-  "workspaces": [
-    "src/local_modules/*",
-    "src/external_modules/*"
-  ],
   "scripts": {
-    "build": "nest build",
+    "build": "tsc -p tsconfig.json",
     "dev": "cross-env NODE_ENV=development nest start --watch",
-    "start": "nest start"
+    "start": "node dist/main.js"
   },
   "dependencies": {
     "@nestjs/common": "^11.0.0",
-    "@nestjs/core": "^11.0.0",
-    "@nestjs/platform-express": "^11.0.0",
     "@nestjs/config": "^4.0.0",
-    "class-validator": "^0.14.0",
+    "@nestjs/core": "^11.0.0",
+    "@nestjs/microservices": "^11.1.17",
+    "@nestjs/platform-express": "^11.0.0",
+    "chokidar": "^4.0.1",
     "class-transformer": "^0.5.1",
-    "reflect-metadata": "^0.1.14",
-    "rxjs": "^7.8.1",
+    "class-validator": "^0.14.0",
     "dotenv": "^16.4.5",
-    "chokidar": "^4.0.1"
+    "reflect-metadata": "^0.1.14",
+    "rxjs": "^7.8.1"
   },
   "devDependencies": {
     "@nestjs/cli": "^11.0.0",
@@ -30,14 +27,11 @@
     "ts-node": "^10.9.2",
     "typescript": "^5.9.3"
   },
-  "author": "module-author",
-  "license": "MIT",
+  "author": "",
+  "license": "",
   "keywords": [
     "nest",
     "microservice",
     "module"
-  ],
-  "localModules": {
-    "{{moduleName}}": "{{version}}-local"
-  }
+  ]
 }

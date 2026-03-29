@@ -2,6 +2,7 @@ import { readFileSync, writeFileSync, existsSync, mkdirSync } from 'fs';
 import path from 'path';
 import os from 'os';
 import { CliError, ErrorCode, CryptoUtil } from '../utils';
+import { getLogger } from '../utils/logger';
 
 /**
  * Config Interface
@@ -120,6 +121,7 @@ export class ConfigManager {
   private projectConfigPath: string;
   private userConfig: Partial<PnceConfig> = {};
   private projectConfig: Partial<PnceConfig> = {};
+  private logger = getLogger();
 
   constructor() {
     // User Config Directory
@@ -131,6 +133,22 @@ export class ConfigManager {
 
     // Directory
     this.ensureDirectories();
+  }
+
+  /**
+   * Handle configuration file changes
+   */
+  private handleConfigChange(filePath: string): void {
+    if (filePath === this.userConfigPath) {
+      this.userConfig = this.loadUserConfig();
+      this.logger.info('User configuration reloaded.');
+    } else if (filePath === this.projectConfigPath) {
+      this.projectConfig = this.loadProjectConfig();
+      this.logger.info('Project configuration reloaded.');
+    }
+    // Here, you might want to emit a custom event from ConfigManager
+    // for other parts of the application to react to configuration changes.
+    // For now, getConfig() will implicitly return updated values.
   }
 
   /**

@@ -13,7 +13,9 @@ export const initcommand = new Command('init')
   .description('Interactive configuration wizard - Setup PNCE CLI')
   .action(async () => {
     logger.info('Starting interactive configuration wizard');
+    logger.info('PNCE CLI Config Wizard displayed to user.');
     console.log(chalk.cyan('\n🚀 PNCE CLI Config Wizard\n'));
+    logger.info('Displaying introductory message for config wizard.');
     console.log(chalk.gray('This wizard will help you configure basic settings for PNCE CLI\n'));
 
     const rl = readline.createInterface({
@@ -35,6 +37,7 @@ export const initcommand = new Command('init')
 
     try {
       // Server address
+      logger.info('Step 1: Configuring server URL.');
       console.log(chalk.yellow('Step 1/3: Configure Server'));
       const serverUrl =
         (await question('  Enter server URL (press Enter to use default): ')) ||
@@ -42,12 +45,15 @@ export const initcommand = new Command('init')
       config.serverUrl = serverUrl;
 
       // Log level
+      logger.info('Step 2: Configuring log level.');
       console.log('\n' + chalk.yellow('Step 2/3: Configure Log Level'));
+      logger.info('Log level options displayed.');
       console.log(chalk.gray('  Options: debug, info, warn, error (default: info)'));
       const logLevel = (await question('  Enter log level: ')) || 'info';
       config.logLevel = ['debug', 'info', 'warn', 'error'].includes(logLevel) ? logLevel : 'info';
 
       // Proxy settings
+      logger.info('Step 3: Configuring proxy settings (optional).');
       console.log('\n' + chalk.yellow('Step 3/3: Configure Proxy (Optional)'));
       const useProxy = await question('  Use proxy? (y/N): ');
       if (useProxy.toLowerCase() === 'y' || useProxy.toLowerCase() === 'yes') {
@@ -56,12 +62,16 @@ export const initcommand = new Command('init')
       }
 
       // Save configuration
+      logger.info('Saving configuration.');
       console.log('\n' + chalk.cyan('💾 Saving configuration...'));
       configManager.setUserConfig(config);
 
+      logger.info('Configuration complete.', { config });
       console.log(chalk.green('\n✅ Config complete!\n'));
+      logger.info('Config file location displayed to user.');
       console.log(chalk.gray('Config file location: '));
       console.log(chalk.gray(`  ${configManager.getUserConfigPath()}`));
+      logger.info('Instructions for viewing/modifying configuration displayed.');
       console.log(chalk.gray('\nYou can use `pnce config` to view or modify configuration\n'));
 
       logger.info('Config wizard complete', { config });

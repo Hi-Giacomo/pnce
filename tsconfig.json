@@ -21,6 +21,16 @@
     "noUncheckedIndexedAccess": false,
     "useUnknownInCatchVariables": false
   },
-  "include": ["src/**/*.ts"],
-  "exclude": ["node_modules", "dist", "src/templates"]
+  "include": [
+    "src/**/*.ts"
+  ],
+  "exclude": [
+    "node_modules",
+    "dist",
+    "temp",
+    "src/local_modules/temp",
+    "**/*/temp",
+    "**/temp",
+    "src/templates"
+  ]
 }

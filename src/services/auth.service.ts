@@ -1,5 +1,4 @@
 import { ApiService } from './api.service';
-import { OAuth2Service } from './oauth2.service';
 import { LoginOptions, RegisterOptions, AuthResponse, ApiResponse, UserInfo } from '../types';
 import { CliError, ErrorCode } from '../utils';
 import { getConfigManager } from '../config/manager';
@@ -18,13 +17,11 @@ export class AuthService {
    * @returns Auth Response with access token and UserInfo
    */
   async webLogin(): Promise<AuthResponse> {
-    const authResponse = await OAuth2Service.webLogin();
-
-    // Save token
-    const configManager = getConfigManager();
-    configManager.setAuth(authResponse.access_token, undefined, TOKEN.DEFAULT_EXPIRE_SECONDS);
-
-    return authResponse;
+    // OAuth2 login removed - use email/password login instead
+    throw new CliError(
+      ErrorCode.INVALID_INPUT,
+      'Web login is currently unavailable. Please use email/password login.'
+    );
   }
 
   /**

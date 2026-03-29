@@ -47,6 +47,14 @@ function getTemplatesBaseDir(): string {
   return path.join(__dirname);
 }
 
+function getCliBaseDir(): string {
+  const isDev = fs.existsSync(path.join(__dirname, '..', '..', 'src', 'templates'));
+  if (isDev) {
+    return path.join(__dirname, '..', '..');
+  }
+  return path.join(__dirname, '..');
+}
+
 /**
  * TypeTemplateDirectory
  * @param type TemplateType

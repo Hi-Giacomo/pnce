@@ -3,6 +3,9 @@ import { AuthService } from '../services/auth.service';
 import { AuthResponse } from '../types';
 import { ErrorHandler } from '../utils/errors';
 import { getConfigManager } from '../config/manager';
+import { getLogger } from '../utils/logger';
+
+const logger = getLogger();
 
 /**
  * Register authentication-related commands
@@ -24,6 +27,9 @@ export async function registerAuthCommands(
       try {
         const response = await authService.register(options);
         // Token automatically saved to configuration by AuthService
+        logger.info(
+          `✓ Registration successful! User: ${response.user.username || response.user.email}`
+        );
         console.log(
           `✓ Registration successful! User: ${response.user.username || response.user.email}`
         );
@@ -51,7 +57,9 @@ export async function registerAuthCommands(
         }
 
         // Token automatically saved to configuration by AuthService
+        logger.info(`✓ login successful! User: ${response.user.username || response.user.email}`);
         console.log(`✓ login successful! User: ${response.user.username || response.user.email}`);
+        logger.info('Hint: You can now upload modules using command: pnce upload');
         console.log('');
         console.log('💡 Hint: You can now upload modules using command: pnce upload');
       } catch (error) {
@@ -68,15 +76,21 @@ export async function registerAuthCommands(
         const configManager = getConfigManager();
 
         if (!configManager.getToken()) {
+          logger.info('Not logged in');
           console.log('Not logged in');
+          logger.info('Please use the following command to login:');
           console.log('Please use the following command to login:');
+          logger.info('  pnce login');
           console.log('  pnce login');
           return;
         }
 
         const user = await authService.me();
+        logger.info('Current UserInformation:');
         console.log('Current UserInformation:');
+        logger.info(`  Username: ${user.username || 'N/A'}`);
         console.log(`  Username: ${user.username || 'N/A'}`);
+        logger.info(`  email: ${user.email || 'N/A'}`);
         console.log(`  email: ${user.email || 'N/A'}`);
       } catch (error) {
         ErrorHandler.handle(error);
@@ -91,6 +105,7 @@ export async function registerAuthCommands(
       try {
         const configManager = getConfigManager();
         configManager.clearAuth();
+        logger.info('✓ Logged out');
         console.log('✓ Logged out');
       } catch (error) {
         ErrorHandler.handle(error);

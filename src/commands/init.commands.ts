@@ -7,10 +7,18 @@ import {
   normalizeCamelCase,
   normalizeFileName,
 } from '../utils';
+import { getLogger } from '../utils/logger'; // Import getLogger
 import { generateMicroservicefiles, createProjectStructure } from '../templates';
 import { ErrorHandler } from '../utils/errors';
 import { PATHS } from '../constants';
-import { PortManagerService } from '../services/port-manager.service';
+
+const DEFAULT_MODULE_VERSION = '0.0.1'; // Define constant for default version
+
+const projectTypeAliases: Record<string, string> = {
+  // Map for type aliases
+  ms: 'microservice',
+  sv: 'service',
+};
 
 /**
  * Update parent project's package.json localModules
@@ -19,9 +27,10 @@ import { PortManagerService } from '../services/port-manager.service';
 async function addToParentPackageJson(
   projectDir: string,
   moduleName: string,
-  version: string = '0.0.1',
+  version: string = DEFAULT_MODULE_VERSION,
   isLocal: boolean = false
 ): Promise<void> {
+  const logger = getLogger();
   const packageJsonPath = path.join(projectDir, PATHS.PACKAGE_FILE);
 
   if (!fs.existsSync(packageJsonPath)) {
@@ -41,7 +50,7 @@ async function addToParentPackageJson(
 
   // Write back
   await fs.writeJson(packageJsonPath, packageJson, { spaces: 2 });
-  console.log(`✓ Recorded ${moduleName}@${versionWithMarker} to package.json localModules`);
+  logger.info(`✓ Recorded ${moduleName}@${versionWithMarker} to package.json localModules`);
 }
 
 /**
@@ -50,8 +59,9 @@ async function addToParentPackageJson(
 async function addToParentModuleConfig(
   projectDir: string,
   moduleName: string,
-  version: string = '0.0.1'
+  version: string = DEFAULT_MODULE_VERSION
 ): Promise<void> {
+  const logger = getLogger();
   const moduleConfigPath = path.join(projectDir, PATHS.MODULE_CONFIG_FILE);
 
   if (!fs.existsSync(moduleConfigPath)) {
@@ -70,7 +80,7 @@ async function addToParentModuleConfig(
 
   // Write back
   await fs.writeJson(moduleConfigPath, moduleConfig, { spaces: 2 });
-  console.log(`✓ Recorded ${moduleName}@${version} to module.config.json installedModules`);
+  logger.info(`✓ Recorded ${moduleName}@${version} to module.config.json installedModules`);
 }
 
 /**
@@ -89,134 +99,124 @@ export function registerInitCommands(program: Command): void {
       'service'
     )
     .action(async (name, options) => {
-      // Determine working directory
+      const logger = getLogger();
       let initialCwd = process.env.INIT_CWD || process.cwd();
 
-      // Read from environment variable file
       if (process.env.MODULE_INIT_CWD_FILE && fs.existsSync(process.env.MODULE_INIT_CWD_FILE)) {
         initialCwd = fs.readFileSync(process.env.MODULE_INIT_CWD_FILE, 'utf-8').trim();
-        // Clean up the file
         fs.removeSync(process.env.MODULE_INIT_CWD_FILE);
       }
 
-      let targetDir;
+      let moduleName: string;
+      let targetBaseDir: string = options.directory || '';
+
       if (name) {
-        // Module name provided, use as subdirectory
-        targetDir = path.resolve(initialCwd, name);
+        const parsedPath = path.parse(name);
+        moduleName = parsedPath.base;
+        targetBaseDir = options.directory || parsedPath.dir;
+      } else if (options.directory) {
+        moduleName = path.basename(options.directory);
       } else {
-        // No name provided, use -d directory or current directory
-        targetDir = options.directory ? path.resolve(initialCwd, options.directory) : initialCwd;
+        moduleName = path.basename(initialCwd);
       }
 
-      // Get module name
-      const moduleName = name || path.basename(targetDir);
-
-      // Validate module name
       const validation = validateModuleName(moduleName);
       if (!validation.valid) {
-        console.error('❌ Module name validation failed:');
-        console.error(validation.error);
-        console.error('');
-        console.error('💡 Naming suggestions:');
-        console.error('   - Start with letters: my-module, user-service, demo-app');
-        console.error('   - Can include hyphens or underscores: my_module_1, user-service-v2');
-        console.error('   - Avoid pure numbers or starting with numbers: ❌ 123, 1module');
+        logger.error('❌ Module name validation failed:');
+        logger.error(String(validation.error));
+        logger.error('');
+        logger.info('💡 Naming suggestions:');
+        logger.info('   - Start with letters: my-module, user-service, demo-app');
+        logger.info('   - Can include hyphens or underscores: my_module_1, user-service-v2');
+        logger.info('   - Avoid pure numbers or starting with numbers: ❌ 123, 1module');
         return;
       }
 
-      // Normalize module name
       const normalizedClassName = normalizeModuleName(moduleName);
       const normalizedCamelCase = normalizeCamelCase(moduleName);
       const normalizedFileName = normalizeFileName(moduleName);
 
-      // Validate project type
-      // Map type aliases
       let type = options.type;
-      if (type === 'ms') {
-        type = 'microservice';
-      } else if (type === 'sv') {
-        type = 'service';
+      if (projectTypeAliases[type]) {
+        type = projectTypeAliases[type];
       }
 
       if (type !== 'microservice' && type !== 'service') {
-        console.error('❌ Project type must be microservice (or ms) or service (or sv)');
-        console.error('💡 Supported aliases:');
-        console.error('   - microservice or ms: Create a microservice module');
-        console.error('   - service or sv: Create a main service');
+        logger.error('❌ Project type must be microservice (or ms) or service (or sv)');
+        logger.info('💡 Supported aliases:');
+        logger.info('   - microservice or ms: Create a microservice module');
+        logger.info('   - service or sv: Create a main service');
         return;
       }
 
-      // Service type
-      if (type === 'service') {
-        const projectPath = targetDir;
-        if (fs.existsSync(projectPath)) {
-          console.error('❌ Directory already exists');
-          return;
+      let projectCreationPath: string;
+      let displayPath: string;
+
+      if (type === 'microservice') {
+        let finalRelativeDir: string;
+        if (targetBaseDir.startsWith(PATHS.LOCAL_MODULES_DIR)) {
+          finalRelativeDir = targetBaseDir;
+        } else {
+          finalRelativeDir = path.join(PATHS.LOCAL_MODULES_DIR, targetBaseDir);
         }
-
-        console.log(`\n🚀 Creating service project: ${moduleName}`);
-        console.log(`📁 Target directory: ${projectPath}\n`);
-
-        try {
-          await createProjectStructure(projectPath, moduleName);
-          console.log(`\n✅ Service project ${moduleName} created successfully!\n`);
-          console.log('📋 Next steps:');
-          console.log(`   cd ${moduleName}`);
-          console.log('   npm install');
-          console.log('   npm run dev\n');
-        } catch (error) {
-          ErrorHandler.handle(error);
-        }
-        return;
-      }
-
-      // Microservice type
-      // Check if we're in a project root (has package.json)
-      const parentPackageJsonPath = path.join(initialCwd, 'package.json');
-      const isInProjectRoot = fs.existsSync(parentPackageJsonPath);
-
-      let actualTargetDir: string;
-      let parentProjectDir: string | null = null;
-
-      if (isInProjectRoot) {
-        // We're in a project, create in src/local_modules/
-        parentProjectDir = initialCwd;
-        actualTargetDir = path.join(initialCwd, PATHS.LOCAL_MODULES_DIR, moduleName);
-        console.log(`\n🚀 Creating microservice in src/local_modules/: ${moduleName}`);
+        projectCreationPath = path.join(initialCwd, finalRelativeDir, moduleName);
+        displayPath = path.join(finalRelativeDir, moduleName);
       } else {
-        // Not in a project, create in specified directory
-        actualTargetDir = targetDir;
-        console.log(`\n🚀 Creating standalone microservice: ${moduleName}`);
+        // type === 'service'
+        projectCreationPath = path.join(initialCwd, targetBaseDir, moduleName);
+        displayPath = path.join(targetBaseDir, moduleName);
       }
 
-      // Check if already exists
-      if (fs.existsSync(actualTargetDir)) {
-        console.log('❌ Directory already exists');
+      if (fs.existsSync(projectCreationPath)) {
+        logger.error('❌ Directory already exists');
         return;
       }
 
-      // Create directory
-      fs.ensureDirSync(actualTargetDir);
+      logger.info(`\n🚀 Creating ${type} project: ${moduleName}`);
+      logger.info(`📁 Target directory: ${displayPath}\n`);
 
-      // Generate microservice
-      await generateMicroservicefiles(
-        actualTargetDir,
-        moduleName,
-        normalizedClassName,
-        normalizedCamelCase,
-        normalizedFileName
-      );
+      try {
+        if (type === 'microservice') {
+          await generateMicroservicefiles(
+            projectCreationPath,
+            moduleName,
+            normalizedClassName,
+            normalizedCamelCase,
+            normalizedFileName
+          );
+        } else {
+          // type === 'service'
+          await createProjectStructure(projectCreationPath, moduleName);
+        }
+        logger.info(`\n✅ ${type} project ${moduleName} created successfully!\n`);
+        logger.info('📋 Next steps:');
+        logger.info(`   cd ${path.relative(process.cwd(), projectCreationPath)}`);
+        logger.info('   npm install');
+        logger.info('   npm run dev\n');
 
-      // Allocate unique port
-      const port = await PortManagerService.allocatePort(actualTargetDir, moduleName);
-      console.log(`✓ 端口分配: ${port}`);
+        if (type === 'microservice') {
+          // Port allocation removed - users should configure PORT manually
+          const envContent = `PORT=3000\n`;
+          const envFilePath = path.join(projectCreationPath, '.env');
+          await fs.writeFile(envFilePath, envContent);
+          logger.info(`✓ Created .env file with default PORT=3000`);
 
-      // If in project, record to parent project's config files
-      if (parentProjectDir) {
-        await addToParentPackageJson(parentProjectDir, moduleName, '0.0.1', true);
-        await addToParentModuleConfig(parentProjectDir, moduleName, '0.0.1');
+          const parentPackageJsonPath = path.join(initialCwd, 'package.json');
+          const isInProjectRoot = fs.existsSync(parentPackageJsonPath);
+
+          if (isInProjectRoot) {
+            await addToParentPackageJson(initialCwd, moduleName, DEFAULT_MODULE_VERSION, true);
+            await addToParentModuleConfig(initialCwd, moduleName, DEFAULT_MODULE_VERSION);
+            logger.info(`✓ Microservice '${moduleName}' registered in parent project.`);
+          } else {
+            logger.info(`✓ Standalone microservice '${moduleName}' created.`);
+          }
+        } else {
+          // type === 'service'
+          logger.info(`✓ Main service '${moduleName}' created.`);
+        }
+      } catch (error) {
+        ErrorHandler.handle(error);
       }
-
-      console.log(`\n✅ Microservice ${moduleName} created successfully!`);
     });
 }

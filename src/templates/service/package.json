@@ -1,46 +1,40 @@
 {
-  "name": "service",
+  "name": "",
   "version": "0.0.1",
-  "description": "Main service service",
+  "description": "",
   "author": "",
   "private": true,
-  "license": "UNLICENSED",
-  "workspaces": [
-    "src/local_modules/*",
-    "src/external_modules/*"
-  ],
+  "license": "",
   "scripts": {
-    "build": "nest build",
+    "build": "tsc -p tsconfig.json",
     "dev": "cross-env NODE_ENV=development ENV_NAME=main nest start --watch",
     "dev:main": "cross-env ENV_NAME=main nest start --watch",
-    "start": "nest start",
+    "start": "node dist/main.js",
     "start:prod": "node dist/main",
     "format": "prettier --write \"src/**/*.ts\""
   },
   "dependencies": {
     "@nestjs/common": "^11.0.1",
-    "@nestjs/core": "^11.0.1",
-    "@nestjs/platform-express": "^11.1.12",
     "@nestjs/config": "^4.0.0",
-    "class-validator": "^0.14.0",
+    "@nestjs/core": "^11.0.1",
+    "@nestjs/microservices": "^11.1.17",
+    "@nestjs/platform-express": "^11.1.12",
+    "chokidar": "^4.0.1",
     "class-transformer": "^0.5.1",
+    "class-validator": "^0.14.0",
+    "dotenv": "^16.4.5",
     "fs-extra": "^11.2.0",
     "reflect-metadata": "^0.2.2",
-    "rxjs": "^7.8.1",
-    "dotenv": "^16.4.5",
-    "chokidar": "^4.0.1"
+    "rxjs": "^7.8.1"
   },
   "devDependencies": {
     "@nestjs/cli": "^11.0.0",
     "@nestjs/schematics": "^11.0.0",
-    "@types/node": "^22.10.7",
     "@types/fs-extra": "^11.0.4",
+    "@types/node": "^22.10.7",
     "cross-env": "^7.0.3",
     "prettier": "^3.4.2",
     "ts-node": "^10.9.2",
     "typescript": "^5.7.3"
-  },
-  "localModules": {
-    "{{moduleName}}": "{{version}}-local"
   }
 }

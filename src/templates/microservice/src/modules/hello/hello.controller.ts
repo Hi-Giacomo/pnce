@@ -1,11 +1,13 @@
-import { Controller, Get } from '@nestjs/common';
+import { Controller } from '@nestjs/common';
 import { HelloService } from './hello.service';
+import { MessagePattern } from '@nestjs/microservices';
+import { MSG } from './hello.messages';
 
 @Controller()
 export class HelloController {
   constructor(private readonly helloService: HelloService) {}
 
-  @Get('hello/world')
+  @MessagePattern(MSG.world)
   getHelloWorld() {
     return {
       message: 'Hello, World!',

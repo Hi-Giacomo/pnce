@@ -2,12 +2,12 @@ import { Command } from 'commander';
 import { CLI_VERSION } from '../config/default.config';
 import { getLogger } from '../utils/logger';
 
+const logger = getLogger();
+
 /**
  * Register help commands
  */
 export function registerHelpCommand(program: Command): void {
-  const logger = getLogger();
-
   program
     .command('help')
     .alias('h')
@@ -34,6 +34,7 @@ export function registerHelpCommand(program: Command): void {
  * Show basic help information
  */
 function showBasicHelp(): void {
+  logger.info('Displaying basic help information.');
   console.log(`
 ╭───────────────────────────────────────────────────────────╮
 │                                                  │
@@ -89,6 +90,7 @@ Need more help? Run: pnce help --verbose
  * Show verbose help information
  */
 function showVerboseHelp(): void {
+  logger.info('Displaying verbose help information.');
   console.log(`
 ╭───────────────────────────────────────────────────────────╮
 │                                                  │
@@ -229,6 +231,7 @@ Documentation: https://github.com/your-org/pnce-cli/wiki
  * Show quick start guide
  */
 function showQuickStart(): void {
+  logger.info('Displaying quick start guide.');
   console.log(`
 ╭───────────────────────────────────────────────────────────╮
 │                                                  │

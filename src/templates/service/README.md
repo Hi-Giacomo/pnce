@@ -10,6 +10,7 @@ NestJS-based modular service template with microservice architecture.
 - CORS cross-origin support
 - Automatic environment file monitoring
 - Graceful shutdown handling (SIGTERM/SIGINT)
+- **Microservice integration via TCP transport**
 
 ## Installation
 
@@ -74,6 +75,11 @@ Create a `.env` file in the project root with the following variables:
 PORT=3000
 NODE_ENV=development
 APP_HOST=localhost
+APP_NAME=service
+
+# Microservice Configuration
+MICROSERVICE_HOST=localhost
+MICROSERVICE_PORT=4001
 
 # Database Configuration (optional)
 DB_HOST=localhost

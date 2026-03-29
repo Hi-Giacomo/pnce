@@ -2,55 +2,45 @@
 
 <div align="center">
 
-**Pnce CLI Tool** - NestJS Modular Rapid Development CLI Tool
+**Pnce CLI Tool** - Lightweight CLI for NestJS microservices development
 
 [![npm version](https://img.shields.io/npm/v/pnce.svg)](https://www.npmjs.com/package/pnce)
 [![downloads](https://img.shields.io/npm/dm/pnce.svg)](https://www.npmjs.com/package/pnce)
 [![license](https://img.shields.io/npm/l/pnce.svg)](LICENSE)
 [![Node](https://img.shields.io/node/v/pnce.svg)](https://nodejs.org/)
 
-A modular development tool designed for NestJS, helping developers quickly create, manage, publish, and deploy NestJS services and microservice modules.
+A lightweight command-line tool designed for NestJS microservices development, helping developers quickly create, manage, and install modules.
 
-[中文文档](./README_CN.md) | [English](./README.md)
+[English](./README.md)
 
 </div>
 
 ## ✨ Core Features
 
-- 🚀 **Quick Setup** - One-click generate service/microservice scaffolding
-- 📦 **Module Management** - Unified module publishing and installation workflow
+- 🚀 **Quick Setup** - Generate service/microservice scaffolding instantly
+- 📦 **Module Management** - Simple module publishing and installation
 - 🔗 **Dependency Management** - Automatic handling of module dependencies
-- 📥 **Parallel Downloads** - Support 3x faster batch module installation
-- 📊 **Progress Display** - Real-time display of download and installation progress
-- 🔐 **Secure Authentication** - Support OAuth2 and email/password login
-- ⚙️ **Flexible Configuration** - Support environment variables and multi-level configuration
-- 📝 **Complete Logging** - Detailed operation logs and error tracking
-- 🔌 **Plugin System** - Extensible plugin architecture
-- 📁 **Profile Management** - Multi-environment configuration switching
+- 📥 **Fast Downloads** - Efficient module download and installation
+- 🔐 **Secure Authentication** - OAuth2 support for cloud operations
+- ⚙️ **Flexible Configuration** - Environment variables and configuration files
 - 🌍 **i18n Support** - Multi-language support (English/Chinese)
-- 📊 **Analytics** - Optional usage analytics for improvement
 
 ## 📋 Table of Contents
 
 - [Installation](#installation)
 - [Quick Start](#quick-start)
 - [Command Reference](#command-reference)
-- [Configuration Guide](#configuration-guide)
-- [Advanced Features](#advanced-features)
+- [Configuration](#configuration)
 - [FAQ](#faq)
-- [Contributing](#contributing)
 
 ## 📚 Documentation
 
-For more detailed documentation, please see:
 - [Quick Start](docs/QUICKSTART.md) - Quick start guide
-- [API Documentation](docs/API_DOCUMENTATION.md) - API reference documentation
-- [Architecture](docs/ARCHITECTURE.md) - Project architecture overview
+- [API Documentation](docs/API_DOCUMENTATION.md) - API reference
+- [Architecture](docs/ARCHITECTURE.md) - Architecture overview
 - [FAQ](docs/FAQ.md) - Frequently asked questions
 - [Troubleshooting](docs/TROUBLESHOOTING.md) - Troubleshooting guide
-- [Changelog](docs/CHANGELOG.md) - Version changelog
-- [Contributing](docs/CONTRIBUTING.md) - How to contribute
-- [Security](docs/SECURITY.md) - Security policy
+- [Changelog](docs/CHANGELOG.md) - Version history
 
 ## 🚀 Installation
 

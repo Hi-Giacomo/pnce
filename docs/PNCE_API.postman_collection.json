@@ -193,7 +193,7 @@
           },
           "response": [
             {
-              "name": "成功",
+              "name": "Success",
               "originalRequest": {
                 "method": "GET",
                 "header": [
@@ -336,7 +336,7 @@
       "name": "📦 Module Management APIs",
       "item": [
         {
-          "name": "6. 上传模块",
+          "name": "6. Upload Module",
           "request": {
             "method": "POST",
             "header": [
@@ -480,7 +480,7 @@
           ]
         },
         {
-          "name": "7. 获取模块信息",
+          "name": "7. Get Module Information",
           "request": {
             "method": "GET",
             "url": {
@@ -492,7 +492,7 @@
           },
           "response": [
             {
-              "name": "成功",
+              "name": "Success",
               "originalRequest": {
                 "method": "GET",
                 "url": {
@@ -524,7 +524,7 @@
           ]
         },
         {
-          "name": "8. 下载模块",
+          "name": "8. Download Module",
           "request": {
             "method": "GET",
             "header": [
@@ -543,7 +543,7 @@
           },
           "response": [
             {
-              "name": "下载成功",
+              "name": "Download successful",
               "originalRequest": {
                 "method": "GET",
                 "header": [
@@ -601,7 +601,7 @@
           ]
         },
         {
-          "name": "9. 删除模块版本",
+          "name": "9. Delete Module Version",
           "request": {
             "method": "DELETE",
             "header": [
@@ -637,7 +637,7 @@
               "status": "OK",
               "code": 200,
               "_postman_previewlanguage": "json",
-              "body": "{\n  \"success\": true,\n  \"message\": \"版本Delete successful\"\n}"
+              "body": "{\n  \"success\": true,\n  \"message\": \"Version Delete successful\"\n}"
             },
             {
               "name": "No permission to delete",
@@ -712,12 +712,12 @@
               "status": "OK",
               "code": 200,
               "_postman_previewlanguage": "json",
-              "body": "{\n  \"success\": true,\n  \"message\": \"模块Delete successful\"\n}"
+              "body": "{\n  \"success\": true,\n  \"message\": \"Module Delete successful\"\n}"
             }
           ]
         },
         {
-          "name": "11. 更新模块信息",
+          "name": "11. Update Module Information",
           "request": {
             "method": "PUT",
             "header": [
@@ -743,7 +743,7 @@
           },
           "response": [
             {
-              "name": "更新成功",
+              "name": "Update successful",
               "originalRequest": {
                 "method": "PUT",
                 "header": [
@@ -797,10 +797,10 @@
       ]
     },
     {
-      "name": "🔍 模块搜索接口",
+      "name": "🔍 Module Search APIs",
       "item": [
         {
-          "name": "12. 搜索模块",
+          "name": "12. Search Modules",
           "request": {
             "method": "GET",
             "url": {
@@ -811,7 +811,7 @@
                 {
                   "key": "q",
                   "value": "auth",
-                  "description": "搜索关键词"
+                  "description": "Search Keyword"
                 },
                 {
                   "key": "author",
@@ -827,17 +827,17 @@
                 {
                   "key": "page",
                   "value": "1",
-                  "description": "页码"
+                  "description": "Page Number"
                 },
                 {
                   "key": "limit",
                   "value": "20",
-                  "description": "每页数量"
+                  "description": "Items Per Page"
                 },
                 {
                   "key": "sort",
                   "value": "date",
-                  "description": "排序: name | date | downloads"
+                  "description": "Sort: name | date | downloads"
                 }
               ]
             },
@@ -845,7 +845,7 @@
           },
           "response": [
             {
-              "name": "成功",
+              "name": "Success",
               "originalRequest": {
                 "method": "GET",
                 "url": {
@@ -884,7 +884,7 @@
           ]
         },
         {
-          "name": "13. 获取热门模块",
+          "name": "13. Get Popular Modules",
           "request": {
             "method": "GET",
             "url": {
@@ -900,7 +900,7 @@
                 {
                   "key": "limit",
                   "value": "10",
-                  "description": "返回数量"
+                  "description": "Return Count"
                 }
               ]
             },
@@ -908,7 +908,7 @@
           },
           "response": [
             {
-              "name": "成功",
+              "name": "Success",
               "originalRequest": {
                 "method": "GET",
                 "url": {
@@ -935,7 +935,7 @@
           ]
         },
         {
-          "name": "14. 按作者获取模块",
+          "name": "14. Get Modules by Author",
           "request": {
             "method": "GET",
             "url": {
@@ -957,7 +957,7 @@
           },
           "response": [
             {
-              "name": "成功",
+              "name": "Success",
               "originalRequest": {
                 "method": "GET",
                 "url": {
@@ -984,7 +984,7 @@
           ]
         },
         {
-          "name": "15. 获取所有模块列表",
+          "name": "15. Get All Modules List",
           "request": {
             "method": "GET",
             "url": {
@@ -1006,7 +1006,7 @@
           },
           "response": [
             {
-              "name": "成功",
+              "name": "Success",
               "originalRequest": {
                 "method": "GET",
                 "url": {
@@ -1035,10 +1035,10 @@
       ]
     },
     {
-      "name": "📊 统计接口",
+      "name": "📊 Statistics APIs",
       "item": [
         {
-          "name": "16. 获取全局统计信息",
+          "name": "16. Get Global Statistics",
           "request": {
             "method": "GET",
             "url": {
@@ -1050,7 +1050,7 @@
           },
           "response": [
             {
-              "name": "成功",
+              "name": "Success",
               "originalRequest": {
                 "method": "GET",
                 "url": {
@@ -1067,7 +1067,7 @@
           ]
         },
         {
-          "name": "17. 获取模块下载统计",
+          "name": "17. Get Module Download Statistics",
           "request": {
             "method": "GET",
             "url": {
@@ -1091,7 +1091,7 @@
           },
           "response": [
             {
-              "name": "成功",
+              "name": "Success",
               "originalRequest": {
                 "method": "GET",
                 "url": {
@@ -1120,10 +1120,10 @@
       ]
     },
     {
-      "name": "❤️ 健康检查",
+      "name": "❤️ Health Check",
       "item": [
         {
-          "name": "18. 服务健康检查",
+          "name": "18. Service Health Check",
           "request": {
             "method": "GET",
             "url": {
@@ -1135,7 +1135,7 @@
           },
           "response": [
             {
-              "name": "健康",
+              "name": "Healthy",
               "originalRequest": {
                 "method": "GET",
                 "url": {
@@ -1210,7 +1210,7 @@
                 }
               ]
             },
-            "description": "OAuth2 Authorization Page（在网站域名下，不在 API 服务器）"
+            "description": "OAuth2 Authorization Page (under website domain, not API server)"
           },
           "response": [
             {

@@ -1,17 +1,18 @@
 import { Command } from 'commander';
 import * as path from 'path';
 import * as fs from 'fs-extra';
-import { moduleDownloadService } from '../services/module-download.service';
-import { modulesManagerService } from '../services/modules-manager.service';
+import { ModuleDownloadService } from '../services/module-download.service';
 import { ApiService } from '../services/api.service';
 import { ErrorHandler, CliError } from '../utils';
 import { getConfig } from '../config';
 import { ApiResponse, ModuleInformation } from '../types';
 import { PATHS } from '../constants';
-import { PortManagerService } from '../services/port-manager.service';
+import { getLogger } from '../utils/logger';
+
+const logger = getLogger();
 
 /**
- * module package.json  localModules
+ * Add module to package.json localModules
  */
 async function addToPackageJson(
   apiService: ApiService,
@@ -27,10 +28,10 @@ async function addToPackageJson(
 
   const packageJson = await fs.readJson(packageJsonPath);
 
-  // version，version
+  // Get latest version if not specified
   let targetversion = version;
   if (!targetversion) {
-    console.log(`Get ${moduleName} Latestversion...`);
+    logger.info(`Getting latest version for module: ${moduleName}...`);
     const response = await apiService.get<ApiResponse<{ module: ModuleInformation }>>(
       `/api/modules/${moduleName}`
     );
@@ -42,25 +43,25 @@ async function addToPackageJson(
     targetversion = `^${response.module.latest}`;
   }
 
-  //  localModules
+  // Initialize localModules if not exists
   if (!packageJson.localModules) {
     packageJson.localModules = {};
   }
 
-  // module
+  // Add module to localModules
   packageJson.localModules[moduleName] = targetversion;
 
-  //  package.json
+  // Write to package.json
   await fs.writeJson(packageJsonPath, packageJson, { spaces: 2 });
-  console.log(`✓  ${moduleName}@${targetversion}  package.json  localModules`);
+  logger.info(`Added ${moduleName}@${targetversion} to package.json localModules`);
 }
 
 /**
- * Record module.config.json
+ * Record module in module.config.json
  * @param apiService - API service instance
  * @param projectDir - Directory
  * @param moduleName - module name
- * @param version - module version(,version)
+ * @param version - module version (optional)
  */
 async function addTomoduleConfig(
   apiService: ApiService,
@@ -71,7 +72,7 @@ async function addTomoduleConfig(
   const moduleConfigPath = path.join(projectDir, PATHS.MODULE_CONFIG_FILE);
 
   if (!fs.existsSync(moduleConfigPath)) {
-    //  module.config.json，
+    // If module.config.json does not exist, create it from package.json
     const packageJsonPath = path.join(projectDir, PATHS.PACKAGE_FILE);
     const packageJson = fs.existsSync(packageJsonPath) ? await fs.readJson(packageJsonPath) : {};
 
@@ -91,12 +92,12 @@ async function addTomoduleConfig(
 
   const moduleConfig = await fs.readJson(moduleConfigPath);
 
-  //  installedModules
+  // Initialize installedModules if not exists
   if (!moduleConfig.installedModules) {
     moduleConfig.installedModules = {};
   }
 
-  // version，version
+  // Get latest version if not specified
   let targetversion = version;
   if (!targetversion) {
     const response = await apiService.get<ApiResponse<{ module: ModuleInformation }>>(
@@ -107,36 +108,37 @@ async function addTomoduleConfig(
     }
   }
 
-  // Record
+  // Record installed module
   if (targetversion) {
     moduleConfig.installedModules[moduleName] = targetversion;
     await fs.writeJson(moduleConfigPath, moduleConfig, { spaces: 2 });
-    console.log(`✓  ${moduleName}@${targetversion}  module.config.json  installedModules`);
+    logger.info(`Recorded ${moduleName}@${targetversion} in module.config.json installedModules`);
   }
 }
 
 /**
- * command
+ * Register install commands
  * @param program - commander program instance
- * @param moduleDownloadService - module
- * @param modulesManager - module
+ * @param moduleDownloadService - module download service
  * @param api - API service instance
  */
 export function registerInstallCommands(
   program: Command,
-  moduleDownloadService: any,
-  modulesManager: any,
+  moduleDownloadService: ModuleDownloadService,
   api: ApiService
 ): void {
-  // modulecommand
+  // Install module command
   program
     .command('install <module>')
-    .description('Installmodule（ format: module@version）')
-    .option('-p, --port <port>', 'Port（Optional）')
-    .option('--link', ' modules.json（Externaldependencies，Storage src/external_modules/）')
-    .option('--save', ' package.json  localModules（Local，Storage src/local_modules/）')
-    .option('--parallel', 'EnableParallelDownload（Default）')
-    .option('--no-parallel', 'DisableParallelDownload')
+    .description('Install module (format: module@version)')
+    .option('-p, --port <port>', 'Port (Optional)')
+    .option(
+      '--link',
+      'Link to modules.json (external dependencies, stored in src/external_modules/)'
+    )
+    .option('--save', 'Save to package.json localModules (local, stored in src/local_modules/)')
+    .option('--parallel', 'Enable parallel download (default)')
+    .option('--no-parallel', 'Disable parallel download')
     .option(
       '--concurrency <num>',
       'Concurrent downloads',
@@ -150,58 +152,47 @@ export function registerInstallCommands(
         //  module@version
         const [moduleName, version] = module.split('@');
 
-        // Yes/No --link  --save
+        // Check --link and --save options
         if (options.link && options.save) {
           throw new CliError(
             'INVALID_INPUT',
-            'Use --link  --save\n   --link:  modules.json (Externaldependencies)\n   --save:  package.json (Local)'
+            'Cannot use both --link and --save.\n   --link: Links to modules.json (external dependencies).\n   --save: Saves to package.json (local modules).'
           );
         }
 
-        // Directory
+        // Installation directory
         let installDir: string;
         let installMode: 'link' | 'save' | 'temp';
 
         if (options.link) {
           installMode = 'link';
           installDir = PATHS.EXTERNAL_MODULES_DIR;
-          console.log('✨ : Externaldependencies（ modules.json）\n');
+          logger.info('Installation mode: External dependencies (modules.json)');
+          console.log('✨ Installation mode: External dependencies (modules.json)\n');
         } else if (options.save) {
           installMode = 'save';
           installDir = PATHS.LOCAL_MODULES_DIR;
-          console.log('✨ : Local（ package.json）\n');
+          logger.info('Installation mode: Local (package.json)');
+          console.log('✨ Installation mode: Local (package.json)\n');
         } else {
           // Default
           installMode = 'temp';
           installDir = PATHS.EXTERNAL_MODULES_DIR;
-          console.log('✨ : TemporaryInstall（dependenciesManage）\n');
-          console.log('💡 Hint: Use --link  modules.json， --save  package.json\n');
+          logger.info('Installation mode: Temporary install (dependency management)');
+          console.log('✨ Installation mode: Temporary install (dependency management)\n');
+          logger.info('Hint: Use --link to add to modules.json, --save to add to package.json');
+          console.log(
+            '💡 Hint: Use --link to add to modules.json, --save to add to package.json\n'
+          );
         }
 
-        //
-        if (installMode === 'link') {
-          //  modules.json
-          await modulesManager.addModule(initialCwd, moduleName, version ? version : undefined);
-          await modulesManager.installAll(initialCwd);
-        } else if (installMode === 'save') {
-          //  package.json  localModules
-          await addToPackageJson(api, initialCwd, moduleName, version);
+        // Perform the installation
+        await moduleDownloadService.install(moduleName, version, installDir);
 
-          //
-          if (options.parallel) {
-            console.log(`🚀 EnableParallelDownload（Concurrent: ${options.concurrency}）`);
-          }
-
-          await moduleDownloadService.install(moduleName, version, installDir);
-        } else {
-          //
-          await moduleDownloadService.install(moduleName, version, installDir);
-        }
-
-        // Record module.config.json
+        // Record in module.config.json
         await addTomoduleConfig(api, initialCwd, moduleName, version);
 
-        // Port，module
+        // Configure port for the module
         if (options.port) {
           const moduleConfigPath = path.join(
             initialCwd,
@@ -214,9 +205,15 @@ export function registerInstallCommands(
             const config = await fs.readJson(moduleConfigPath);
             config.port = parseInt(options.port);
             await fs.writeJson(moduleConfigPath, config, { spaces: 2 });
-            console.log(`✓ module ${moduleName} PortConfigure ${options.port}`);
+            logger.info(`Module ${moduleName} port configured to ${options.port}`);
+            console.log(`✓ Module ${moduleName} port configured to ${options.port}`);
           } else {
-            console.log(`  Hint: module ${moduleName}  ${PATHS.MODULE_CONFIG_FILE}，ConfigurePort`);
+            logger.warn(
+              `Module ${moduleName} does not have a ${PATHS.MODULE_CONFIG_FILE}. Cannot configure port.`
+            );
+            console.log(
+              `  Hint: Module ${moduleName} does not have a ${PATHS.MODULE_CONFIG_FILE}. Cannot configure port.`
+            );
           }
         } else {
           // Auto-allocate port if not specified
@@ -226,12 +223,13 @@ export function registerInstallCommands(
           if (fs.existsSync(moduleConfigPath)) {
             const config = await fs.readJson(moduleConfigPath);
 
-            // Only allocate port if not already set
+            // Port configuration notice
             if (!config.port) {
-              const port = await PortManagerService.allocatePort(moduleDir, moduleName);
-              console.log(`✓ 自动分配端口: ${port} for ${moduleName}`);
+              logger.info(`⚠️  No port configured for ${moduleName}, using default`);
+              console.log(`⚠️  No port configured for ${moduleName}, using default`);
             } else {
-              console.log(`✓ 已配置端口: ${config.port} for ${moduleName}`);
+              logger.info(`✓ Port configured: ${config.port} for ${moduleName}`);
+              console.log(`✓ Port configured: ${config.port} for ${moduleName}`);
             }
           }
         }
@@ -240,31 +238,32 @@ export function registerInstallCommands(
       }
     });
 
-  // command
+  // Install batch command
   program
     .command('install-batch <modules...>')
-    .description('Installmodule（ParallelDownload）')
+    .description('Install modules in batch (Parallel Download)')
     .option(
       '--concurrency <num>',
-      'Concurrent downloads',
+      'Number of concurrent downloads',
       (value) => parseInt(value),
       getConfig().maxConcurrentDownloads
     )
-    .option('--link', ' modules.json')
-    .option('--save', ' package.json  localModules')
+    .option('--link', 'Link to modules.json')
+    .option('--save', 'Save to package.json localModules')
     .action(async (modules, options) => {
       try {
-        // module list
+        // Process module list
         const moduleList = modules.map((moduleItem: string) => {
           const [name, version] = moduleItem.split('@');
           return { name, version };
         });
 
+        logger.info(`Installing ${moduleList.length} modules (Concurrent: ${options.concurrency})`);
         console.log(
-          `🚀 Install ${moduleList.length} module（Concurrent: ${options.concurrency}）\n`
+          `🚀 Installing ${moduleList.length} modules (Concurrent: ${options.concurrency})\n`
         );
 
-        // Directory
+        // Determine installation directory
         let installDir: string;
         if (options.save) {
           installDir = PATHS.LOCAL_MODULES_DIR;
@@ -272,10 +271,11 @@ export function registerInstallCommands(
           installDir = PATHS.EXTERNAL_MODULES_DIR;
         }
 
-        //
+        // Perform batch installation
         await moduleDownloadService.installBatch(moduleList, installDir, options.concurrency);
 
-        console.log(`\n✓ All modulesInstallComplete`);
+        logger.info(`All modules installed successfully.`);
+        console.log(`\n✓ All modules installed successfully`);
       } catch (error) {
         ErrorHandler.handle(error);
       }
