@@ -1,0 +1,9 @@
+{
+  "name": "app",
+  "description": "Main service app",
+  "author": "service-author",
+  "version": "0.0.1",
+  "type": "service",
+  "appId": "",
+  "teamId": ""
+}

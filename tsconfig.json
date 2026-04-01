@@ -19,7 +19,11 @@
     "noImplicitReturns": true,
     "noFallthroughCasesInSwitch": true,
     "noUncheckedIndexedAccess": false,
-    "useUnknownInCatchVariables": false
+    "useUnknownInCatchVariables": false,
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
+    "moduleResolution": "node",
+    "types": ["node"]
   },
   "include": [
     "src/**/*.ts"
@@ -28,9 +32,10 @@
     "node_modules",
     "dist",
     "temp",
-    "src/local_modules/temp",
-    "**/*/temp",
     "**/temp",
-    "src/templates"
+    "**/*/temp",
+    "src/app/node_modules",
+    "src/app/dist",
+    "src/app/coverage"
   ]
 }

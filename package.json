@@ -4,6 +4,10 @@
   "description": "Pnce CLI Tool - Modular Rapid Development CLI Tool",
   "type": "commonjs",
   "main": "dist/index.js",
+  "private": true,
+  "workspaces": [
+    "src/app"
+  ],
   "bin": {
     "pnce": "./dist/index.js"
   },
