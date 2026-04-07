@@ -7,6 +7,12 @@ module.exports = [
   js.configs.recommended,
   ...tseslint.configs.recommended,
   {
+    languageOptions: {
+      parserOptions: {
+        project: './tsconfig.json',
+        tsconfigRootDir: __dirname,
+      },
+    },
     plugins: {
       prettier: eslintPluginPrettier,
     },

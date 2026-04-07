@@ -1,8 +1,12 @@
-import { Command } from 'commander';
+import { type Command } from 'commander';
 import * as path from 'path';
 import { spawn } from 'child_process';
 import * as fs from 'fs';
-import { DEVELOPMENT_APP_PORT, DEVELOPMENT_SERVICE_PORT, SERVICE_PORT } from '../contacts/global.config';
+import {
+  DEVELOPMENT_APP_PORT,
+  DEVELOPMENT_SERVICE_PORT,
+  SERVICE_PORT,
+} from '../contacts/global.config';
 
 /**
  * Register start command
@@ -28,7 +32,6 @@ export function registerStartCommand(program: Command): void {
         process.exit(1);
       }
 
-
       if (!fs.existsSync(path.join(appPath, 'package.json'))) {
         console.error(`❌ package.json not found in ${appPath}`);
         process.exit(1);
@@ -37,7 +40,6 @@ export function registerStartCommand(program: Command): void {
         console.error(`❌ package.json not found in ${servicePath}`);
         process.exit(1);
       }
-
 
       if (options.mode === 'admin:dev') {
         console.log('🚀 Starting application in development mode...\n');

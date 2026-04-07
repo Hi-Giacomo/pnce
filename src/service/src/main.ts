@@ -14,13 +14,16 @@ async function bootstrap() {
   // 配置静态文件服务 - / 访问 src/service/public 目录
   const expressApp = app.getHttpAdapter().getInstance();
   const serveStatic = require('serve-static');
-  expressApp.use('/' , serveStatic(join(__dirname, '../public'), {
-    index: ['/app/index.html'],
-    dotfiles: 'ignore',
-  }));
+  expressApp.use(
+    '/',
+    serveStatic(join(__dirname, '../public'), {
+      index: ['/app/index.html'],
+      dotfiles: 'ignore',
+    })
+  );
 
   const port = process.env.PORT || 3000;
-  
+
   await app.listen(port);
 
   // 输出启动信息

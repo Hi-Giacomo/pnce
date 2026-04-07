@@ -13,13 +13,13 @@ import { globalHookManager } from './hooks';
  */
 export function integrateMicroserviceManager(microserviceManager: any) {
   if (!microserviceManager) return;
-  
+
   // 监听微服务创建
   const originalCreate = microserviceManager.createMicroservice;
   if (typeof originalCreate === 'function') {
-    microserviceManager.createMicroservice = function(...args: any[]) {
+    microserviceManager.createMicroservice = function (...args: any[]) {
       const result = originalCreate.apply(this, args);
-      
+
       // 如果是 Promise，等待完成
       if (result instanceof Promise) {
         return result.then((service: any) => {
@@ -32,7 +32,7 @@ export function integrateMicroserviceManager(microserviceManager: any) {
           return service;
         });
       }
-      
+
       // 如果是同步调用
       if (result && typeof result === 'object') {
         globalEventBus.emit('microservice:created', {
@@ -42,17 +42,17 @@ export function integrateMicroserviceManager(microserviceManager: any) {
           timestamp: new Date(),
         });
       }
-      
+
       return result;
     };
   }
-  
+
   // 监听微服务启动
   const originalStart = microserviceManager.startMicroservice;
   if (typeof originalStart === 'function') {
-    microserviceManager.startMicroservice = function(...args: any[]) {
+    microserviceManager.startMicroservice = function (...args: any[]) {
       const result = originalStart.apply(this, args);
-      
+
       if (result instanceof Promise) {
         return result.then((service: any) => {
           globalEventBus.emit('microservice:started', {
@@ -64,17 +64,17 @@ export function integrateMicroserviceManager(microserviceManager: any) {
           return service;
         });
       }
-      
+
       return result;
     };
   }
-  
+
   // 监听微服务停止
   const originalStop = microserviceManager.stopMicroservice;
   if (typeof originalStop === 'function') {
-    microserviceManager.stopMicroservice = function(...args: any[]) {
+    microserviceManager.stopMicroservice = function (...args: any[]) {
       const result = originalStop.apply(this, args);
-      
+
       if (result instanceof Promise) {
         return result.then((service: any) => {
           globalEventBus.emit('microservice:stopped', {
@@ -85,11 +85,11 @@ export function integrateMicroserviceManager(microserviceManager: any) {
           return service;
         });
       }
-      
+
       return result;
     };
   }
-  
+
   console.log('Microservice manager integrated with hooks system');
 }
 
@@ -99,13 +99,13 @@ export function integrateMicroserviceManager(microserviceManager: any) {
  */
 export function integratePortManager(portManager: any) {
   if (!portManager) return;
-  
+
   // 监听端口分配
   const originalAllocate = portManager.allocatePort;
   if (typeof originalAllocate === 'function') {
-    portManager.allocatePort = function(...args: any[]) {
+    portManager.allocatePort = function (...args: any[]) {
       const result = originalAllocate.apply(this, args);
-      
+
       if (result instanceof Promise) {
         return result.then((port: number) => {
           globalEventBus.emit('port:allocated', {
@@ -116,7 +116,7 @@ export function integratePortManager(portManager: any) {
           return port;
         });
       }
-      
+
       if (typeof result === 'number') {
         globalEventBus.emit('port:allocated', {
           port: result,
@@ -124,17 +124,17 @@ export function integratePortManager(portManager: any) {
           timestamp: new Date(),
         });
       }
-      
+
       return result;
     };
   }
-  
+
   // 监听端口释放
   const originalRelease = portManager.releasePort;
   if (typeof originalRelease === 'function') {
-    portManager.releasePort = function(...args: any[]) {
+    portManager.releasePort = function (...args: any[]) {
       const result = originalRelease.apply(this, args);
-      
+
       if (result instanceof Promise) {
         return result.then((port: number) => {
           globalEventBus.emit('port:released', {
@@ -145,11 +145,11 @@ export function integratePortManager(portManager: any) {
           return port;
         });
       }
-      
+
       return result;
     };
   }
-  
+
   console.log('Port manager integrated with hooks system');
 }
 
@@ -159,25 +159,25 @@ export function integratePortManager(portManager: any) {
  */
 export function integrateConfigManager(configManager: any) {
   if (!configManager) return;
-  
+
   // 监听配置变更
   const originalSet = configManager.set;
   if (typeof originalSet === 'function') {
-    configManager.set = function(key: string, value: any) {
+    configManager.set = function (key: string, value: any) {
       const oldValue = configManager.get ? configManager.get(key) : undefined;
       const result = originalSet.call(this, key, value);
-      
+
       globalEventBus.emit('config:updated', {
         key,
         oldValue,
         newValue: value,
         timestamp: new Date(),
       });
-      
+
       return result;
     };
   }
-  
+
   console.log('Config manager integrated with hooks system');
 }
 
@@ -187,20 +187,20 @@ export function integrateConfigManager(configManager: any) {
  */
 export function autoIntegrateProject(project: any) {
   if (!project) return;
-  
+
   // 尝试集成各种管理器
   if (project.microserviceManager) {
     integrateMicroserviceManager(project.microserviceManager);
   }
-  
+
   if (project.portManager) {
     integratePortManager(project.portManager);
   }
-  
+
   if (project.configManager) {
     integrateConfigManager(project.configManager);
   }
-  
+
   // 注册项目本身作为服务
   if (project.name && typeof project === 'object') {
     globalServiceRegistry.register(project.name, {
@@ -210,7 +210,7 @@ export function autoIntegrateProject(project: any) {
       },
     });
   }
-  
+
   console.log('Project auto-integrated with hooks system');
 }
 
@@ -219,20 +219,17 @@ export function autoIntegrateProject(project: any) {
  * @param service 原始服务对象
  * @param serviceName 服务名称
  */
-export function createServiceWrapper<T extends object>(
-  service: T,
-  serviceName: string
-): T {
+export function createServiceWrapper<T extends object>(service: T, serviceName: string): T {
   const wrapper = { ...service };
-  
+
   // 为所有方法添加事件发布
-  Object.keys(wrapper).forEach(key => {
+  Object.keys(wrapper).forEach((key) => {
     const originalMethod = (wrapper as any)[key];
-    
+
     if (typeof originalMethod === 'function') {
-      (wrapper as any)[key] = function(...args: any[]) {
+      (wrapper as any)[key] = function (...args: any[]) {
         const result = originalMethod.apply(this, args);
-        
+
         // 发布方法调用事件
         globalEventBus.emit('service:method:called', {
           serviceName,
@@ -240,7 +237,7 @@ export function createServiceWrapper<T extends object>(
           args,
           timestamp: new Date(),
         });
-        
+
         // 处理 Promise 返回值
         if (result instanceof Promise) {
           return result
@@ -263,7 +260,7 @@ export function createServiceWrapper<T extends object>(
               throw error;
             });
         }
-        
+
         // 同步方法完成
         globalEventBus.emit('service:method:completed', {
           serviceName,
@@ -271,18 +268,18 @@ export function createServiceWrapper<T extends object>(
           result,
           timestamp: new Date(),
         });
-        
+
         return result;
       };
     }
   });
-  
+
   // 添加服务生命周期事件
   if ((wrapper as any).initialize) {
     const originalInitialize = (wrapper as any).initialize;
-    (wrapper as any).initialize = function(...args: any[]) {
+    (wrapper as any).initialize = function (...args: any[]) {
       const result = originalInitialize.apply(this, args);
-      
+
       if (result instanceof Promise) {
         return result.then(() => {
           globalEventBus.emit(ServiceEvents.SERVICE_STARTED, {
@@ -291,21 +288,21 @@ export function createServiceWrapper<T extends object>(
           });
         });
       }
-      
+
       globalEventBus.emit(ServiceEvents.SERVICE_STARTED, {
         serviceName,
         timestamp: new Date(),
       });
-      
+
       return result;
     };
   }
-  
+
   if ((wrapper as any).destroy) {
     const originalDestroy = (wrapper as any).destroy;
-    (wrapper as any).destroy = function(...args: any[]) {
+    (wrapper as any).destroy = function (...args: any[]) {
       const result = originalDestroy.apply(this, args);
-      
+
       if (result instanceof Promise) {
         return result.then(() => {
           globalEventBus.emit(ServiceEvents.SERVICE_STOPPED, {
@@ -314,16 +311,16 @@ export function createServiceWrapper<T extends object>(
           });
         });
       }
-      
+
       globalEventBus.emit(ServiceEvents.SERVICE_STOPPED, {
         serviceName,
         timestamp: new Date(),
       });
-      
+
       return result;
     };
   }
-  
+
   return wrapper;
 }
 
@@ -333,14 +330,14 @@ export function createServiceWrapper<T extends object>(
  */
 export function createEventListeners(eventMap: Record<string, EventHandler>) {
   const cleanupFunctions: (() => void)[] = [];
-  
+
   Object.entries(eventMap).forEach(([event, handler]) => {
     const unsubscribe = globalEventBus.on(event, handler);
     cleanupFunctions.push(unsubscribe);
   });
-  
+
   return () => {
-    cleanupFunctions.forEach(unsubscribe => unsubscribe());
+    cleanupFunctions.forEach((unsubscribe) => unsubscribe());
   };
 }
 
@@ -363,16 +360,18 @@ export function registerServices(services: Record<string, any>) {
 /**
  * 初始化 hooks 系统并返回清理函数
  */
-export function initializeHooksSystem(options: {
-  autoCleanup?: boolean;
-  logEvents?: boolean;
-  defaultServices?: Record<string, any>;
-} = {}) {
+export function initializeHooksSystem(
+  options: {
+    autoCleanup?: boolean;
+    logEvents?: boolean;
+    defaultServices?: Record<string, any>;
+  } = {}
+) {
   const { autoCleanup = true, logEvents = false, defaultServices = {} } = options;
-  
+
   // 注册默认服务
   registerServices(defaultServices);
-  
+
   // 启用事件日志
   if (logEvents) {
     // 监听所有事件
@@ -381,12 +380,12 @@ export function initializeHooksSystem(options: {
       // 这里简化处理，只记录数据
       console.log(`[Event] data:`, data);
     });
-    
+
     if (autoCleanup) {
       globalHookManager.register('event-logger', () => unsubscribe);
     }
   }
-  
+
   // 返回清理函数
   return () => {
     if (autoCleanup) {

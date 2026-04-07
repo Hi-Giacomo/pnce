@@ -71,7 +71,7 @@ export class EventBus {
 
     // 移除指定的监听器
     const eventListeners = this.listeners.get(event)!;
-    const index = eventListeners.findIndex(listener => listener.handler === handler);
+    const index = eventListeners.findIndex((listener) => listener.handler === handler);
     if (index !== -1) {
       eventListeners.splice(index, 1);
     }
@@ -100,10 +100,10 @@ export class EventBus {
       try {
         // 执行事件处理函数
         const result = listener.handler(data);
-        
+
         // 如果是 Promise，捕获可能的错误但不阻塞其他监听器
         if (result instanceof Promise) {
-          result.catch(error => {
+          result.catch((error) => {
             console.error(`Event handler error for event "${String(event)}":`, error);
           });
         }
@@ -120,9 +120,9 @@ export class EventBus {
     // 移除一次性事件的监听器
     if (listenersToRemove.length > 0) {
       const remainingListeners = eventListeners.filter(
-        listener => !listenersToRemove.includes(listener)
+        (listener) => !listenersToRemove.includes(listener)
       );
-      
+
       if (remainingListeners.length === 0) {
         this.listeners.delete(event);
       } else {
@@ -149,11 +149,13 @@ export class EventBus {
     for (const listener of eventListeners) {
       try {
         const result = listener.handler(data);
-        
+
         if (result instanceof Promise) {
-          promises.push(result.catch(error => {
-            console.error(`Event handler error for event "${String(event)}":`, error);
-          }));
+          promises.push(
+            result.catch((error) => {
+              console.error(`Event handler error for event "${String(event)}":`, error);
+            })
+          );
         }
 
         if (listener.once) {
@@ -170,9 +172,9 @@ export class EventBus {
     // 移除一次性事件的监听器
     if (listenersToRemove.length > 0) {
       const remainingListeners = eventListeners.filter(
-        listener => !listenersToRemove.includes(listener)
+        (listener) => !listenersToRemove.includes(listener)
       );
-      
+
       if (remainingListeners.length === 0) {
         this.listeners.delete(event);
       } else {
@@ -221,14 +223,14 @@ export const ServiceEvents = {
   SERVICE_STARTED: 'service:started',
   SERVICE_STOPPED: 'service:stopped',
   SERVICE_ERROR: 'service:error',
-  
+
   // 端口管理事件
   PORT_ALLOCATED: 'port:allocated',
   PORT_RELEASED: 'port:released',
-  
+
   // 配置变更事件
   CONFIG_UPDATED: 'config:updated',
-  
+
   // 微服务相关事件
   MICROSERVICE_CREATED: 'microservice:created',
   MICROSERVICE_STARTED: 'microservice:started',

@@ -20,10 +20,10 @@ console.log('=== 演示1: 基本事件通信 ===');
 // 定义服务
 class NotificationService {
   name = 'NotificationService';
-  
+
   sendNotification(message: string) {
     console.log(`📢 发送通知: ${message}`);
-    
+
     // 发布通知事件
     globalEventBus.emit('notification:sent', {
       message,
@@ -72,7 +72,7 @@ const emit = useEmit();
 // 模拟用户操作：切换主题
 setTimeout(() => {
   setTheme('dark');
-  
+
   // 发布自定义事件
   emit('ui:theme:changed', {
     from: 'light',
@@ -96,29 +96,29 @@ console.log('=== 演示3: 微服务集成 ===');
 class MicroserviceManager implements Service {
   name = 'MicroserviceManager';
   private services = new Map<string, any>();
-  
+
   createService(name: string, port: number) {
     console.log(`🚀 创建微服务: ${name} (端口: ${port})`);
-    
+
     const service = { name, port, pid: Date.now() };
     this.services.set(name, service);
-    
+
     // 发布微服务创建事件
     globalEventBus.emit('microservice:created', {
       name,
       port,
       timestamp: new Date(),
     });
-    
+
     return service;
   }
-  
+
   startService(name: string) {
     const service = this.services.get(name);
     if (!service) return null;
-    
+
     console.log(`✅ 启动微服务: ${name} (PID: ${service.pid})`);
-    
+
     // 发布微服务启动事件
     globalEventBus.emit('microservice:started', {
       name,
@@ -126,7 +126,7 @@ class MicroserviceManager implements Service {
       pid: service.pid,
       timestamp: new Date(),
     });
-    
+
     return service;
   }
 }
@@ -140,7 +140,7 @@ globalServiceRegistry.register('MicroserviceManager', {
 // 监听微服务事件
 useEvent('microservice:created', (data) => {
   console.log(`📡 监听到微服务创建: ${data.name} 在端口 ${data.port}`);
-  
+
   // 自动启动微服务（模拟）
   setTimeout(() => {
     microserviceManager.startService(data.name);
@@ -149,7 +149,7 @@ useEvent('microservice:created', (data) => {
 
 useEvent('microservice:started', (data) => {
   console.log(`📡 监听到微服务启动: ${data.name} (PID: ${data.pid})`);
-  
+
   // 这里可以更新监控面板、日志记录等
 });
 
@@ -169,13 +169,13 @@ console.log('\n=== 演示4: 端口管理 ===');
 // 监听端口事件
 useEvent('port:allocated', (data) => {
   console.log(`🔌 端口分配: ${data.port} -> ${data.serviceName}`);
-  
+
   // 这里可以更新端口映射表
 });
 
 useEvent('port:released', (data) => {
   console.log(`🔌 端口释放: ${data.port} <- ${data.serviceName}`);
-  
+
   // 这里可以清理端口资源
 });
 
@@ -202,23 +202,23 @@ console.log('\n=== 演示5: 服务依赖 ===');
 
 class DatabaseService {
   name = 'DatabaseService';
-  
+
   query(sql: string) {
     console.log(`🗄️  数据库查询: ${sql}`);
-    
+
     // 发布查询事件
     globalEventBus.emit('database:query', {
       sql,
       timestamp: new Date(),
     });
-    
+
     return { rows: [{ id: 1, name: '测试数据' }] };
   }
 }
 
 class ApiService {
   name = 'ApiService';
-  
+
   constructor() {
     // 监听数据库查询事件
     useEvent('database:query', (data) => {
@@ -226,26 +226,26 @@ class ApiService {
       // 这里可以记录日志、更新缓存等
     });
   }
-  
+
   getUsers() {
     console.log('🌐 API服务: 获取用户列表');
-    
+
     // 获取数据库服务
     const dbService = useService<DatabaseService>('DatabaseService');
     if (!dbService) {
       console.log('❌ 数据库服务不可用');
       return [];
     }
-    
+
     // 执行查询
     const result = dbService.query('SELECT * FROM users');
-    
+
     // 发布API调用完成事件
     globalEventBus.emit('api:users:fetched', {
       count: result.rows.length,
       timestamp: new Date(),
     });
-    
+
     return result.rows;
   }
 }
@@ -284,6 +284,6 @@ setTimeout(() => {
   console.log('3. 配置变更可以实时响应');
   console.log('4. 微服务和端口管理可以无缝集成');
   console.log('5. 服务间依赖和通信非常简单');
-  
+
   process.exit(0);
 }, 5000);

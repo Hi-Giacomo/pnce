@@ -1,5 +1,5 @@
-import { ClientProviderOptions, Transport } from '@nestjs/microservices';
-import { ServiceConnectTypes, ServiceTypes } from '../typings/service.typs';
+import { type ClientProviderOptions, Transport } from '@nestjs/microservices';
+import { type ServiceConnectTypes, type ServiceTypes } from '../typings/service.typs';
 
 export const ModulesConfig: Record<
   ServiceConnectTypes,

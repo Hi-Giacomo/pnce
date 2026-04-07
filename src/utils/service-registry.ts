@@ -47,10 +47,7 @@ export class ServiceRegistry {
    * @param name 服务名称
    * @param registration 服务注册信息
    */
-  register<T extends Service>(
-    name: string,
-    registration: ServiceRegistration<T>
-  ): void {
+  register<T extends Service>(name: string, registration: ServiceRegistration<T>): void {
     if (this.services.has(name)) {
       throw new Error(`Service "${name}" is already registered`);
     }
@@ -127,19 +124,21 @@ export class ServiceRegistry {
     const factory = this.factories.get(name);
     if (factory) {
       const instance = factory();
-      
+
       // 如果是 Promise，需要异步处理
       if (instance instanceof Promise) {
-        instance.then(resolvedInstance => {
-          this.instances.set(name, resolvedInstance);
-          return resolvedInstance;
-        }).catch(error => {
-          console.error(`Failed to create service instance "${name}":`, error);
-          return null;
-        });
+        instance
+          .then((resolvedInstance) => {
+            this.instances.set(name, resolvedInstance);
+            return resolvedInstance;
+          })
+          .catch((error) => {
+            console.error(`Failed to create service instance "${name}":`, error);
+            return null;
+          });
         return null; // 暂时返回 null，等待异步完成
       }
-      
+
       this.instances.set(name, instance);
       return instance as T;
     }
@@ -227,7 +226,7 @@ export class ServiceRegistry {
           await Promise.resolve(registration.service.initialize());
         }
         initialized.add(serviceName);
-        
+
         // 发布服务初始化完成事件
         globalEventBus.emit('service:initialized', {
           serviceName,
@@ -237,7 +236,7 @@ export class ServiceRegistry {
       } catch (error) {
         errors.set(serviceName, error as Error);
         console.error(`Failed to initialize service "${serviceName}":`, error);
-        
+
         // 发布服务错误事件
         globalEventBus.emit(ServiceEvents.SERVICE_ERROR, {
           serviceName,
@@ -269,14 +268,14 @@ export class ServiceRegistry {
    */
   async destroyAll(): Promise<void> {
     const instances = Array.from(this.instances.values());
-    
+
     // 逆序销毁（最后创建的先销毁）
     for (let i = instances.length - 1; i >= 0; i--) {
       const instance = instances[i];
       if (instance.destroy) {
         try {
           await Promise.resolve(instance.destroy());
-          
+
           // 发布服务停止事件
           globalEventBus.emit(ServiceEvents.SERVICE_STOPPED, {
             serviceName: instance.name,
@@ -299,8 +298,8 @@ export class ServiceRegistry {
    */
   get serviceNames(): string[] {
     const serviceNames = new Set<string>();
-    Array.from(this.services.keys()).forEach(name => serviceNames.add(name));
-    Array.from(this.factories.keys()).forEach(name => serviceNames.add(name));
+    Array.from(this.services.keys()).forEach((name) => serviceNames.add(name));
+    Array.from(this.factories.keys()).forEach((name) => serviceNames.add(name));
     return Array.from(serviceNames);
   }
 
@@ -319,7 +318,7 @@ export class ServiceRegistry {
    */
   private validateDependencies(serviceName: string, dependencies: string[]): void {
     const missingDeps: string[] = [];
-    
+
     for (const depName of dependencies) {
       if (!this.has(depName)) {
         missingDeps.push(depName);
@@ -346,7 +345,7 @@ export function ServiceDecorator(options: {
   return function (target: any) {
     // 创建服务实例
     const instance = new target();
-    
+
     // 注册服务
     globalServiceRegistry.register(options.name, {
       service: {
@@ -356,7 +355,7 @@ export function ServiceDecorator(options: {
       dependencies: options.dependencies,
       singleton: options.singleton,
     });
-    
+
     return target;
   };
 }

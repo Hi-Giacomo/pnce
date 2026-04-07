@@ -3,8 +3,8 @@
  * 提供类似 React hooks 的 API，让开发者可以方便地订阅事件和获取服务
  */
 
-import { EventType, EventHandler, globalEventBus } from './event-bus';
-import { Service, globalServiceRegistry } from './service-registry';
+import { type EventType, type EventHandler, globalEventBus } from './event-bus';
+import { type Service, globalServiceRegistry } from './service-registry';
 
 // 事件订阅钩子
 export function useEvent<T = any>(
@@ -22,10 +22,7 @@ export function useEvent<T = any>(
 }
 
 // 一次性事件订阅钩子
-export function useEventOnce<T = any>(
-  event: EventType,
-  handler: EventHandler<T>
-): () => void {
+export function useEventOnce<T = any>(event: EventType, handler: EventHandler<T>): () => void {
   // 订阅一次性事件
   const unsubscribe = globalEventBus.once(event, handler);
 
@@ -36,9 +33,7 @@ export function useEventOnce<T = any>(
 }
 
 // 服务获取钩子
-export function useService<T extends Service = Service>(
-  serviceName: string
-): T | null {
+export function useService<T extends Service = Service>(serviceName: string): T | null {
   return globalServiceRegistry.get<T>(serviceName);
 }
 
@@ -60,7 +55,7 @@ export function useEventState<T = any>(
   options: EventStateOptions<T> = {}
 ): [T | undefined, () => void] {
   let state: T | undefined = options.initialValue;
-  
+
   const handler: EventHandler = (data: any) => {
     if (options.transform) {
       state = options.transform(data);
@@ -96,7 +91,7 @@ export function useEmitAsync(): <T = any>(event: EventType, data?: T) => Promise
 // 复合钩子：监听服务状态变化
 export function useServiceStatus(serviceName: string) {
   let status: any = { status: 'unknown', serviceName };
-  
+
   const handler: EventHandler = (data: any) => {
     if (data.serviceName === serviceName) {
       status = data;
@@ -118,7 +113,7 @@ export function useServiceStatus(serviceName: string) {
 // 复合钩子：监听配置变化
 export function useConfig<T = any>(configKey: string, defaultValue?: T) {
   let config: T | undefined = defaultValue;
-  
+
   const handler: EventHandler = (data: any) => {
     if (data.key === configKey) {
       config = data.value;
@@ -231,7 +226,7 @@ export const globalHookManager = new HookManager();
 export function useEffect(effect: () => void | (() => void), dependencies?: any[]): void {
   // 执行副作用
   const cleanup = effect();
-  
+
   // 如果有清理函数，返回它
   if (typeof cleanup === 'function') {
     // 在组件卸载时执行清理
@@ -240,7 +235,7 @@ export function useEffect(effect: () => void | (() => void), dependencies?: any[
         cleanup();
       }
     };
-    
+
     // 注册全局清理函数（简化实现）
     globalHookManager.register(`useEffect-${Date.now()}`, () => handleUnload);
   }
