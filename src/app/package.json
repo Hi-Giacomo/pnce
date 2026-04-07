@@ -1,40 +1,35 @@
 {
   "name": "app",
-  "version": "0.0.1",
-  "description": "Main service app",
-  "author": "",
   "private": true,
-  "license": "",
+  "version": "0.0.0",
+  "type": "module",
   "scripts": {
-    "build": "tsc -p tsconfig.json",
-    "dev": "cross-env NODE_ENV=development ENV_NAME=main nest start --watch",
-    "dev:main": "cross-env ENV_NAME=main nest start --watch",
-    "start": "node dist/main.js",
-    "start:prod": "node dist/main",
-    "format": "prettier --write \"src/**/*.ts\""
+    "dev": "vite",
+    "build": "tsc -b && vite build",
+    "lint": "eslint .",
+    "preview": "vite preview"
   },
   "dependencies": {
-    "@nestjs/common": "^11.0.1",
-    "@nestjs/config": "^4.0.0",
-    "@nestjs/core": "^11.0.1",
-    "@nestjs/microservices": "^11.1.17",
-    "@nestjs/platform-express": "^11.1.12",
-    "chokidar": "^4.0.1",
-    "class-transformer": "^0.5.1",
-    "class-validator": "^0.14.0",
-    "dotenv": "^16.4.5",
-    "fs-extra": "^11.2.0",
-    "reflect-metadata": "^0.2.2",
-    "rxjs": "^7.8.1"
+    "@types/echarts": "^4.9.22",
+    "echarts": "^6.0.0",
+    "react": "^19.2.4",
+    "react-dom": "^19.2.4",
+    "react-router": "^7.14.0",
+    "sass": "^1.99.0",
+    "zustand": "^5.0.12"
   },
   "devDependencies": {
-    "@nestjs/cli": "^11.0.0",
-    "@nestjs/schematics": "^11.0.0",
-    "@types/fs-extra": "^11.0.4",
-    "@types/node": "^22.10.7",
-    "cross-env": "^7.0.3",
-    "prettier": "^3.4.2",
-    "ts-node": "^10.9.2",
-    "typescript": "^5.7.3"
+    "@eslint/js": "^9.39.4",
+    "@types/node": "^24.12.0",
+    "@types/react": "^19.2.14",
+    "@types/react-dom": "^19.2.3",
+    "@vitejs/plugin-react": "^6.0.1",
+    "eslint": "^9.39.4",
+    "eslint-plugin-react-hooks": "^7.0.1",
+    "eslint-plugin-react-refresh": "^0.5.2",
+    "globals": "^17.4.0",
+    "typescript": "~5.9.3",
+    "typescript-eslint": "^8.57.0",
+    "vite": "^8.0.1"
   }
 }

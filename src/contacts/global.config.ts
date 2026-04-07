@@ -1,0 +1,3 @@
+export const SERVICE_PORT = 3000;
+export const DEVELOPMENT_APP_PORT = 8080;
+export const DEVELOPMENT_SERVICE_PORT = 3000;

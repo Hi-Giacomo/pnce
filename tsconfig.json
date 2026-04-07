@@ -26,7 +26,12 @@
     "types": ["node"]
   },
   "include": [
-    "src/**/*.ts"
+    "src/index.ts",
+    "src/command/**/*.ts",
+    "src/contacts/**/*.ts",
+    "src/templates/**/*.ts",
+    "src/utils/**/*.ts",
+    "src/service/src/**/*.ts"
   ],
   "exclude": [
     "node_modules",
@@ -34,8 +39,9 @@
     "temp",
     "**/temp",
     "**/*/temp",
-    "src/app/node_modules",
-    "src/app/dist",
-    "src/app/coverage"
+    "src/service/node_modules",
+    "src/service/dist",
+    "src/service/coverage",
+    "src/app"
   ]
 }

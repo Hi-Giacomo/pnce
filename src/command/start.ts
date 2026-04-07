@@ -1,6 +1,8 @@
 import { Command } from 'commander';
 import * as path from 'path';
 import { spawn } from 'child_process';
+import * as fs from 'fs';
+import { DEVELOPMENT_APP_PORT, DEVELOPMENT_SERVICE_PORT, SERVICE_PORT } from '../contacts/global.config';
 
 /**
  * Register start command
@@ -10,33 +12,39 @@ export function registerStartCommand(program: Command): void {
   program
     .command('start')
     .description('Start the application')
-    .option('-m, --mode <mode>', 'Start mode: dev, prod', 'dev')
+    .option('-m, --mode <mode>', 'Start mode: admin:dev, start', 'admin:dev')
     .option('-p, --port <port>', 'Port number', '3000')
     .action((options) => {
-      // Get project root (parent of dist directory)
       const distDir = path.dirname(path.dirname(__dirname));
       const appPath = path.join(distDir, 'src/app');
+      const servicePath = path.join(distDir, 'src/service');
 
-      // Check if app directory exists
-      const fs = require('fs');
       if (!fs.existsSync(appPath)) {
         console.error(`❌ Application directory not found: ${appPath}`);
         process.exit(1);
       }
+      if (!fs.existsSync(servicePath)) {
+        console.error(`❌ Application directory not found: ${servicePath}`);
+        process.exit(1);
+      }
 
-      // Check if package.json exists
+
       if (!fs.existsSync(path.join(appPath, 'package.json'))) {
         console.error(`❌ package.json not found in ${appPath}`);
         process.exit(1);
       }
+      if (!fs.existsSync(path.join(servicePath, 'package.json'))) {
+        console.error(`❌ package.json not found in ${servicePath}`);
+        process.exit(1);
+      }
 
-      if (options.mode === 'dev') {
+
+      if (options.mode === 'admin:dev') {
         console.log('🚀 Starting application in development mode...\n');
-
         try {
-          const devProcess = spawn(
+          const devAppProcess = spawn(
             process.platform === 'win32' ? 'npm.cmd' : 'npm',
-            ['run', 'dev'],
+            ['run', 'dev', '--', `PORT=${DEVELOPMENT_APP_PORT}`],
             {
               cwd: appPath,
               stdio: 'inherit',
@@ -47,12 +55,36 @@ export function registerStartCommand(program: Command): void {
             }
           );
 
-          devProcess.on('error', (error) => {
+          devAppProcess.on('error', (error) => {
             console.error('❌ Failed to start application:', error.message);
             process.exit(1);
           });
 
-          devProcess.on('exit', (code) => {
+          const devServiceProcess = spawn(
+            process.platform === 'win32' ? 'npm.cmd' : 'npm',
+            ['run', 'dev', '--', `PORT=${DEVELOPMENT_SERVICE_PORT}`],
+            {
+              cwd: servicePath,
+              stdio: 'inherit',
+              env: {
+                ...process.env,
+                PORT: options.port,
+              },
+            }
+          );
+
+          devServiceProcess.on('error', (error) => {
+            console.error('❌ Failed to start application:', error.message);
+            process.exit(1);
+          });
+
+          devServiceProcess.on('exit', (code) => {
+            if (code !== 0) {
+              process.exit(code || 1);
+            }
+          });
+
+          devAppProcess.on('exit', (code) => {
             if (code !== 0) {
               process.exit(code || 1);
             }
@@ -61,7 +93,7 @@ export function registerStartCommand(program: Command): void {
           console.error('❌ Failed to start application:', error);
           process.exit(1);
         }
-      } else if (options.mode === 'prod') {
+      } else if (options.mode === 'start') {
         console.log('🚀 Starting application in production mode...\n');
 
         // Build first
@@ -70,7 +102,7 @@ export function registerStartCommand(program: Command): void {
             process.platform === 'win32' ? 'npm.cmd' : 'npm',
             ['run', 'build'],
             {
-              cwd: appPath,
+              cwd: servicePath,
               stdio: 'inherit',
             }
           );
@@ -89,9 +121,9 @@ export function registerStartCommand(program: Command): void {
             // Start production server
             const prodProcess = spawn(
               process.platform === 'win32' ? 'npm.cmd' : 'npm',
-              ['run', 'start:prod'],
+              ['run', 'start:prod', '--', `PORT=${options.port}`],
               {
-                cwd: appPath,
+                cwd: servicePath,
                 stdio: 'inherit',
                 env: {
                   ...process.env,

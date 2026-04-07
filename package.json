@@ -6,7 +6,8 @@
   "main": "dist/index.js",
   "private": true,
   "workspaces": [
-    "src/app"
+    "src/app",
+    "src/service"
   ],
   "bin": {
     "pnce": "./dist/index.js"
@@ -19,6 +20,7 @@
     "dist/templates/**/*.md",
     "dist/templates/**/*.json",
     "dist/templates/docs",
+    "src/service/public/**/*",
     "README.md",
     "LICENSE"
   ],
@@ -58,8 +60,8 @@
   },
   "homepage": "https://github.com/hi-giacomo/pnce",
   "scripts": {
-    "build": "tsc && node scripts/copy-templates.js && chmod +x dist/index.js",
-    "start": "node dist/index.js",
+    "build": "cd ./src/app && npm run build && cd ../service && npm run build && cd ../../ && tsc && node scripts/copy-templates.js && cp -r src/service/public dist/ && chmod +x dist/index.js",
+    "start": "node dist/index.js start",
     "dev": "ts-node src/index.ts",
     "watch": "tsc --watch",
     "test": "vitest",
@@ -76,8 +78,11 @@
     "pkg:build:win": "npm run build && pkg . --targets node18-win-x64 --output ./release/pnce-win.exe"
   },
   "lint-staged": {
-    "src/**/*.ts": [
+    "src/**/*.{ts,tsx}": [
       "eslint --fix",
+      "prettier --write"
+    ],
+    "*.{js,cjs}": [
       "prettier --write"
     ]
   },

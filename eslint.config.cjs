@@ -1,7 +1,7 @@
 const js = require('@eslint/js');
 const tseslint = require('typescript-eslint');
 const eslintPluginPrettier = require('eslint-plugin-prettier');
-const nestjsPlugin = require('@nestjs/eslint-plugin-nestjs-typed');
+// const nestjsPlugin = require('@nestjs/eslint-plugin-nestjs-typed'); // 此包不存在，暂时注释
 
 module.exports = [
   js.configs.recommended,
@@ -44,24 +44,24 @@ module.exports = [
       ],
     },
   },
-  // NestJS app configuration
-  {
-    files: ['src/app/**/*.ts'],
-    plugins: {
-      '@nestjs/typed': nestjsPlugin,
-    },
-    rules: {
-      '@nestjs/typed/no-typed-lifecycle-methods': 'warn',
-      '@nestjs/typed/no-suffix-in-controller-names': 'warn',
-      '@nestjs/typed/no-unnecessary-prefix-in-controller-names': 'warn',
-      '@nestjs/typed/typed-event-emitter-decorator': 'warn',
-      '@nestjs/typed/no-singular-cycle-injectable-decorator': 'warn',
-      '@nestjs/typed/no-duplicate-injectable-decorator': 'error',
-      '@nestjs/typed/no-complex-injection-token': 'warn',
-      '@nestjs/typed/injectable-class-name': 'warn',
-      '@nestjs/typed/provided-in-invalid-range': 'error',
-    },
-  },
+  // NestJS app configuration - 暂时禁用，因为插件不存在
+  // {
+  //   files: ['src/app/**/*.ts'],
+  //   plugins: {
+  //     '@nestjs/typed': nestjsPlugin,
+  //   },
+  //   rules: {
+  //     '@nestjs/typed/no-typed-lifecycle-methods': 'warn',
+  //     '@nestjs/typed/no-suffix-in-controller-names': 'warn',
+  //     '@nestjs/typed/no-unnecessary-prefix-in-controller-names': 'warn',
+  //     '@nestjs/typed/typed-event-emitter-decorator': 'warn',
+  //     '@nestjs/typed/no-singular-cycle-injectable-decorator': 'warn',
+  //     '@nestjs/typed/no-duplicate-injectable-decorator': 'error',
+  //     '@nestjs/typed/no-complex-injection-token': 'warn',
+  //     '@nestjs/typed/injectable-class-name': 'warn',
+  //     '@nestjs/typed/provided-in-invalid-range': 'error',
+  //   },
+  // },
   // Template files - relaxed rules
   {
     files: ['src/templates/**/*.ts'],

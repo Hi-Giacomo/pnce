@@ -1,0 +1,86 @@
+.brand-side {
+    width: 45%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 40px;
+    
+    .brand-content {
+        max-width: 400px;
+        
+        .brand-logo {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 64px;
+            height: 64px;
+            background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+            border-radius: 16px;
+            margin-bottom: 24px;
+            box-shadow: 0 12px 32px rgba(99, 102, 241, 0.4);
+            
+            span {
+                color: white;
+                font-size: 20px;
+                font-weight: 700;
+                letter-spacing: 1px;
+            }
+        }
+        
+        h1 {
+            color: #fff;
+            font-size: 32px;
+            font-weight: 600;
+            margin: 0 0 12px;
+            letter-spacing: -0.5px;
+        }
+        
+        .brand-en {
+            color: rgba(255, 255, 255, 0.4);
+            font-size: 13px;
+            margin: 0 0 40px;
+            letter-spacing: 2px;
+        }
+        
+        .brand-features {
+            .feature {
+                display: flex;
+                align-items: center;
+                gap: 12px;
+                margin-bottom: 18px;
+                color: rgba(255, 255, 255, 0.5);
+                font-size: 14px;
+                
+                .feature-dot {
+                    width: 8px;
+                    height: 8px;
+                    background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+                    border-radius: 50%;
+                }
+            }
+        }
+    }
+}
+
+@media (max-width: 1024px) {
+    .brand-side {
+        width: 100%;
+        padding: 48px 40px 32px;
+        min-height: auto;
+        
+        .brand-content {
+            text-align: center;
+            max-width: 100%;
+            
+            .brand-features {
+                display: none;
+            }
+        }
+    }
+}
+
+@media (max-width: 640px) {
+    .brand-side {
+        display: none;
+    }
+}

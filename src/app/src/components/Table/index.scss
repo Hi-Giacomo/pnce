@@ -1,0 +1,43 @@
+.table-wrapper {
+    overflow-x: auto;
+    border-radius: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px;
+    
+    thead {
+        background: rgba(255, 255, 255, 0.02);
+        
+        th {
+            padding: 14px 16px;
+            text-align: left;
+            color: rgba(255, 255, 255, 0.65);
+            font-weight: 500;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+        }
+    }
+    
+    tbody {
+        tr {
+            border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+            transition: background 0.2s;
+            
+            &:hover {
+                background: rgba(99, 102, 241, 0.05);
+            }
+            
+            &:last-child {
+                border-bottom: none;
+            }
+        }
+        
+        td {
+            padding: 14px 16px;
+            color: rgba(255, 255, 255, 0.85);
+        }
+    }
+}

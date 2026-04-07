@@ -1,0 +1,107 @@
+.manager-content {
+  background:
+    radial-gradient(circle at 20% 50%, rgba(99, 102, 241, 0.08) 0%, transparent 50%),
+    radial-gradient(circle at 80% 80%, rgba(139, 92, 246, 0.08) 0%, transparent 50%),
+    radial-gradient(circle at 40% 20%, rgba(59, 130, 246, 0.05) 0%, transparent 50%);
+  position: relative;
+  animation: bgPulse 8s ease-in-out infinite;
+  min-height: 100%; // 确保内容区域填满
+  border-radius: 8px; // 圆角效果
+
+  // 网格背景
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-image:
+      linear-gradient(rgba(99, 102, 241, 0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(99, 102, 241, 0.03) 1px, transparent 1px);
+    background-size: 50px 50px;
+    pointer-events: none;
+    opacity: 0.5;
+    animation: gridMove 20s linear infinite;
+  }
+
+  @keyframes bgPulse {
+    0%,
+    100% {
+      background-position: 0% 50%;
+    }
+    50% {
+      background-position: 100% 50%;
+    }
+  }
+
+  @keyframes gridMove {
+    0% {
+      transform: translate(0, 0);
+    }
+    100% {
+      transform: translate(50px, 50px);
+    }
+  }
+
+  // 卡片增强效果
+  .card {
+    background: rgba(26, 26, 46, 0.6);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(99, 102, 241, 0.15);
+    box-shadow:
+      0 4px 20px rgba(0, 0, 0, 0.3),
+      0 0 0 1px rgba(99, 102, 241, 0.05) inset;
+    transition: all 0.3s ease;
+
+    &:hover {
+      border-color: rgba(99, 102, 241, 0.25);
+      box-shadow:
+        0 8px 30px rgba(0, 0, 0, 0.4),
+        0 0 20px rgba(99, 102, 241, 0.1),
+        0 0 0 1px rgba(99, 102, 241, 0.08) inset;
+      transform: translateY(-2px);
+    }
+
+    .card-header {
+      border-bottom: 1px solid rgba(99, 102, 241, 0.15);
+      background: rgba(99, 102, 241, 0.05);
+    }
+  }
+
+  // 表格增强效果
+  .table-wrapper {
+    border: 1px solid rgba(99, 102, 241, 0.12);
+    background: rgba(15, 15, 35, 0.4);
+    backdrop-filter: blur(5px);
+  }
+
+  .table {
+    thead {
+      th {
+        color: rgba(255, 255, 255, 0.75);
+        border-bottom: 1px solid rgba(99, 102, 241, 0.15);
+        background: rgba(99, 102, 241, 0.08);
+        text-transform: uppercase;
+        font-size: 12px;
+        letter-spacing: 0.5px;
+      }
+    }
+
+    tbody {
+      tr {
+        border-bottom: 1px solid rgba(99, 102, 241, 0.08);
+        transition: all 0.2s ease;
+
+        &:hover {
+          background: rgba(99, 102, 241, 0.1);
+          box-shadow: inset 0 0 20px rgba(99, 102, 241, 0.05);
+        }
+      }
+
+      td {
+        color: rgba(255, 255, 255, 0.9);
+      }
+    }
+  }
+}

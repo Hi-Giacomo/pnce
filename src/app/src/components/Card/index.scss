@@ -1,0 +1,30 @@
+.card {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: 12px;
+    overflow: hidden;
+    
+    .card-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 16px 20px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+        
+        .card-title {
+            color: #fff;
+            font-size: 16px;
+            font-weight: 500;
+            margin: 0;
+        }
+        
+        .card-extra {
+            color: rgba(255, 255, 255, 0.65);
+            font-size: 14px;
+        }
+    }
+    
+    .card-body {
+        padding: 20px;
+    }
+}
